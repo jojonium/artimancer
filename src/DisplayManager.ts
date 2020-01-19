@@ -51,6 +51,15 @@ class DisplayManager extends Manager {
     this.backCanvas.width = window.screen.width;
     this.backCanvas.width = window.screen.height;
 
+    // set event listeners
+    document.addEventListener("fullscreenchange", () => {
+      this.adjustCanvasSize();
+    });
+
+    window.addEventListener("resize", () => {
+      this.adjustCanvasSize();
+    });
+
     // start drawing the canvas
     window.requestAnimationFrame(this.draw.bind(this));
 

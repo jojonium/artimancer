@@ -5,19 +5,12 @@ function main(): void {
   // start all managers
   GM.startUp();
 
+  // TODO move this into InputManager
   document.addEventListener("keydown", e => {
     const key = e.key;
     if (key === "f") {
       DM.enterFullscreen();
     }
-  });
-
-  document.addEventListener("fullscreenchange", () => {
-    DM.adjustCanvasSize();
-  });
-
-  window.addEventListener("resize", () => {
-    DM.adjustCanvasSize();
   });
 }
 
