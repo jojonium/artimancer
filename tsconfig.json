@@ -1,12 +1,12 @@
 {
   "compilerOptions": {
-    "module": "system",
-    "target": "es5",
+    "module": "commonjs",
+    "target": "ES5",
     "noImplicitAny": true,
     "lib": [ "es2018", "dom" ],
     "moduleResolution": "node",
     "sourceMap": true,
-    "outFile": "static/main.js",
+    "outDir": "dist",
     "baseUrl": ".",
     "diagnostics": true,
     "paths": {
