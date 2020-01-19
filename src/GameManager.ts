@@ -1,6 +1,7 @@
 import { Manager } from "./Manager";
 import { Clock } from "./Clock";
 import { DM } from "./DisplayManager";
+import { IM } from "./InputManager";
 
 // target number of game steps per secong
 const TARGET_STEPS_PER_SECOND = 60;
@@ -17,6 +18,8 @@ class GameManager extends Manager {
   private clock: Clock;
   /** target number of milliseconds per game step */
   private stepTime: number;
+  /** whether to log extra info */
+  private noisy = true;
 
   /**
    * Private because managers are supposed to be singleton
@@ -24,10 +27,10 @@ class GameManager extends Manager {
   private constructor() {
     super();
     this.setType("Game Manager");
+    this.clock = new Clock();
     this.stepTime = (1 / TARGET_STEPS_PER_SECOND) * 1000;
     this.gameOver = false;
     this.adjustTime = 0;
-    this.clock = new Clock();
     this.stepTime = (1 / TARGET_STEPS_PER_SECOND) * 1000;
   }
 
@@ -45,10 +48,12 @@ class GameManager extends Manager {
   public startUp(): void {
     DM.startUp();
     // TODO start Resource Manager
-    // TODO start Input Manager
+    IM.startUp();
     // TODO start WorldManager
     super.startUp();
-    console.log("Game Manager successfully started");
+
+    this.run();
+    if (this.noisy) console.log("Game Manager successfully started");
   }
 
   /**
@@ -75,7 +80,8 @@ class GameManager extends Manager {
 
     // TODO send step events to all interested Entities
 
-    // TODO get input
+    // get input
+    IM.step();
 
     // TODO update game world
 
@@ -84,7 +90,7 @@ class GameManager extends Manager {
     const timeToSleep = this.stepTime - elapsedTime - this.adjustTime;
     this.clock.delta();
     if (!this.gameOver) {
-      setTimeout(this.run, timeToSleep);
+      setTimeout(this.run.bind(this), timeToSleep);
     }
   }
 }

@@ -5,9 +5,9 @@
  */
 export class Vector {
   /** x component */
-  private x: number;
+  public x: number;
   /** y component */
-  private y: number;
+  public y: number;
 
   /**
    * constructs an (x, y) vector

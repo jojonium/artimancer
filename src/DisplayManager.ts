@@ -14,6 +14,8 @@ class DisplayManager extends Manager {
   private context: CanvasRenderingContext2D;
   /** canvas context that we draw on */
   private backContext: CanvasRenderingContext2D;
+  /** whether to log extra info */
+  private noisy = true;
 
   private constructor() {
     super();
@@ -52,18 +54,22 @@ class DisplayManager extends Manager {
     this.backCanvas.width = window.screen.height;
 
     // set event listeners
-    document.addEventListener("fullscreenchange", () => {
-      this.adjustCanvasSize();
-    });
-
-    window.addEventListener("resize", () => {
-      this.adjustCanvasSize();
-    });
+    document.removeEventListener(
+      "fullscreenchange",
+      this.adjustCanvasSize.bind(this)
+    );
+    document.addEventListener(
+      "fullscreenchange",
+      this.adjustCanvasSize.bind(this)
+    );
+    window.removeEventListener("resize", this.adjustCanvasSize.bind(this));
+    window.addEventListener("resize", this.adjustCanvasSize.bind(this));
 
     // start drawing the canvas
     window.requestAnimationFrame(this.draw.bind(this));
 
-    console.log("Display Manager successfully started");
+    super.startUp();
+    if (this.noisy) console.log("Display Manager successfully started");
   }
 
   /**
@@ -95,16 +101,19 @@ class DisplayManager extends Manager {
     window.requestAnimationFrame(this.draw.bind(this));
   }
 
-  /**
-   * attempt to enter fullscreen
-   */
-  public enterFullscreen(): void {
-    // check if the browser supports requestFullscreen()
-    if (this.canvas.requestFullscreen) {
-      this.canvas.requestFullscreen().then(() => {
-        this.canvas.width = window.screen.width;
-        this.canvas.height = window.screen.height;
-      });
+  public toggleFullScreen(): void {
+    if (document.fullscreenElement === null) {
+      // enter fullscreen
+      // check if the browser supports requestFullscreen()
+      if (this.canvas.requestFullscreen) {
+        this.canvas.requestFullscreen().then(() => {
+          this.canvas.width = window.screen.width;
+          this.canvas.height = window.screen.height;
+        });
+      }
+    } else {
+      document.exitFullscreen();
+      this.adjustCanvasSize();
     }
   }
 
@@ -113,10 +122,9 @@ class DisplayManager extends Manager {
    * canvas keeps up with it
    */
   public adjustCanvasSize(): void {
-    console.log("here");
     if (document.fullscreenElement === null) {
-      this.canvas.width = window.innerWidth / 2;
-      this.canvas.height = window.innerHeight / 2;
+      this.canvas.width = window.screen.width / 2;
+      this.canvas.height = window.screen.height / 2;
     }
   }
 }
