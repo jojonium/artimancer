@@ -1,8 +1,14 @@
 import { Manager } from "./Manager";
 
+/**
+ * The DisplayManager class handles drawing things to the screen
+ */
 class DisplayManager extends Manager {
+  /** singleton instance */
   private static _instance = new DisplayManager();
+  /** HTML canvas that will be drawn on */
   private canvas: HTMLCanvasElement;
+  /** canvas context to draw on */
   private ctx: CanvasRenderingContext2D;
 
   private constructor() {
