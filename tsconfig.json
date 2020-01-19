@@ -6,7 +6,6 @@
     "lib": [ "es2018", "dom" ],
     "moduleResolution": "node",
     "sourceMap": true,
-    "declaration": true,
     "outFile": "static/main.js",
     "baseUrl": ".",
     "diagnostics": true,
