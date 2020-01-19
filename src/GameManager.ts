@@ -1,10 +1,11 @@
 import { Manager } from "./Manager";
 import { Clock } from "./Clock";
+import { DM } from "./DisplayManager";
 
 // target number of game steps per secong
 const TARGET_STEPS_PER_SECOND = 60;
 
-export class GameManager extends Manager {
+class GameManager extends Manager {
   private static _instance = new GameManager();
   /** false if the game is currently running */
   private gameOver = false;
@@ -30,8 +31,24 @@ export class GameManager extends Manager {
     this.stepTime = (1 / TARGET_STEPS_PER_SECOND) * 1000;
   }
 
-  public getInstance(): GameManager {
+  /**
+   * @return the singleton instance of this manager
+   */
+  public static getInstance(): GameManager {
     return GameManager._instance;
+  }
+
+  /**
+   * starts up all other managers
+   * @override
+   */
+  public startUp(): void {
+    DM.startUp();
+    // TODO start Resource Manager
+    // TODO start Input Manager
+    // TODO start WorldManager
+    super.startUp();
+    console.log("Game Manager successfully started");
   }
 
   /**
@@ -62,10 +79,6 @@ export class GameManager extends Manager {
 
     // TODO update game world
 
-    // TODO draw current scene to back buffer
-
-    // TODO swap buffers
-
     // sleep until it's time for the next step
     const elapsedTime = this.clock.split();
     const timeToSleep = this.stepTime - elapsedTime - this.adjustTime;
@@ -75,3 +88,5 @@ export class GameManager extends Manager {
     }
   }
 }
+
+export const GM = GameManager.getInstance();
