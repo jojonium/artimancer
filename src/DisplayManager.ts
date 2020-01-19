@@ -100,12 +100,14 @@ class DisplayManager extends Manager {
   }
 
   /**
-   * this should be called when fullscreen is exited. Restores the canvas size
+   * this should be called whenever the window size changes, to make sure the
+   * canvas keeps up with it
    */
-  public onExitFullscreen(): void {
+  public adjustCanvasSize(): void {
+    console.log("here");
     if (document.fullscreenElement === null) {
-      this.canvas.width = window.screen.width / 2;
-      this.canvas.height = window.screen.height / 2;
+      this.canvas.width = window.innerWidth / 2;
+      this.canvas.height = window.innerHeight / 2;
     }
   }
 }

@@ -13,7 +13,11 @@ function main(): void {
   });
 
   document.addEventListener("fullscreenchange", () => {
-    DM.onExitFullscreen();
+    DM.adjustCanvasSize();
+  });
+
+  window.addEventListener("resize", () => {
+    DM.adjustCanvasSize();
   });
 }
 
