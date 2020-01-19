@@ -2,6 +2,23 @@
 
 A simple game I'm working on. Stay tuned for more progress.
 
+## Running Development Server
+
+```
+$ npm ci
+$ npm run build
+$ npm start
+```
+
+The `build` npm script will compile TypeScript in the `src` directory, and write
+the output to `dist`. Then Browserify will bundle all the transpiled files into
+one `static/bundle.js`. 
+
+## Formatting and Linting
+
+ESlint and Prettier are configured already. Just do `npm run lint` to lint your
+TypeScript.
+
 ## Copying
 
 This program is free software: you can redistribute it and/or modify it
