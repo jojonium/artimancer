@@ -2,6 +2,7 @@ import { Manager } from "./Manager";
 import { Clock } from "./Clock";
 import { DM } from "./DisplayManager";
 import { IM } from "./InputManager";
+import { RM } from "./ResourceManager";
 
 // target number of game steps per secong
 const TARGET_STEPS_PER_SECOND = 60;
@@ -47,7 +48,7 @@ class GameManager extends Manager {
    */
   public startUp(): void {
     DM.startUp();
-    // TODO start Resource Manager
+    RM.startUp();
     IM.startUp();
     // TODO start WorldManager
     super.startUp();

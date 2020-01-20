@@ -9,6 +9,9 @@ const HOSTNAME = process.env.NODE_HOSTNAME || "localhost";
 // directory to serve static content from
 app.use(express.static(path.resolve(__dirname, "static")));
 
+// serve images from the images directory
+app.use("/images", express.static(path.resolve(__dirname, "images")));
+
 // start the server
 app.listen(PORT, HOSTNAME, () => {
   console.log(`Started server listening on ${HOSTNAME}:${PORT}...`);

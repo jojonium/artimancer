@@ -1,4 +1,5 @@
 import { Manager } from "./Manager";
+import { RM } from "./ResourceManager";
 
 /**
  * The DisplayManager class handles drawing things to the screen
@@ -51,7 +52,7 @@ class DisplayManager extends Manager {
     this.backContext = this.backCanvas.getContext("2d");
     this.backContext.imageSmoothingEnabled = false;
     this.backCanvas.width = window.screen.width;
-    this.backCanvas.width = window.screen.height;
+    this.backCanvas.height = window.screen.height;
 
     // set event listeners
     document.removeEventListener(
@@ -86,6 +87,32 @@ class DisplayManager extends Manager {
       this.backCanvas.width,
       this.backCanvas.height
     );
+    if (RM.getPercentLoaded() < 1) {
+      // show loading bar
+      this.backContext.fillStyle = "blue";
+      this.backContext.strokeStyle = "black";
+      this.backContext.lineWidth = 8;
+      const barHeight = 80;
+      const barLength = this.backCanvas.width * 0.75;
+      const x = this.backCanvas.width / 2 - barLength / 2;
+      const y = this.backCanvas.height / 2 - barHeight / 2;
+      this.backContext.fillRect(
+        x,
+        y,
+        barLength * RM.getPercentLoaded(),
+        barHeight
+      );
+      this.backContext.rect(x, y, barLength, barHeight);
+      this.backContext.stroke();
+    } else {
+      this.backContext.drawImage(
+        RM.getSprite("test")
+          .getCurrentFrame()
+          .getImage(),
+        0,
+        0
+      );
+    }
     this.backContext.restore();
 
     // swap the back canvas to the front
