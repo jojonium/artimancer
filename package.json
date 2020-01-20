@@ -9,6 +9,9 @@
     "lint": "eslint 'src/**/*' --ext .ts --quiet --fix",
     "prebuild": "npm run lint",
     "build": "tsc && browserify dist/main.js -o static/bundle.js",
+    "watch-js": "watchify -v -d dist/main.js -o static/bundle.js",
+    "watch-ts": "tsc --watch",
+    "watch": "npm run watch-js & npm run watch-ts & npm run start",
     "start": "node index.js"
   },
   "repository": {
@@ -38,6 +41,7 @@
     "typescript": "^3.7.5"
   },
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "watchify": "^3.11.1"
   }
 }

@@ -14,6 +14,9 @@ The `build` npm script will compile TypeScript in the `src` directory, and write
 the output to `dist`. Then Browserify will bundle all the transpiled files into
 one `static/bundle.js`. 
 
+The `npm run watch` script will start the web server and watch for source
+file changes, automatically re-compiling when changes are detected
+
 ## Formatting and Linting
 
 ESlint and Prettier are configured already. Just do `npm run lint` to lint your
