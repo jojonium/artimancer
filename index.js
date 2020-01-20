@@ -12,6 +12,9 @@ app.use(express.static(path.resolve(__dirname, "static")));
 // serve images from the images directory
 app.use("/images", express.static(path.resolve(__dirname, "images")));
 
+// serve fonts from the fonts directory
+app.use("/fonts", express.static(path.resolve(__dirname, "fonts")));
+
 // start the server
 app.listen(PORT, HOSTNAME, () => {
   console.log(`Started server listening on ${HOSTNAME}:${PORT}...`);
