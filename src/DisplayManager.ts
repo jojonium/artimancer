@@ -66,8 +66,6 @@ class DisplayManager extends Manager {
       "fullscreenchange",
       this.adjustCanvasSize.bind(this)
     );
-    window.removeEventListener("resize", this.adjustCanvasSize.bind(this));
-    window.addEventListener("resize", this.adjustCanvasSize.bind(this));
 
     // start drawing the canvas
     window.requestAnimationFrame(this.draw.bind(this));
