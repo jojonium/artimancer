@@ -53,7 +53,6 @@ export class Sprite {
       this.clock.delta();
       this.currentFrameNum = (this.currentFrameNum + 1) % this.frames.length;
     }
-    console.log("Sprite returning frame " + this.currentFrameNum);
     return this.frames[this.currentFrameNum];
   }
 }

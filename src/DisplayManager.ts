@@ -1,5 +1,5 @@
 import { Manager } from "./Manager";
-import { RM } from "./ResourceManager";
+import { WM } from "./WorldManager";
 
 /**
  * The DisplayManager class handles drawing things to the screen
@@ -23,6 +23,9 @@ class DisplayManager extends Manager {
     this.setType("Display Manager");
   }
 
+  /**
+   * return the singleton instance of this manager
+   */
   public static getInstance(): DisplayManager {
     return DisplayManager._instance;
   }
@@ -78,42 +81,8 @@ class DisplayManager extends Manager {
    * again. draw() only needs to be called once
    */
   private draw(): void {
-    // TODO implement a GameMode class that can have its own draw method
-    this.backContext.save();
-    this.backContext.fillStyle = "green";
-    this.backContext.fillRect(
-      0,
-      0,
-      this.backCanvas.width,
-      this.backCanvas.height
-    );
-    if (RM.getPercentLoaded() < 1) {
-      // show loading bar
-      this.backContext.fillStyle = "blue";
-      this.backContext.strokeStyle = "black";
-      this.backContext.lineWidth = 8;
-      const barHeight = 80;
-      const barLength = this.backCanvas.width * 0.75;
-      const x = this.backCanvas.width / 2 - barLength / 2;
-      const y = this.backCanvas.height / 2 - barHeight / 2;
-      this.backContext.fillRect(
-        x,
-        y,
-        barLength * RM.getPercentLoaded(),
-        barHeight
-      );
-      this.backContext.rect(x, y, barLength, barHeight);
-      this.backContext.stroke();
-    } else {
-      this.backContext.drawImage(
-        RM.getSprite("test")
-          .getCurrentFrame()
-          .getImage(),
-        0,
-        0
-      );
-    }
-    this.backContext.restore();
+    // draw the current world
+    WM.draw(this.backCanvas);
 
     // swap the back canvas to the front
     this.context.save();

@@ -63,7 +63,6 @@ export class ResourceManager extends Manager {
           this.sprites.get(i.spriteLabel).setFrame(i.index, frame);
           this.percentLoaded += 1 / totalLength;
           // round percentLoaded to the nearest hundredth
-          this.percentLoaded = Math.round(this.percentLoaded * 100) / 100;
         },
         reason => {
           throw new Error(`RM: failed to load: ${reason}`);
