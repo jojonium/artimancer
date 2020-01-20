@@ -12,8 +12,6 @@ export class ResourceManager extends Manager {
   private static _instance = new ResourceManager();
   /** map of sprites, indexed by name */
   private sprites: Map<string, Sprite>;
-  /** array of fonts */
-  private fonts: Array<FontFace>;
   /** what percentage of all resources have loaded */
   private percentLoaded: number;
   /** whether to log extra info */
@@ -39,7 +37,6 @@ export class ResourceManager extends Manager {
    */
   public startUp(): void {
     this.sprites = new Map<string, Sprite>();
-    this.fonts = new Array<FontFace>();
 
     this.loadAllResources();
 
