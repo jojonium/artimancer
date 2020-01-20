@@ -5,10 +5,6 @@ import { Clock } from "./Clock";
  * This class represents a sprite, which can be single frame or multiple
  */
 export class Sprite {
-  /** Sprite width in pixels */
-  private width: number;
-  /** Sprite height in pixels */
-  private height: number;
   /** amount of time between frames, in milliseconds */
   private slowdown: number;
   /** frames of this sprite */
@@ -20,13 +16,16 @@ export class Sprite {
 
   /**
    * constructs a new sprite
-   * @param slowdown time between frames, in milliseconds
+   * @param slowdown time between frames, in milliseconds. Set to zero for
+   * non-animating sprites
    * @param length number of frames in this sprite
    */
   public constructor(slowdown = 16, length = 1) {
     this.slowdown = slowdown;
     this.frames = new Array<Frame>(length);
-    this.clock = new Clock();
+    if (this.frames.length > 1 || slowdown > 1) {
+      this.clock = new Clock();
+    }
     this.currentFrameNum = 0;
   }
 
@@ -47,6 +46,10 @@ export class Sprite {
    * stuff will happen
    */
   public getCurrentFrame(): Frame {
+    if (this.frames.length <= 1 || this.slowdown < 1) {
+      // non-animating sprite
+      return this.frames[0];
+    }
     const timeElapsed = this.clock.split();
     if (timeElapsed >= this.slowdown) {
       // time to move up to the next frame
