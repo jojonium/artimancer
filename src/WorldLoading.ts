@@ -28,6 +28,12 @@ export class WorldLoading extends World {
     ctx.fillStyle = "#aaaaaa";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+    // draw text
+    ctx.font = "bold 50px Bitter";
+    ctx.fillStyle = "black";
+    ctx.textAlign = "center";
+    ctx.fillText("Now loading...", canvas.width / 2, canvas.height / 2 - 100);
+
     // show loading bar
     ctx.fillStyle = "blue";
     ctx.strokeStyle = "black";

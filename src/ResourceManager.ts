@@ -2,6 +2,7 @@ import { Manager } from "./Manager";
 import { Sprite } from "./Sprite";
 import { resources } from "./resources";
 import { Frame } from "./Frame";
+import { FontFaceDescriptors } from "css-font-loading-module";
 
 /**
  * The ResourceManager handles loading resources, such as sprites and sounds
@@ -11,6 +12,8 @@ export class ResourceManager extends Manager {
   private static _instance = new ResourceManager();
   /** map of sprites, indexed by name */
   private sprites: Map<string, Sprite>;
+  /** array of fonts */
+  private fonts: Array<FontFace>;
   /** what percentage of all resources have loaded */
   private percentLoaded: number;
   /** whether to log extra info */
@@ -36,6 +39,7 @@ export class ResourceManager extends Manager {
    */
   public startUp(): void {
     this.sprites = new Map<string, Sprite>();
+    this.fonts = new Array<FontFace>();
 
     this.loadAllResources();
 
@@ -50,25 +54,63 @@ export class ResourceManager extends Manager {
     }
     this.percentLoaded = 0;
     // TODO update this when more things are added to resources
-    const totalLength = resources.images.length;
+    const totalLength = resources.images.length + resources.fonts.length;
+
+    // load all fonts
+    for (const f of resources.fonts) {
+      this.loadFont(f.family, f.filename, f.options)
+        .then(ff => {
+          if (this.noisy) console.log(`RM: successfully loaded ${f.filename}`);
+          document.fonts.add(ff);
+          this.percentLoaded += 1 / totalLength;
+        })
+        .catch(reason => {
+          console.error(reason);
+          throw new Error(`RM: failed to load font ${f.filename}`);
+        });
+    }
+    // load all images
     for (const i of resources.images) {
       // make sure this sprite exists
       if (!this.sprites.has(i.spriteLabel)) {
         throw new Error("RM: missing sprite with label " + i.spriteLabel);
       }
-      this.loadImage(i.filename).then(
-        img => {
-          if (this.noisy) console.log(`RM: successfully loaded ${i.filename}`);
-          const frame = new Frame(img);
-          this.sprites.get(i.spriteLabel).setFrame(i.index, frame);
-          this.percentLoaded += 1 / totalLength;
-          // round percentLoaded to the nearest hundredth
-        },
-        reason => {
-          throw new Error(`RM: failed to load: ${reason}`);
-        }
-      );
+      this.loadImage(i.filename)
+        .then(
+          img => {
+            if (this.noisy)
+              console.log(`RM: successfully loaded ${i.filename}`);
+            const frame = new Frame(img);
+            this.sprites.get(i.spriteLabel).setFrame(i.index, frame);
+            this.percentLoaded += 1 / totalLength;
+            // round percentLoaded to the nearest hundredth
+          },
+          reason => {
+            console.error(reason);
+            throw new Error(`RM: failed to load image ${i.filename}`);
+          }
+        )
+        .catch(reason => {
+          console.error(reason);
+          throw new Error(`RM: failed to load image ${i.filename}`);
+        });
     }
+  }
+
+  /**
+   * Loads a font from the server
+   * @param family name of this font family
+   * @param filename filename of the font to load
+   * @param ffdesc CSS font-face descriptors to go with this font
+   * @return a Promise containing the FontFace
+   */
+  private loadFont(
+    family: string,
+    filename: string,
+    ffDesc?: FontFaceDescriptors
+  ): Promise<FontFace> {
+    const ff = new FontFace(family, `url(${filename})`, ffDesc);
+    return ff.load();
   }
 
   /**
