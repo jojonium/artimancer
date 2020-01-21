@@ -20,7 +20,7 @@ class DisplayManager extends Manager {
   /** whether to log extra info */
   private noisy = true;
   /** dimensions of back canvas in pixels */
-  private quality = 500;
+  private quality = 1000;
 
   /**
    * private because DisplayManager is singleton

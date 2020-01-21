@@ -1,8 +1,10 @@
 import { World } from "./World";
 import { RM } from "./ResourceManager";
 import { WM } from "./WorldManager";
-import { WorldDisplayTest } from "./WorldDisplayTest";
 import { CANV_SIZE } from "./DisplayManager";
+import { WorldRoomEditor } from "./WorldRoomEditor";
+import { Room } from "./Room";
+import { Vector } from "./Vector";
 
 /**
  * a World that displays a loading bar while resources are being loaded
@@ -52,7 +54,15 @@ export class WorldLoading extends World {
     this.percentLoaded = RM.getPercentLoaded();
     if (1 - this.percentLoaded <= 0.01) {
       // TODO move on to next world
-      WM.enterWorld(new WorldDisplayTest());
+      const room = new Room("Test Room");
+      room.addBackground(
+        RM.getSprite("test-bg"),
+        new Vector(500, 300),
+        600,
+        200,
+        0
+      );
+      WM.enterWorld(new WorldRoomEditor(room));
     }
   }
 }

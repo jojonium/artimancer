@@ -36,4 +36,11 @@ export abstract class World {
    * @param stepCount number of this step
    */
   public abstract step(stepCount: number): void;
+
+  /**
+   * optional method to call when we leave this world
+   */
+  public exit(): void {
+    return;
+  }
 }

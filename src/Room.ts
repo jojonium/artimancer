@@ -28,6 +28,9 @@ export class Room {
   public constructor(label: string) {
     this.label = label;
     this.backgrounds = new Array<[]>(6);
+    for (let i = 0; i < 6; ++i) {
+      this.backgrounds[i] = [];
+    }
     this.entities = [];
   }
 
@@ -43,7 +46,7 @@ export class Room {
    * @param sprite the sprite of this background piece
    * @param layer 0-5, higher layers are drawn on top of lower ones
    */
-  private addBackground(
+  public addBackground(
     sprite: Sprite,
     centerPos: Vector,
     width: number,
