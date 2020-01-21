@@ -65,6 +65,7 @@ export class Room {
    * @param h height of the canvas
    */
   public draw(ctx: CanvasRenderingContext2D, w: number, h: number): void {
+    // draw all backgrounds layer by layer
     this.backgrounds.forEach(layer => {
       layer.forEach(obj => {
         const x = obj.centerPos.x - obj.width / 2;
@@ -78,5 +79,8 @@ export class Room {
         );
       });
     });
+
+    // draw all entities on top of the background
+    this.entities.map(ent => ent.draw(ctx, w, h));
   }
 }
