@@ -17,9 +17,15 @@ class DisplayManager extends Manager {
   private backContext: CanvasRenderingContext2D;
   /** whether to log extra info */
   private noisy = true;
-  /** width/height of back canvas in pixels */
-  private backDimension = 1000;
+  /**
+   * width/height of back canvas in pixels
+   * TODO consider making this bigger for high-res displays
+   */
+  private backDimension = 3000;
 
+  /**
+   * private because DisplayManager is singleton
+   */
   private constructor() {
     super();
     this.setType("Display Manager");
@@ -56,8 +62,10 @@ class DisplayManager extends Manager {
     this.backCanvas = document.createElement("canvas");
     this.backContext = this.backCanvas.getContext("2d");
     this.backContext.imageSmoothingEnabled = false;
-    this.backCanvas.width = this.backDimension;
-    this.backCanvas.height = this.backDimension;
+    // the backCanvas will be 3 times the size so that you can draw outside the
+    // bounds and it will still look right
+    this.backCanvas.width = this.backDimension * 3;
+    this.backCanvas.height = this.backDimension * 3;
 
     // set event listeners
     document.removeEventListener(
@@ -89,14 +97,7 @@ class DisplayManager extends Manager {
     // and we'll we'll abstract the scaling away
 
     this.backContext.save();
-    // draw black background
-    this.backContext.fillStyle = "black";
-    this.backContext.fillRect(
-      0,
-      0,
-      this.backCanvas.width,
-      this.backCanvas.height
-    );
+    this.backContext.translate(this.backDimension, this.backDimension);
     // draw the current world
     WM.draw(this.backCanvas);
     this.backContext.restore();
@@ -106,19 +107,19 @@ class DisplayManager extends Manager {
     // draw canvas background
     this.context.fillStyle = "#d2d2d2";
     this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
-    let scaleFactor = 1;
-    let yTranslate = 0;
-    let xTranslate = 0;
+    let scaleFact = 1;
+    let yTranslate = -this.backDimension;
+    let xTranslate = -this.backDimension;
     if (this.canvas.width < this.canvas.height) {
       // width is the limiting factor
-      scaleFactor = this.canvas.width / this.backDimension;
-      yTranslate = (this.canvas.height - this.canvas.width) / (2 * scaleFactor);
+      scaleFact = this.canvas.width / this.backDimension;
+      yTranslate += (this.canvas.height - this.canvas.width) / (2 * scaleFact);
     } else {
       // height is the limiting factor
-      scaleFactor = this.canvas.height / this.backDimension;
-      xTranslate = (this.canvas.width - this.canvas.height) / (2 * scaleFactor);
+      scaleFact = this.canvas.height / this.backDimension;
+      xTranslate += (this.canvas.width - this.canvas.height) / (2 * scaleFact);
     }
-    this.context.scale(scaleFactor, scaleFactor);
+    this.context.scale(scaleFact, scaleFact);
     this.context.translate(xTranslate, yTranslate);
     this.context.drawImage(this.backCanvas, 0, 0);
     this.context.restore();

@@ -23,31 +23,31 @@ export class WorldDisplayTest extends World {
    */
   public draw(canvas: HTMLCanvasElement): void {
     const ctx = canvas.getContext("2d");
-    ctx.beginPath();
-    ctx.lineWidth = 12;
-    ctx.fillStyle = "green";
+    ctx.lineWidth = 80;
     ctx.strokeStyle = "black";
-    ctx.rect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "green";
+    ctx.beginPath();
+    ctx.rect(0, 0, 3000, 3000);
     ctx.fill();
     ctx.stroke();
     ctx.strokeStyle = "blue";
     ctx.fillStyle = "red";
     ctx.beginPath();
-    ctx.rect(-50, -50, 100, 100);
+    ctx.rect(-150, -150, 300, 300);
     ctx.fill();
     ctx.stroke();
 
-    const center = new Vector(canvas.width / 2, canvas.height / 2);
+    const center = new Vector(3000 / 2, 3000 / 2);
     ctx.fillStyle = "blue";
     ctx.strokeStyle = "black";
     ctx.beginPath();
-    ctx.arc(center.x, center.y, 100, 0, 2 * Math.PI);
+    ctx.arc(center.x, center.y, 300, 0, 2 * Math.PI);
     ctx.stroke();
     ctx.fill();
-    ctx.font = "bold 50px monospace";
+    ctx.font = "bold 100px monospace";
     ctx.fillStyle = "black";
     ctx.textAlign = "right";
-    ctx.fillText("" + this.stepCount, 950, 80);
+    ctx.fillText("" + this.stepCount, 2950, 180);
   }
 
   /**
