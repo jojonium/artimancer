@@ -1,5 +1,6 @@
 import { World } from "./World";
 import { Vector } from "./Vector";
+import { CANV_SIZE } from "./DisplayManager";
 
 /**
  * This world is for testing display scaling
@@ -20,36 +21,34 @@ export class WorldDisplayTest extends World {
    * draw a black box around the border of the drawing area, with a green fill,
    * and a blue circle with black outline in the center
    * @param ctx the canvas context to draw on
-   * @param w width of the canvas
-   * @param h height of the canvas
    */
-  public draw(ctx: CanvasRenderingContext2D, w: number, h: number): void {
-    ctx.lineWidth = 0.008 * h;
+  public draw(ctx: CanvasRenderingContext2D): void {
+    ctx.lineWidth = 0.008 * CANV_SIZE;
     ctx.strokeStyle = "yellow";
     ctx.fillStyle = "green";
     ctx.beginPath();
-    ctx.rect(0, 0, w, h);
+    ctx.rect(0, 0, 1000, 1000);
     ctx.fill();
     ctx.stroke();
     ctx.strokeStyle = "blue";
     ctx.fillStyle = "red";
     ctx.beginPath();
-    const z = 0.05 * w;
+    const z = 0.05 * CANV_SIZE;
     ctx.rect(-z, -z, z * 2, z * 2);
     ctx.fill();
     ctx.stroke();
 
-    const center = new Vector(w / 2, h / 2);
+    const center = new Vector(CANV_SIZE / 2, CANV_SIZE / 2);
     ctx.fillStyle = "blue";
     ctx.strokeStyle = "black";
     ctx.beginPath();
     ctx.arc(center.x, center.y, z * 2, 0, 2 * Math.PI);
     ctx.stroke();
     ctx.fill();
-    ctx.font = `bold ${0.04 * h}px monospace`;
+    ctx.font = `bold ${0.04 * CANV_SIZE}px monospace`;
     ctx.fillStyle = "black";
     ctx.textAlign = "right";
-    ctx.fillText("" + this.stepCount, w * 0.95, h * 0.05);
+    ctx.fillText("" + this.stepCount, CANV_SIZE * 0.95, CANV_SIZE * 0.05);
   }
 
   /**

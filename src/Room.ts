@@ -61,10 +61,8 @@ export class Room {
   /**
    * draw this room to the canvas
    * @param ctx the canvas context to draw on
-   * @param w width of the canvas
-   * @param h height of the canvas
    */
-  public draw(ctx: CanvasRenderingContext2D, w: number, h: number): void {
+  public draw(ctx: CanvasRenderingContext2D): void {
     // draw all backgrounds layer by layer
     this.backgrounds.forEach(layer => {
       layer.forEach(obj => {
@@ -74,13 +72,13 @@ export class Room {
           obj.sprite.getCurrentFrame().getImage(),
           x,
           y,
-          obj.width * w,
-          obj.height * h
+          obj.width,
+          obj.height
         );
       });
     });
 
     // draw all entities on top of the background
-    this.entities.map(ent => ent.draw(ctx, w, h));
+    this.entities.map(ent => ent.draw(ctx));
   }
 }

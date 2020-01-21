@@ -19,12 +19,9 @@ export class WorldFreeRoam extends World {
   /**
    * draws this world
    * @param ctx the canvas context to draw on
-   * @param w width of the canvas
-   * @param h height of the canvas
    */
-  public draw(ctx: CanvasRenderingContext2D, w: number, h: number): void {
-    // TODO implement
-    this.currentRoom.draw(ctx, w, h);
+  public draw(ctx: CanvasRenderingContext2D): void {
+    this.currentRoom.draw(ctx);
   }
 
   /**

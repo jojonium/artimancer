@@ -1,6 +1,8 @@
 import { Manager } from "./Manager";
 import { WM } from "./WorldManager";
 
+export const CANV_SIZE = 1000;
+
 /**
  * The DisplayManager class handles drawing things to the screen
  */
@@ -17,11 +19,8 @@ class DisplayManager extends Manager {
   private backContext: CanvasRenderingContext2D;
   /** whether to log extra info */
   private noisy = true;
-  /**
-   * width/height of back canvas in pixels
-   * TODO consider making this bigger for high-res displays
-   */
-  private backDimension = 1000;
+  /** dimensions of back canvas in pixels */
+  private quality = 500;
 
   /**
    * private because DisplayManager is singleton
@@ -53,8 +52,6 @@ class DisplayManager extends Manager {
     this.canvas.id = "canvas";
     this.context = this.canvas.getContext("2d");
     this.context.imageSmoothingEnabled = false;
-    this.canvas.width = window.screen.width / 2;
-    this.canvas.height = window.screen.height / 2;
     canvasHolder.appendChild(this.canvas);
 
     // Create back canvas that is the size of the actual screen. We'll draw
@@ -62,8 +59,8 @@ class DisplayManager extends Manager {
     this.backCanvas = document.createElement("canvas");
     this.backContext = this.backCanvas.getContext("2d");
     this.backContext.imageSmoothingEnabled = false;
-    this.backCanvas.width = window.screen.width;
-    this.backCanvas.height = window.screen.height;
+
+    this.adjustCanvasSize();
 
     // set event listeners
     document.removeEventListener(
@@ -86,14 +83,13 @@ class DisplayManager extends Manager {
 
   /**
    * Draw one frame onto the canvas, then request an animation from to do it
-   * again. draw() only needs to be called once
+   * again. draw() only needs to be called once.
+   *
+   * We abstract away all the scaling to this.quality and screen size, so all
+   * other draw functions should assume they are drawing on a CANV_SIZE by
+   * CANV_SIZE square canvas
    */
   private draw(): void {
-    // The back canvas can be any size, depending on the user's screen size. We
-    // want the shown canvas to scale well to bigger screen sizes. Basically all
-    // draw functions should assume they're drawing on a square canvas and we'll
-    // abstract the scaling away
-
     // clear backContext
     this.backContext.clearRect(
       0,
@@ -104,25 +100,28 @@ class DisplayManager extends Manager {
 
     this.backContext.save();
     // scale the back canvas so it's as if we're drawing on a square with width
-    // and height equal to this.backDimension
+    // and height equal to CANV_SIZE
     let scaleFact = 1;
     let yTranslate = 0;
     let xTranslate = 0;
     if (this.backCanvas.width < this.backCanvas.height) {
       // width is the limiting factor
-      scaleFact = this.backCanvas.width / this.backDimension;
+      scaleFact = this.backCanvas.width / this.quality;
       yTranslate =
         (this.backCanvas.height - this.backCanvas.width) / (2 * scaleFact);
     } else {
       // height is the limiting factor
-      scaleFact = this.backCanvas.height / this.backDimension;
+      scaleFact = this.backCanvas.height / this.quality;
       xTranslate =
         (this.backCanvas.width - this.backCanvas.height) / (2 * scaleFact);
     }
+    // scale to size of this.quality
     this.backContext.scale(scaleFact, scaleFact);
     this.backContext.translate(xTranslate, yTranslate);
+    // now scale to the constant CANV_SIZE
+    this.backContext.scale(this.quality / CANV_SIZE, this.quality / CANV_SIZE);
     // draw the current world
-    WM.draw(this.backContext, this.backDimension, this.backDimension);
+    WM.draw(this.backContext);
     this.backContext.restore();
 
     // swap the back canvas to the front
@@ -163,8 +162,18 @@ class DisplayManager extends Manager {
    * canvas keeps up with it
    */
   public adjustCanvasSize(): void {
-    this.backCanvas.width = window.screen.width;
-    this.backCanvas.height = window.screen.height;
+    // scale back-canvas to the size of this.quality
+    if (window.screen.width < window.screen.height) {
+      // width is the limiting factor
+      this.backCanvas.width = this.quality;
+      this.backCanvas.height =
+        (this.quality * window.screen.height) / window.screen.width;
+    } else {
+      // height is the limiting factor
+      this.backCanvas.height = this.quality;
+      this.backCanvas.width =
+        (this.quality * window.screen.width) / window.screen.height;
+    }
 
     if (document.fullscreenElement === null) {
       // non-fullscreen mode
@@ -177,4 +186,5 @@ class DisplayManager extends Manager {
     }
   }
 }
+
 export const DM = DisplayManager.getInstance();

@@ -49,11 +49,9 @@ class WorldManager extends Manager {
   /**
    * Draw the world on the canvas
    * @param ctx the canvas context to draw on
-   * @param w width of the canvas context
-   * @param h height of the canvas context
    */
-  public draw(ctx: CanvasRenderingContext2D, w: number, h: number): void {
-    this.currentWorld.draw(ctx, w, h);
+  public draw(ctx: CanvasRenderingContext2D): void {
+    this.currentWorld.draw(ctx);
   }
 
   /**

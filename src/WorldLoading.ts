@@ -2,6 +2,7 @@ import { World } from "./World";
 import { RM } from "./ResourceManager";
 import { WM } from "./WorldManager";
 import { WorldDisplayTest } from "./WorldDisplayTest";
+import { CANV_SIZE } from "./DisplayManager";
 
 /**
  * a World that displays a loading bar while resources are being loaded
@@ -22,24 +23,22 @@ export class WorldLoading extends World {
   /**
    * draws a loading bar centered on a gray canvas
    * @param ctx the canvas context to draw on
-   * @param w width of the canvas
-   * @param h height of the canvas
    */
-  public draw(ctx: CanvasRenderingContext2D, w: number, h: number): void {
+  public draw(ctx: CanvasRenderingContext2D): void {
     // draw text
-    ctx.font = `bold ${0.05 * h}px Bitter`;
+    ctx.font = `bold 50px Bitter`;
     ctx.fillStyle = "#cccccc";
     ctx.textAlign = "center";
-    ctx.fillText("Now loading...", w / 2, h / 2 - 0.1 * h);
+    ctx.fillText("Now loading...", CANV_SIZE / 2, CANV_SIZE / 2 - 100);
 
     // show loading bar
     ctx.fillStyle = "#007acc";
     ctx.strokeStyle = "#cccccc";
-    ctx.lineWidth = 0.008 * h;
-    const barHeight = h * 0.05;
-    const barLength = w * 0.75;
-    const x = w / 2 - barLength / 2;
-    const y = h / 2 - barHeight / 2;
+    ctx.lineWidth = 8;
+    const barHeight = 50;
+    const barLength = 750;
+    const x = CANV_SIZE / 2 - barLength / 2;
+    const y = CANV_SIZE / 2 - barHeight / 2;
     ctx.fillRect(x, y, barLength * this.percentLoaded, barHeight);
     ctx.rect(x, y, barLength, barHeight);
     ctx.stroke();

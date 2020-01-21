@@ -31,12 +31,6 @@ export abstract class FreeRoamEntity {
   /**
    * Draws this entity
    * @param ctx the canvas context to draw on
-   * @param w width of the canvas
-   * @param h height of the canvas
    */
-  public abstract draw(
-    ctx: CanvasRenderingContext2D,
-    w: number,
-    h: number
-  ): void;
+  public abstract draw(ctx: CanvasRenderingContext2D): void;
 }
