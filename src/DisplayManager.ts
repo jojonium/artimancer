@@ -94,6 +94,13 @@ class DisplayManager extends Manager {
     // draw functions should assume they're drawing on a square canvas and we'll
     // we'll abstract the scaling away
 
+    // clear backContext
+    this.backContext.clearRect(
+      0,
+      0,
+      this.backCanvas.width,
+      this.backCanvas.height
+    );
     this.backContext.save();
     // scale the back canvas so it's as if we're drawing on a square with width
     // and height equal to this.backDimension
@@ -120,12 +127,13 @@ class DisplayManager extends Manager {
     // swap the back canvas to the front
     this.context.save();
     // draw canvas background
-    this.context.fillStyle = "black";
+    this.context.fillStyle = "#232629";
     this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
     // draw backContext on the front
-    const xs = this.canvas.width / this.backCanvas.width;
-    const ys = this.canvas.height / this.backCanvas.height;
-    this.context.scale(xs, ys);
+    this.context.scale(
+      this.canvas.width / this.backCanvas.width,
+      this.canvas.height / this.backCanvas.height
+    );
     this.context.drawImage(this.backCanvas, 0, 0);
     this.context.restore();
 
