@@ -58,7 +58,7 @@ export class WorldRoomEditor extends WorldFreeRoam {
     this.currentPolygon.addPoints(vec);
     if (ev.shiftKey) {
       // try to close the polygon
-      if (this.currentPolygon.closePath()) {
+      if (this.currentPolygon.getPoints().length > 2) {
         this.completedPolygons.push(this.currentPolygon);
         this.currentPolygon = null;
       }
