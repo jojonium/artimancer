@@ -15,8 +15,8 @@ export class Room {
   private backgrounds: {
     sprite: Sprite;
     centerPos: Vector;
-    width: number; // as factor of total window width
-    height: number; // as factor of total window height
+    width: number; // pixels, scaled to a CANV_SIZE by CANV_SIZE canvas
+    height: number; // pixels, scaled to a CANV_SIZE by CANV_SIZE canvas
   }[][];
   /** all free roam entities in this room */
   private entities: FreeRoamEntity[];

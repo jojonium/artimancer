@@ -11,9 +11,9 @@ export abstract class FreeRoamEntity {
   private pos: Vector;
   /** direction the entity is facing */
   private dir: Vector;
-  /** width of this entity as a ratio of the total screen width */
+  /** width of this entity in pixels on a CANV_SIZE by CANV_SIZE canvas */
   private width: number;
-  /** height of this entity as a ratio of the total screen width */
+  /** height of this entity in pixels on a CANV_SIZE by CANV_SIZE canvas */
   private height: number;
 
   /**
