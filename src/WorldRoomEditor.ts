@@ -2,6 +2,8 @@ import { Room } from "./Room";
 import { WorldFreeRoam } from "./WorldFreeRoam";
 import { Vector } from "./Vector";
 import { Polygon } from "./Polygon";
+import { DM } from "./DisplayManager";
+import { IM } from "./InputManager";
 
 /**
  * This class is for development purposes, and allows for easy graphical
@@ -12,6 +14,8 @@ export class WorldRoomEditor extends WorldFreeRoam {
   private completedPolygons: Polygon[];
   /** the polygon currently being worked on */
   private currentPolygon: Polygon;
+  /** current mouse location */
+  private mousePos: Vector;
 
   /**
    * Constructs a new RoomEditor world for a given room
@@ -21,6 +25,10 @@ export class WorldRoomEditor extends WorldFreeRoam {
     super();
     this.setType("Room Editor");
     this.setRoom(room);
+    this.completedPolygons = new Array<Polygon>();
+
+    // set button controls
+    IM.setOnPressed("escape", this.cancel.bind(this));
 
     // add event listeners to the canvas
     document
@@ -29,6 +37,12 @@ export class WorldRoomEditor extends WorldFreeRoam {
     document
       .getElementById("canvas")
       .addEventListener("mousedown", this.mousedownHandler.bind(this));
+    document
+      .getElementById("canvas")
+      .removeEventListener("mousemove", this.mousemoveHandler.bind(this));
+    document
+      .getElementById("canvas")
+      .addEventListener("mousemove", this.mousemoveHandler.bind(this));
   }
 
   /**
@@ -36,10 +50,8 @@ export class WorldRoomEditor extends WorldFreeRoam {
    * @param ev the mouse event produced by the click
    */
   public mousedownHandler(ev: MouseEvent): void {
-    const canvas = document.getElementById("canvas");
-    const rect = canvas.getBoundingClientRect();
-    const vec = new Vector(ev.clientX - rect.left, ev.clientY - rect.top);
-    console.log(`${vec.x}, ${vec.y}`);
+    const vec = DM.windowToWorldCoord(new Vector(ev.clientX, ev.clientY));
+    this.mousePos = vec;
     if (this.currentPolygon === null || this.currentPolygon === undefined) {
       this.currentPolygon = new Polygon();
     }
@@ -51,7 +63,21 @@ export class WorldRoomEditor extends WorldFreeRoam {
         this.currentPolygon = null;
       }
     }
-    console.log(this.currentPolygon);
+  }
+
+  /**
+   * cancels any pending operations, such as drawing a polygon
+   */
+  public cancel(): void {
+    this.currentPolygon = null;
+  }
+
+  /**
+   * handles mouse movements over the canvas, updating this.mousePos
+   * @param ev the mouse event produced by the mouse movement
+   */
+  public mousemoveHandler(ev: MouseEvent): void {
+    this.mousePos = DM.windowToWorldCoord(new Vector(ev.clientX, ev.clientY));
   }
 
   /**
@@ -61,6 +87,9 @@ export class WorldRoomEditor extends WorldFreeRoam {
     document
       .getElementById("canvas")
       .removeEventListener("mousedown", this.mousedownHandler.bind(this));
+    document
+      .getElementById("canvas")
+      .removeEventListener("mousemove", this.mousemoveHandler.bind(this));
   }
 
   /**
@@ -70,18 +99,36 @@ export class WorldRoomEditor extends WorldFreeRoam {
    */
   public draw(ctx: CanvasRenderingContext2D): void {
     super.draw(ctx);
+    // draw completed polygons in blue
+    for (const p of this.completedPolygons) {
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = "rgba(0, 162, 234, 1)";
+      ctx.fillStyle = "rgba(0, 122, 204, 0.4)";
+      ctx.setLineDash([0]);
+      ctx.beginPath();
+      ctx.moveTo(p.getPoints()[0].x, p.getPoints()[0].y);
+      p.getPoints().forEach(point => ctx.lineTo(point.x, point.y));
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+    }
+
     // draw current polygon in red
     if (this.currentPolygon && this.currentPolygon.getPoints().length > 0) {
-      console.log(this.currentPolygon);
-      ctx.lineWidth = 15;
+      ctx.lineWidth = 3;
       ctx.strokeStyle = "red";
       ctx.beginPath();
       const points = this.currentPolygon.getPoints();
       ctx.moveTo(points[0].x, points[0].y);
-      this.currentPolygon.getPoints().forEach(point => {
-        ctx.lineTo(point.x, point.y);
-      });
+      points.forEach(point => ctx.lineTo(point.x, point.y));
       ctx.stroke();
+      if (this.mousePos) {
+        ctx.lineTo(this.mousePos.x, this.mousePos.y);
+        ctx.stroke();
+        ctx.setLineDash([8, 5]);
+        ctx.closePath();
+        ctx.stroke();
+      }
     }
   }
 }

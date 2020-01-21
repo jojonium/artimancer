@@ -42,7 +42,7 @@ export class Polygon {
    * @return this, so it can be chained
    */
   public addPoints(...points: Vector[]): Polygon {
-    this.points.concat(points);
+    this.points = this.points.concat(points);
     this.isClosed = false;
     return this;
   }
