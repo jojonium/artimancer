@@ -92,7 +92,7 @@ class DisplayManager extends Manager {
     // The back canvas can be any size, depending on the user's screen size. We
     // want the shown canvas to scale well to bigger screen sizes. Basically all
     // draw functions should assume they're drawing on a square canvas and we'll
-    // we'll abstract the scaling away
+    // abstract the scaling away
 
     // clear backContext
     this.backContext.clearRect(
@@ -101,6 +101,7 @@ class DisplayManager extends Manager {
       this.backCanvas.width,
       this.backCanvas.height
     );
+
     this.backContext.save();
     // scale the back canvas so it's as if we're drawing on a square with width
     // and height equal to this.backDimension

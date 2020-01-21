@@ -1,5 +1,6 @@
 import { Sprite } from "./Sprite";
 import { Vector } from "./Vector";
+import { FreeRoamEntity } from "./FreeRoamEntity";
 
 export type Layer = 0 | 1 | 2 | 3 | 4 | 5;
 
@@ -8,14 +9,17 @@ export type Layer = 0 | 1 | 2 | 3 | 4 | 5;
  * a background, NPCs, enemies, and other objects
  */
 export class Room {
-  /** identifier for this room */
+  /** unique identifier for this room */
   private label: string;
+  /** elements that make up the visual background of this room */
   private backgrounds: {
     sprite: Sprite;
     centerPos: Vector;
-    width: number;
-    height: number;
+    width: number; // as factor of total window width
+    height: number; // as factor of total window height
   }[][];
+  /** all free roam entities in this room */
+  private entities: FreeRoamEntity[];
 
   /**
    * Constructs a new room
@@ -24,6 +28,14 @@ export class Room {
   public constructor(label: string) {
     this.label = label;
     this.backgrounds = new Array<[]>(6);
+    this.entities = [];
+  }
+
+  /**
+   * @return this Room's unique string identifier
+   */
+  public getLabel(): string {
+    return this.label;
   }
 
   /**
@@ -61,8 +73,8 @@ export class Room {
           obj.sprite.getCurrentFrame().getImage(),
           x,
           y,
-          obj.width,
-          obj.height
+          obj.width * w,
+          obj.height * h
         );
       });
     });
