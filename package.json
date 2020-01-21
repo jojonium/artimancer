@@ -8,7 +8,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint 'src/**/*' --ext .ts --quiet --fix",
     "prebuild": "npm run lint",
-    "build": "tsc && browserify dist/main.js -o static/bundle.js",
+    "build": "tsc && browserify -v -d dist/main.js -o static/bundle.js",
     "watch-js": "watchify -v -d dist/main.js -o static/bundle.js",
     "watch-ts": "tsc --watch",
     "watch": "npm run watch-js & npm run watch-ts & npm run start",
