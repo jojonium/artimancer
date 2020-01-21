@@ -198,23 +198,27 @@ class DisplayManager extends Manager {
    * @return a corresponding coordinate Vector in the game world
    */
   public windowToWorldCoord(vec: Vector): Vector {
-    if (this.backCanvas.width < this.backCanvas.height) {
+    let scaleFact = 1;
+    let xTranslate = 0;
+    let yTranslate = 0;
+    let scaleTo: HTMLCanvasElement | Screen = window.screen;
+    if (document.fullscreenElement === null) {
+      scaleTo = this.canvas;
+      // translate based on canvas's position in document
+      const rect = this.canvas.getBoundingClientRect();
+      vec = vec.subtract(rect.left, rect.top);
+    }
+    if (window.screen.width < window.screen.height) {
       // width is the limiting factor
-      const scaleFact = CANV_SIZE / window.screen.width;
-      vec = vec.scale(scaleFact);
-      vec = vec.subtract(
-        0,
-        ((window.screen.height - window.screen.width) * scaleFact) / 2
-      );
+      scaleFact = CANV_SIZE / scaleTo.width;
+      yTranslate = -(scaleTo.height - scaleTo.width) / 2;
     } else {
       // height is the limiting factor
-      const scaleFact = CANV_SIZE / window.screen.height;
-      vec = vec.scale(scaleFact);
-      vec = vec.subtract(
-        ((window.screen.width - window.screen.height) * scaleFact) / 2,
-        0
-      );
+      scaleFact = CANV_SIZE / scaleTo.height;
+      xTranslate = -(scaleTo.width - scaleTo.height) / 2;
     }
+    vec = vec.add(xTranslate, yTranslate);
+    vec = vec.scale(scaleFact);
 
     return vec;
   }
