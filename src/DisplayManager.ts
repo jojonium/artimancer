@@ -1,5 +1,6 @@
 import { Manager } from "./Manager";
 import { WM } from "./WorldManager";
+import { Vector } from "./Vector";
 
 export const CANV_SIZE = 1000;
 
@@ -20,7 +21,7 @@ class DisplayManager extends Manager {
   /** whether to log extra info */
   private noisy = true;
   /** dimensions of back canvas in pixels */
-  private quality = 1000;
+  private quality = 2000;
 
   /**
    * private because DisplayManager is singleton
@@ -141,6 +142,10 @@ class DisplayManager extends Manager {
     window.requestAnimationFrame(this.draw.bind(this));
   }
 
+  /**
+   * toggle fullscreen status of the front canvas and adjust its size
+   * accordingly
+   */
   public toggleFullScreen(): void {
     if (document.fullscreenElement === null) {
       // enter fullscreen
@@ -184,6 +189,34 @@ class DisplayManager extends Manager {
       this.canvas.width = window.screen.width;
       this.canvas.height = window.screen.height;
     }
+  }
+
+  /**
+   * translates an input vector that is a set of window coordinates to the
+   * appropriate coordinates in the world
+   * @param vec input Vector, representing a location on the window
+   * @return a corresponding coordinate Vector in the game world
+   */
+  public windowToWorldCoord(vec: Vector): Vector {
+    if (this.backCanvas.width < this.backCanvas.height) {
+      // width is the limiting factor
+      const scaleFact = CANV_SIZE / window.screen.width;
+      vec = vec.scale(scaleFact);
+      vec = vec.subtract(
+        0,
+        ((window.screen.height - window.screen.width) * scaleFact) / 2
+      );
+    } else {
+      // height is the limiting factor
+      const scaleFact = CANV_SIZE / window.screen.height;
+      vec = vec.scale(scaleFact);
+      vec = vec.subtract(
+        ((window.screen.width - window.screen.height) * scaleFact) / 2,
+        0
+      );
+    }
+
+    return vec;
   }
 }
 
