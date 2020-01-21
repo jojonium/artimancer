@@ -17,6 +17,8 @@ class DisplayManager extends Manager {
   private backContext: CanvasRenderingContext2D;
   /** whether to log extra info */
   private noisy = true;
+  /** width/height of back canvas in pixels */
+  private backDimension = 1000;
 
   private constructor() {
     super();
@@ -54,8 +56,8 @@ class DisplayManager extends Manager {
     this.backCanvas = document.createElement("canvas");
     this.backContext = this.backCanvas.getContext("2d");
     this.backContext.imageSmoothingEnabled = false;
-    this.backCanvas.width = 1000;
-    this.backCanvas.height = 1000;
+    this.backCanvas.width = this.backDimension;
+    this.backCanvas.height = this.backDimension;
 
     // set event listeners
     document.removeEventListener(
@@ -101,23 +103,24 @@ class DisplayManager extends Manager {
 
     // swap the back canvas to the front
     this.context.save();
+    // draw canvas background
+    this.context.fillStyle = "#d2d2d2";
+    this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
     let scaleFactor = 1;
     let yTranslate = 0;
     let xTranslate = 0;
     if (this.canvas.width < this.canvas.height) {
       // width is the limiting factor
-      scaleFactor = this.canvas.width / this.backCanvas.width;
-      yTranslate = (this.canvas.height - this.backCanvas.height) / 2;
+      scaleFactor = this.canvas.width / this.backDimension;
+      yTranslate = (this.canvas.height - this.canvas.width) / (2 * scaleFactor);
     } else {
       // height is the limiting factor
-      scaleFactor = this.canvas.height / this.backCanvas.height;
-      xTranslate = (this.canvas.width - this.backCanvas.width) / 2;
+      scaleFactor = this.canvas.height / this.backDimension;
+      xTranslate = (this.canvas.width - this.canvas.height) / (2 * scaleFactor);
     }
     this.context.scale(scaleFactor, scaleFactor);
     this.context.translate(xTranslate, yTranslate);
     this.context.drawImage(this.backCanvas, 0, 0);
-    // Reset current transformation matrix to the identity matrix
-    this.context.setTransform(1, 0, 0, 1, 0, 0);
     this.context.restore();
 
     // now do it again
