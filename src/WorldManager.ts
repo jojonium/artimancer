@@ -62,7 +62,7 @@ class WorldManager extends Manager {
     this.enterWorld(new WorldLoading());
 
     super.startUp();
-    if (this.noisy) console.log("World Manager successfully started");
+    if (this.noisy) console.log("WM: successfully started");
   }
 }
 

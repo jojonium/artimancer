@@ -41,7 +41,7 @@ export class ResourceManager extends Manager {
     this.loadAllResources();
 
     super.startUp();
-    if (this.noisy) console.log("Resource Manager successfully started");
+    if (this.noisy) console.log("RM: successfully started");
   }
 
   private loadAllResources(): void {

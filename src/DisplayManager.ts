@@ -75,7 +75,7 @@ class DisplayManager extends Manager {
     window.requestAnimationFrame(this.draw.bind(this));
 
     super.startUp();
-    if (this.noisy) console.log("Display Manager successfully started");
+    if (this.noisy) console.log("DM: successfully started");
   }
 
   /**

@@ -55,7 +55,7 @@ class GameManager extends Manager {
     super.startUp();
 
     this.run();
-    if (this.noisy) console.log("Game Manager successfully started");
+    if (this.noisy) console.log("GM: successfully started");
   }
 
   /**

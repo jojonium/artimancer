@@ -482,7 +482,7 @@ class InputManager extends Manager {
     // set listeners
     this.resetListeners();
 
-    if (this.noisy) console.log("Input manager successfully started");
+    if (this.noisy) console.log("IM: successfully started");
   }
 }
 
