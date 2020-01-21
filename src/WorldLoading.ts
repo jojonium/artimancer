@@ -1,5 +1,7 @@
 import { World } from "./World";
 import { RM } from "./ResourceManager";
+import { WM } from "./WorldManager";
+import { WorldDisplayTest } from "./WorldDisplayTest";
 
 /**
  * a World that displays a loading bar while resources are being loaded
@@ -13,7 +15,7 @@ export class WorldLoading extends World {
    */
   public constructor() {
     super();
-    this.setType("World Loading");
+    this.setType("Loading");
     this.percentLoaded = 0;
   }
 
@@ -55,6 +57,7 @@ export class WorldLoading extends World {
     this.percentLoaded = RM.getPercentLoaded();
     if (1 - this.percentLoaded <= 0.01) {
       // TODO move on to next world
+      WM.enterWorld(new WorldDisplayTest());
     }
   }
 }

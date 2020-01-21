@@ -54,8 +54,8 @@ class DisplayManager extends Manager {
     this.backCanvas = document.createElement("canvas");
     this.backContext = this.backCanvas.getContext("2d");
     this.backContext.imageSmoothingEnabled = false;
-    this.backCanvas.width = window.screen.width;
-    this.backCanvas.height = window.screen.height;
+    this.backCanvas.width = 1000;
+    this.backCanvas.height = 1000;
 
     // set event listeners
     document.removeEventListener(
@@ -66,6 +66,8 @@ class DisplayManager extends Manager {
       "fullscreenchange",
       this.adjustCanvasSize.bind(this)
     );
+    window.removeEventListener("resize", this.adjustCanvasSize.bind(this));
+    window.addEventListener("resize", this.adjustCanvasSize.bind(this));
 
     // start drawing the canvas
     window.requestAnimationFrame(this.draw.bind(this));
@@ -79,16 +81,43 @@ class DisplayManager extends Manager {
    * again. draw() only needs to be called once
    */
   private draw(): void {
+    // The back canvas can be any size, depending on the user's screen size. We
+    // want the drawn canvas to scale well to bigger screen sizes. Basically all
+    // draw functions should assume they're drawing on a 1000x1000 pixel canvas,
+    // and we'll we'll abstract the scaling away
+
+    this.backContext.save();
+    // draw black background
+    this.backContext.fillStyle = "black";
+    this.backContext.fillRect(
+      0,
+      0,
+      this.backCanvas.width,
+      this.backCanvas.height
+    );
     // draw the current world
     WM.draw(this.backCanvas);
+    this.backContext.restore();
 
     // swap the back canvas to the front
     this.context.save();
-    this.context.scale(
-      this.canvas.width / this.backCanvas.width,
-      this.canvas.height / this.backCanvas.height
-    );
+    let scaleFactor = 1;
+    let yTranslate = 0;
+    let xTranslate = 0;
+    if (this.canvas.width < this.canvas.height) {
+      // width is the limiting factor
+      scaleFactor = this.canvas.width / this.backCanvas.width;
+      yTranslate = (this.canvas.height - this.backCanvas.height) / 2;
+    } else {
+      // height is the limiting factor
+      scaleFactor = this.canvas.height / this.backCanvas.height;
+      xTranslate = (this.canvas.width - this.backCanvas.width) / 2;
+    }
+    this.context.scale(scaleFactor, scaleFactor);
+    this.context.translate(xTranslate, yTranslate);
     this.context.drawImage(this.backCanvas, 0, 0);
+    // Reset current transformation matrix to the identity matrix
+    this.context.setTransform(1, 0, 0, 1, 0, 0);
     this.context.restore();
 
     // now do it again
@@ -117,8 +146,13 @@ class DisplayManager extends Manager {
    */
   public adjustCanvasSize(): void {
     if (document.fullscreenElement === null) {
+      // non-fullscreen mode
       this.canvas.width = window.screen.width / 2;
       this.canvas.height = window.screen.height / 2;
+    } else {
+      // in fullscreen mode, fill the whole screen
+      this.canvas.width = window.screen.width;
+      this.canvas.height = window.screen.height;
     }
   }
 }
