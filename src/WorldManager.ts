@@ -51,9 +51,7 @@ class WorldManager extends Manager {
    * @param canvas the canvas to draw on
    */
   public draw(canvas: HTMLCanvasElement): void {
-    canvas.getContext("2d").save();
     this.currentWorld.draw(canvas);
-    canvas.getContext("2d").restore();
   }
 
   /**
