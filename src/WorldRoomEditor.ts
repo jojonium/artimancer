@@ -81,7 +81,7 @@ export class WorldRoomEditor extends WorldFreeRoam {
   }
 
   /**
-   * remove event listeners
+   * remove event listeners and clear buttons
    */
   public exit(): void {
     document
@@ -90,6 +90,10 @@ export class WorldRoomEditor extends WorldFreeRoam {
     document
       .getElementById("canvas")
       .removeEventListener("mousemove", this.mousemoveHandler.bind(this));
+    const noOp = (): void => {
+      return;
+    };
+    IM.setOnPressed("escape", noOp);
   }
 
   /**
