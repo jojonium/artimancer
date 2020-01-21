@@ -12,7 +12,7 @@
     "watch-js": "watchify -v -d dist/main.js -o static/bundle.js",
     "watch-ts": "tsc --watch",
     "watch": "npm run watch-js & npm run watch-ts & npm run start",
-    "start": "node index.js"
+    "start": "ts-node index.ts"
   },
   "repository": {
     "type": "git",
@@ -38,10 +38,11 @@
     "eslint-config-prettier": "^6.9.0",
     "eslint-plugin-prettier": "^3.1.2",
     "prettier": "^1.19.1",
-    "typescript": "^3.7.5"
+    "typescript": "^3.7.5",
+    "watchify": "^3.11.1"
   },
   "dependencies": {
     "express": "^4.17.1",
-    "watchify": "^3.11.1"
+    "ts-node": "^8.6.2"
   }
 }
