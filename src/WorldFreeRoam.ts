@@ -18,11 +18,13 @@ export class WorldFreeRoam extends World {
 
   /**
    * draws this world
-   * @param canvas the HTML canvas to draw on
+   * @param ctx the canvas context to draw on
+   * @param w width of the canvas
+   * @param h height of the canvas
    */
-  public draw(canvas: HTMLCanvasElement): void {
+  public draw(ctx: CanvasRenderingContext2D, w: number, h: number): void {
     // TODO implement
-    this.currentRoom.draw(canvas);
+    this.currentRoom.draw(ctx, w, h);
   }
 
   /**

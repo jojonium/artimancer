@@ -21,29 +21,29 @@ export class WorldLoading extends World {
 
   /**
    * draws a loading bar centered on a gray canvas
-   * @param canvas the canvas to draw on
+   * @param ctx the canvas context to draw on
+   * @param w width of the canvas
+   * @param h height of the canvas
    */
-  public draw(canvas: HTMLCanvasElement): void {
-    const ctx = canvas.getContext("2d");
-
+  public draw(ctx: CanvasRenderingContext2D, w: number, h: number): void {
     // draw gray background
     ctx.fillStyle = "#aaaaaa";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillRect(0, 0, w, h);
 
     // draw text
-    ctx.font = "bold 50px Bitter";
+    ctx.font = `bold ${0.05 * h}px Bitter`;
     ctx.fillStyle = "black";
     ctx.textAlign = "center";
-    ctx.fillText("Now loading...", canvas.width / 2, canvas.height / 2 - 100);
+    ctx.fillText("Now loading...", w / 2, h / 2 - 0.1 * h);
 
     // show loading bar
     ctx.fillStyle = "blue";
     ctx.strokeStyle = "black";
-    ctx.lineWidth = 8;
-    const barHeight = 80;
-    const barLength = canvas.width * 0.75;
-    const x = canvas.width / 2 - barLength / 2;
-    const y = canvas.height / 2 - barHeight / 2;
+    ctx.lineWidth = 0.008 * h;
+    const barHeight = h * 0.05;
+    const barLength = w * 0.75;
+    const x = w / 2 - barLength / 2;
+    const y = h / 2 - barHeight / 2;
     ctx.fillRect(x, y, barLength * this.percentLoaded, barHeight);
     ctx.rect(x, y, barLength, barHeight);
     ctx.stroke();

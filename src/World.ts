@@ -27,9 +27,15 @@ export abstract class World {
 
   /**
    * draw this world to the canvas
-   * @param canvas the canvas to draw on
+   * @param ctx the canvas context to draw on
+   * @param w width of the canvas
+   * @param h height of the canvas
    */
-  public abstract draw(canvas: HTMLCanvasElement): void;
+  public abstract draw(
+    ctx: CanvasRenderingContext2D,
+    w: number,
+    h: number
+  ): void;
 
   /**
    * action to be performed every step

@@ -48,20 +48,22 @@ export class Room {
 
   /**
    * draw this room to the canvas
-   * @param canvas the canvas to draw on
+   * @param ctx the canvas context to draw on
+   * @param w width of the canvas
+   * @param h height of the canvas
    */
-  public draw(canvas: HTMLCanvasElement): void {
+  public draw(ctx: CanvasRenderingContext2D, w: number, h: number): void {
     this.backgrounds.forEach(layer => {
       layer.forEach(obj => {
-        canvas
-          .getContext("2d")
-          .drawImage(
-            obj.sprite.getCurrentFrame().getImage(),
-            obj.centerPos.x,
-            obj.centerPos.y,
-            obj.width,
-            obj.height
-          );
+        const x = obj.centerPos.x - obj.width / 2;
+        const y = obj.centerPos.y - obj.height / 2;
+        ctx.drawImage(
+          obj.sprite.getCurrentFrame().getImage(),
+          x,
+          y,
+          obj.width,
+          obj.height
+        );
       });
     });
   }

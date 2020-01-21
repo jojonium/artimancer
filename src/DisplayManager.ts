@@ -21,7 +21,7 @@ class DisplayManager extends Manager {
    * width/height of back canvas in pixels
    * TODO consider making this bigger for high-res displays
    */
-  private backDimension = 3000;
+  private backDimension = 1000;
 
   /**
    * private because DisplayManager is singleton
@@ -62,10 +62,8 @@ class DisplayManager extends Manager {
     this.backCanvas = document.createElement("canvas");
     this.backContext = this.backCanvas.getContext("2d");
     this.backContext.imageSmoothingEnabled = false;
-    // the backCanvas will be 3 times the size so that you can draw outside the
-    // bounds and it will still look right
-    this.backCanvas.width = this.backDimension * 3;
-    this.backCanvas.height = this.backDimension * 3;
+    this.backCanvas.width = window.screen.width;
+    this.backCanvas.height = window.screen.height;
 
     // set event listeners
     document.removeEventListener(
@@ -92,35 +90,42 @@ class DisplayManager extends Manager {
    */
   private draw(): void {
     // The back canvas can be any size, depending on the user's screen size. We
-    // want the drawn canvas to scale well to bigger screen sizes. Basically all
-    // draw functions should assume they're drawing on a 1000x1000 pixel canvas,
-    // and we'll we'll abstract the scaling away
+    // want the shown canvas to scale well to bigger screen sizes. Basically all
+    // draw functions should assume they're drawing on a square canvas and we'll
+    // we'll abstract the scaling away
 
     this.backContext.save();
-    this.backContext.translate(this.backDimension, this.backDimension);
+    // scale the back canvas so it's as if we're drawing on a square with width
+    // and height equal to this.backDimension
+    let scaleFact = 1;
+    let yTranslate = 0;
+    let xTranslate = 0;
+    if (this.backCanvas.width < this.backCanvas.height) {
+      // width is the limiting factor
+      scaleFact = this.backCanvas.width / this.backDimension;
+      yTranslate =
+        (this.backCanvas.height - this.backCanvas.width) / (2 * scaleFact);
+    } else {
+      // height is the limiting factor
+      scaleFact = this.backCanvas.height / this.backDimension;
+      xTranslate =
+        (this.backCanvas.width - this.backCanvas.height) / (2 * scaleFact);
+    }
+    this.backContext.scale(scaleFact, scaleFact);
+    this.backContext.translate(xTranslate, yTranslate);
     // draw the current world
-    WM.draw(this.backCanvas);
+    WM.draw(this.backContext, this.backDimension, this.backDimension);
     this.backContext.restore();
 
     // swap the back canvas to the front
     this.context.save();
     // draw canvas background
-    this.context.fillStyle = "#d2d2d2";
+    this.context.fillStyle = "black";
     this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
-    let scaleFact = 1;
-    let yTranslate = -this.backDimension;
-    let xTranslate = -this.backDimension;
-    if (this.canvas.width < this.canvas.height) {
-      // width is the limiting factor
-      scaleFact = this.canvas.width / this.backDimension;
-      yTranslate += (this.canvas.height - this.canvas.width) / (2 * scaleFact);
-    } else {
-      // height is the limiting factor
-      scaleFact = this.canvas.height / this.backDimension;
-      xTranslate += (this.canvas.width - this.canvas.height) / (2 * scaleFact);
-    }
-    this.context.scale(scaleFact, scaleFact);
-    this.context.translate(xTranslate, yTranslate);
+    // draw backContext on the front
+    const xs = this.canvas.width / this.backCanvas.width;
+    const ys = this.canvas.height / this.backCanvas.height;
+    this.context.scale(xs, ys);
     this.context.drawImage(this.backCanvas, 0, 0);
     this.context.restore();
 
@@ -149,6 +154,9 @@ class DisplayManager extends Manager {
    * canvas keeps up with it
    */
   public adjustCanvasSize(): void {
+    this.backCanvas.width = window.screen.width;
+    this.backCanvas.height = window.screen.height;
+
     if (document.fullscreenElement === null) {
       // non-fullscreen mode
       this.canvas.width = window.screen.width / 2;
