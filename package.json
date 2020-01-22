@@ -1,5 +1,5 @@
 {
-  "name": "unnamed-turn-based-rpg",
+  "name": "artimancer",
   "version": "0.0.1",
   "description": "A simple turn-based RPG made for the web",
   "private": true,
@@ -16,18 +16,20 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jojonium/unnamed-turn-based-rpg.git"
+    "url": "git+https://github.com/jojonium/artimancer.git"
   },
   "keywords": [
     "game",
-    "rpg"
+    "rpg",
+    "web-app",
+    "engine"
   ],
   "author": "Joseph Petitti",
   "license": "GPL-3.0-or-later",
   "bugs": {
-    "url": "https://github.com/jojonium/unnamed-turn-based-rpg/issues"
+    "url": "https://github.com/jojonium/artimancer/issues"
   },
-  "homepage": "https://github.com/jojonium/unnamed-turn-based-rpg#readme",
+  "homepage": "https://github.com/jojonium/artimancer#readme",
   "devDependencies": {
     "@types/css-font-loading-module": "0.0.2",
     "@types/express": "^4.17.2",

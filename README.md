@@ -1,4 +1,4 @@
-# Unnamed Turn-Based RPG
+# Artimancer
 
 A simple game I'm working on. Stay tuned for more progress.
 
