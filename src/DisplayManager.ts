@@ -225,3 +225,39 @@ class DisplayManager extends Manager {
 }
 
 export const DM = DisplayManager.getInstance();
+
+/**
+ * Draws a rounded rect on the canvas. You'll still have to call ctx.stroke()
+ * and/or ctx.fill() afterward
+ * @param ctx cavnas context to draw on
+ * @param topLeft Vector pointing to the top left of the rectangle
+ * @param w width of the rectangle
+ * @param h height of the rectangle
+ * @param cornerRadius radius of corners
+ */
+export const roundedRect = (
+  ctx: CanvasRenderingContext2D,
+  topLeft: Vector,
+  w: number,
+  h: number,
+  cornerRadius: number
+): void => {
+  const x1 = topLeft.x;
+  const y1 = topLeft.y;
+  const x2 = topLeft.x + w;
+  const y2 = topLeft.y + h;
+
+  // the JavaScript canvas API doesn't have a built-in function for drawing
+  // rounded rectangles, so we trace out the path manually
+  ctx.beginPath();
+  ctx.moveTo(x1 + cornerRadius, y1);
+  ctx.lineTo(x2 - cornerRadius, y1);
+  ctx.quadraticCurveTo(x2, y1, x2, y1 + cornerRadius);
+  ctx.lineTo(x2, y2 - cornerRadius);
+  ctx.quadraticCurveTo(x2, y2, x2 - cornerRadius, y2);
+  ctx.lineTo(x1 + cornerRadius, y2);
+  ctx.quadraticCurveTo(x1, y2, x1, y2 - cornerRadius);
+  ctx.lineTo(x1, y1 + cornerRadius);
+  ctx.quadraticCurveTo(x1, y1, x1 + cornerRadius, y1);
+  ctx.closePath();
+};
