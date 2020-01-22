@@ -66,8 +66,8 @@ export class WorldRoomEditor extends WorldFreeRoam {
       bgSprite: RM.getSprite("edit-menu-move")
     };
     this.uiElements[1] = new UIElement("edit-menu-barrier");
-    this.uiElements[1].setWidth(200);
-    this.uiElements[1].setHeight(100);
+    this.uiElements[1].setWidth(300);
+    this.uiElements[1].setHeight(150);
     this.uiElements[1].style = {
       bgSprite: RM.getSprite("edit-menu-barrier"),
       borderThickness: 5,

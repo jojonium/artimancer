@@ -47,7 +47,7 @@ class DisplayManager extends Manager {
   /** whether to log extra info */
   private noisy = true;
   /** dimensions of back canvas in pixels */
-  private quality = 2000;
+  private quality = 1000;
 
   /**
    * private because DisplayManager is singleton
@@ -177,11 +177,11 @@ class DisplayManager extends Manager {
     // now scale to the constant CANV_SIZE
     this.backContext.scale(this.quality / CANV_SIZE, this.quality / CANV_SIZE);
 
-    // draw corner UI elements
-    this.drawCorners();
-
     // draw the current world
     WM.draw(this.backContext);
+
+    // draw corner UI elements
+    this.drawCorners();
 
     this.backContext.restore();
 
@@ -208,14 +208,19 @@ class DisplayManager extends Manager {
   private drawCorners(): void {
     const verticalSpace =
       Math.max((this.backCanvas.height - this.backCanvas.width) / 2, 0) *
-      (this.backCanvas.width / CANV_SIZE);
+      (CANV_SIZE / this.backCanvas.width);
     const horizontalSpace =
       Math.max((this.backCanvas.width - this.backCanvas.height) / 2, 0) *
-      (this.backCanvas.height / CANV_SIZE);
+      (CANV_SIZE / this.backCanvas.height);
     if (this.cornerUI.tr !== undefined) {
       // top right
       this.backContext.save();
-      // TODO translate backContext to the correct location
+      this.backContext.translate(
+        CANV_SIZE -
+          this.cornerUI.tr.getWidth() +
+          Math.min(horizontalSpace, this.cornerUI.tr.getWidth()),
+        -Math.min(verticalSpace, this.cornerUI.tr.getHeight())
+      );
       this.cornerUI.tr.draw(this.backContext);
       this.backContext.restore();
     }
