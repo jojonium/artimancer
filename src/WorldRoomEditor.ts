@@ -181,7 +181,7 @@ export class WorldRoomEditor extends WorldFreeRoam {
       IM.setMouseMove(this.mousemoveHandler.bind(this));
 
       // set UI element
-      DM.setCornerUI("top right", this.uiElements[1]);
+      DM.setCornerUI("top left", this.uiElements[1]);
     } else if (this.mode === Mode.select) {
       // TODO implement
     }

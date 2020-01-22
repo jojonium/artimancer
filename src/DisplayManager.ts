@@ -206,14 +206,16 @@ class DisplayManager extends Manager {
    * Draws corner UI elements
    */
   private drawCorners(): void {
+    // available "off-canvas" pixels that can still be seen, scaled to CANV_SIZE
     const verticalSpace =
       Math.max((this.backCanvas.height - this.backCanvas.width) / 2, 0) *
       (CANV_SIZE / this.backCanvas.width);
     const horizontalSpace =
       Math.max((this.backCanvas.width - this.backCanvas.height) / 2, 0) *
       (CANV_SIZE / this.backCanvas.height);
+
+    // top right
     if (this.cornerUI.tr !== undefined) {
-      // top right
       this.backContext.save();
       this.backContext.translate(
         CANV_SIZE -
@@ -222,6 +224,45 @@ class DisplayManager extends Manager {
         -Math.min(verticalSpace, this.cornerUI.tr.getHeight())
       );
       this.cornerUI.tr.draw(this.backContext);
+      this.backContext.restore();
+    }
+
+    // bottom right
+    if (this.cornerUI.br !== undefined) {
+      this.backContext.save();
+      this.backContext.translate(
+        CANV_SIZE -
+          this.cornerUI.br.getWidth() +
+          Math.min(horizontalSpace, this.cornerUI.br.getWidth()),
+        CANV_SIZE -
+          this.cornerUI.br.getHeight() -
+          Math.min(verticalSpace, this.cornerUI.br.getHeight())
+      );
+      this.cornerUI.br.draw(this.backContext);
+      this.backContext.restore();
+    }
+
+    // bottom left
+    if (this.cornerUI.bl !== undefined) {
+      this.backContext.save();
+      this.backContext.translate(
+        -Math.min(horizontalSpace, this.cornerUI.bl.getWidth()),
+        CANV_SIZE -
+          this.cornerUI.bl.getHeight() -
+          Math.min(verticalSpace, this.cornerUI.bl.getHeight())
+      );
+      this.cornerUI.bl.draw(this.backContext);
+      this.backContext.restore();
+    }
+
+    // top left
+    if (this.cornerUI.tl !== undefined) {
+      this.backContext.save();
+      this.backContext.translate(
+        -Math.min(horizontalSpace, this.cornerUI.tl.getWidth()),
+        -Math.min(verticalSpace, this.cornerUI.tl.getHeight())
+      );
+      this.cornerUI.tl.draw(this.backContext);
       this.backContext.restore();
     }
   }
