@@ -23,6 +23,8 @@ import { Vector } from "./Vector";
 import { Polygon } from "./Polygon";
 import { DM } from "./DisplayManager";
 import { IM, noOp } from "./InputManager";
+import { UIElement } from "./UIElement";
+import { RM } from "./ResourceManager";
 
 enum Mode {
   select,
@@ -42,6 +44,8 @@ export class WorldRoomEditor extends WorldFreeRoam {
   private mousePos: Vector;
   /** current editing mode */
   private mode: Mode;
+  /** UI elements this world displays */
+  private uiElements: UIElement[];
 
   /**
    * Constructs a new RoomEditor world for a given room
@@ -54,6 +58,21 @@ export class WorldRoomEditor extends WorldFreeRoam {
     this.completedPolygons = new Array<Polygon>();
     this.mode = Mode.drawBarrier;
     this.mousePos = new Vector(0, 0);
+    this.uiElements = new Array<UIElement>(2);
+    this.uiElements[0] = new UIElement("edit-menu-move");
+    this.uiElements[0].setWidth(200);
+    this.uiElements[0].setHeight(100);
+    this.uiElements[0].style = {
+      bgSprite: RM.getSprite("edit-menu-move")
+    };
+    this.uiElements[1] = new UIElement("edit-menu-barrier");
+    this.uiElements[1].setWidth(200);
+    this.uiElements[1].setHeight(100);
+    this.uiElements[1].style = {
+      bgSprite: RM.getSprite("edit-menu-barrier"),
+      borderThickness: 5,
+      borderStyle: "blue"
+    };
     this.setMode(Mode.drawBarrier);
   }
 
@@ -98,6 +117,7 @@ export class WorldRoomEditor extends WorldFreeRoam {
    */
   public exit(): void {
     this.resetControls();
+    DM.setCornerUI("top right", undefined);
   }
 
   /**
@@ -159,6 +179,9 @@ export class WorldRoomEditor extends WorldFreeRoam {
       IM.setOnPressed("escape", this.cancel.bind(this));
       IM.setMouseDown(this.drawMousedownHandler.bind(this));
       IM.setMouseMove(this.mousemoveHandler.bind(this));
+
+      // set UI element
+      DM.setCornerUI("top right", this.uiElements[1]);
     } else if (this.mode === Mode.select) {
       // TODO implement
     }

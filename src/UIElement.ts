@@ -78,10 +78,35 @@ export class UIElement {
         this.style.bgSprite.getCurrentFrame().getImage(),
         this.pos.x,
         this.pos.y,
-        this.width - (this.style.padding ?? 0),
-        this.height - (this.style.padding ?? 0)
+        this.width,
+        this.height
       );
     }
+    // draw background rectangle
+    ctx.strokeStyle = this.style.borderStyle ?? "rgba(0, 0, 0, 0)";
+    ctx.lineWidth = this.style.borderThickness ?? 0;
+    ctx.fillStyle = this.style.fillStyle ?? "rgba(0, 0, 0, 0)";
+    roundedRect(
+      ctx,
+      this.pos,
+      this.width,
+      this.height,
+      this.style.cornerRadius ?? 0
+    );
+    ctx.fill();
+    ctx.stroke();
+    // draw text
+    ctx.font = this.style.fontStyle ?? "50px sans-serif";
+    ctx.textAlign = this.style.textAlign ?? "center";
+    ctx.textBaseline = this.style.textBaseline ?? "alphabetic";
+    ctx.fillStyle = this.style.fontStyle ?? "rgba(0, 0, 0, 0)";
+    const textVec = new Vector(this.width / 2, this.height / 2);
+    ctx.fillText(
+      this.text,
+      textVec.x,
+      textVec.y,
+      this.width - (this.style.padding ?? 0) * 2
+    );
   }
 
   /**
@@ -161,8 +186,7 @@ export type UIElementStyle = {
   fillStyle?: string | CanvasGradient | CanvasPattern;
   fontStyle?: string;
   textAlign?: CanvasTextAlign;
-  textBaselint?: CanvasTextBaseline;
+  textBaseline?: CanvasTextBaseline;
   padding?: number;
   cornerRadius?: number;
-  layout?: "column" | "row";
 };

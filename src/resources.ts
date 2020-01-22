@@ -25,7 +25,9 @@ import { FontFaceDescriptors } from "css-font-loading-module";
 export const resources = {
   sprites: [
     { spriteLabel: "test", length: 6, slowdown: 48 },
-    { spriteLabel: "test-bg", length: 1, slowdown: 0 }
+    { spriteLabel: "test-bg", length: 1, slowdown: 0 },
+    { spriteLabel: "edit-menu-move", length: 1, slowdown: 0 },
+    { spriteLabel: "edit-menu-barrier", length: 1, slowdown: 0 }
   ],
   images: [
     { filename: "images/f1.svg", spriteLabel: "test", index: 0 },
@@ -34,7 +36,17 @@ export const resources = {
     { filename: "images/f4.svg", spriteLabel: "test", index: 3 },
     { filename: "images/f5.svg", spriteLabel: "test", index: 4 },
     { filename: "images/f6.svg", spriteLabel: "test", index: 5 },
-    { filename: "images/test-bg.svg", spriteLabel: "test-bg", index: 0 }
+    { filename: "images/test-bg.svg", spriteLabel: "test-bg", index: 0 },
+    {
+      filename: "images/edit-menu-move.svg",
+      spriteLabel: "edit-menu-move",
+      index: 0
+    },
+    {
+      filename: "images/edit-menu-barrier.svg",
+      spriteLabel: "edit-menu-barrier",
+      index: 0
+    }
   ],
   fonts: [
     {

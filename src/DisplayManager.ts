@@ -20,6 +20,7 @@
 import { Manager } from "./Manager";
 import { WM } from "./WorldManager";
 import { Vector } from "./Vector";
+import { UIElement } from "./UIElement";
 
 export const CANV_SIZE = 1000;
 
@@ -37,6 +38,12 @@ class DisplayManager extends Manager {
   private context: CanvasRenderingContext2D;
   /** canvas context that we draw on */
   private backContext: CanvasRenderingContext2D;
+  private cornerUI: {
+    tr: UIElement | undefined;
+    br: UIElement | undefined;
+    bl: UIElement | undefined;
+    tl: UIElement | undefined;
+  };
   /** whether to log extra info */
   private noisy = true;
   /** dimensions of back canvas in pixels */
@@ -48,6 +55,13 @@ class DisplayManager extends Manager {
   private constructor() {
     super();
     this.setType("Display Manager");
+
+    this.cornerUI = {
+      tr: undefined,
+      br: undefined,
+      bl: undefined,
+      tl: undefined
+    };
 
     // set these temporarily until we startUp
     this.canvas = document.createElement("canvas");
@@ -162,8 +176,13 @@ class DisplayManager extends Manager {
     this.backContext.translate(xTranslate, yTranslate);
     // now scale to the constant CANV_SIZE
     this.backContext.scale(this.quality / CANV_SIZE, this.quality / CANV_SIZE);
+
+    // draw corner UI elements
+    this.drawCorners();
+
     // draw the current world
     WM.draw(this.backContext);
+
     this.backContext.restore();
 
     // swap the back canvas to the front
@@ -181,6 +200,25 @@ class DisplayManager extends Manager {
 
     // now do it again
     window.requestAnimationFrame(this.draw.bind(this));
+  }
+
+  /**
+   * Draws corner UI elements
+   */
+  private drawCorners(): void {
+    const verticalSpace =
+      Math.max((this.backCanvas.height - this.backCanvas.width) / 2, 0) *
+      (this.backCanvas.width / CANV_SIZE);
+    const horizontalSpace =
+      Math.max((this.backCanvas.width - this.backCanvas.height) / 2, 0) *
+      (this.backCanvas.height / CANV_SIZE);
+    if (this.cornerUI.tr !== undefined) {
+      // top right
+      this.backContext.save();
+      // TODO translate backContext to the correct location
+      this.cornerUI.tr.draw(this.backContext);
+      this.backContext.restore();
+    }
   }
 
   /**
@@ -262,6 +300,31 @@ class DisplayManager extends Manager {
     vec = vec.scale(scaleFact);
 
     return vec;
+  }
+
+  /**
+   * Set the UI element to display in one of the corners
+   * @param which which corner to set
+   * @param uie a UI element
+   */
+  public setCornerUI(
+    which: "top right" | "bottom right" | "bottom left" | "top left",
+    uie: UIElement | undefined
+  ): void {
+    switch (which) {
+      case "top right":
+        this.cornerUI.tr = uie;
+        return;
+      case "bottom right":
+        this.cornerUI.br = uie;
+        return;
+      case "bottom left":
+        this.cornerUI.bl = uie;
+        return;
+      case "top left":
+        this.cornerUI.tl = uie;
+        return;
+    }
   }
 }
 
