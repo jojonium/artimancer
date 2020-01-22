@@ -58,7 +58,7 @@ export class WorldRoomEditor extends WorldFreeRoam {
     this.completedPolygons = new Array<Polygon>();
     this.mode = Mode.drawBarrier;
     this.mousePos = new Vector(0, 0);
-    this.uiElements = new Array<UIElement>(2);
+    this.uiElements = new Array<UIElement>(3);
     this.uiElements[0] = new UIElement("edit-menu-move");
     this.uiElements[0].setWidth(300);
     this.uiElements[0].setHeight(150);
@@ -71,6 +71,17 @@ export class WorldRoomEditor extends WorldFreeRoam {
     this.uiElements[1].style = {
       bgSprite: RM.getSprite("edit-menu-barrier")
     };
+    this.uiElements[2] = new UIElement("edit-instructions-barrier");
+    this.uiElements[2].setWidth(300);
+    this.uiElements[2].setHeight(100);
+    this.uiElements[2].style = {
+      font: "bold 20px Bitter",
+      fontFill: "#d2d2d2",
+      lineHeight: 25,
+      textAlign: "right",
+      padding: 5
+    };
+    this.uiElements[2].setText("Shift+click to complete\nTab to cancel");
     this.setMode(Mode.drawBarrier);
   }
 
@@ -116,6 +127,7 @@ export class WorldRoomEditor extends WorldFreeRoam {
   public exit(): void {
     this.resetControls();
     DM.setCornerUI("top left", undefined);
+    DM.setCornerUI("top right", undefined);
     IM.unregisterButton("select-mode");
     IM.unregisterButton("barrier-mode");
   }
@@ -197,10 +209,12 @@ export class WorldRoomEditor extends WorldFreeRoam {
 
       // set UI element
       DM.setCornerUI("top left", this.uiElements[1]);
+      DM.setCornerUI("top right", this.uiElements[2]);
     } else if (this.mode === Mode.select) {
       // TODO implement
       // set UI element
       DM.setCornerUI("top left", this.uiElements[0]);
+      DM.setCornerUI("top right", undefined);
     }
   }
 }

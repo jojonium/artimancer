@@ -44,7 +44,7 @@ export class UIElement {
   public style: UIElementStyle;
   /** how to align this element in its container */
   private alignment: UIElementAlignment;
-  /** position of this element */
+  /** top left position of this element */
   private pos: Vector;
   /** height of this element. Set to 0 for auto */
   private height: number;
@@ -97,17 +97,37 @@ export class UIElement {
     ctx.fill();
     ctx.stroke();
     // draw text
-    ctx.font = this.style.fontStyle ?? "50px sans-serif";
+    ctx.font = this.style.font ?? "50px sans-serif";
     ctx.textAlign = this.style.textAlign ?? "center";
     ctx.textBaseline = this.style.textBaseline ?? "alphabetic";
-    ctx.fillStyle = this.style.fontStyle ?? "rgba(0, 0, 0, 0)";
-    const textVec = new Vector(this.width / 2, this.height / 2);
-    ctx.fillText(
-      this.text,
-      textVec.x,
-      textVec.y,
-      this.width - (this.style.padding ?? 0) * 2
+    ctx.fillStyle = this.style.fontFill ?? "rgba(0, 0, 0, 0)";
+    const textVec = new Vector(
+      this.pos.x + this.width / 2,
+      this.pos.y + this.height / 2
     );
+    switch (ctx.textAlign) {
+      case "center":
+        break;
+      case "left":
+        textVec.x = this.pos.x + (this.style.padding ?? 0);
+        break;
+      case "right":
+        textVec.x = this.pos.x + this.width - (this.style.padding ?? 0);
+        break;
+    }
+    // the JavaScript canvas API has no support for multi-line strings, so we'll
+    // try to break on newlines manually
+    const lines = this.text.split("\n");
+    // there's no way to measure line height for some reason
+    const lineHeight = this.style.lineHeight ?? 50;
+    lines.forEach((line, i) => {
+      ctx.fillText(
+        line,
+        textVec.x,
+        textVec.y + i * lineHeight,
+        this.width - (this.style.padding ?? 0) * 2
+      );
+    });
   }
 
   /**
@@ -132,14 +152,14 @@ export class UIElement {
   }
 
   /**
-   * get position of this element
+   * get top-left position of this element
    */
   public getPos(): Vector {
     return this.pos;
   }
 
   /**
-   * @param newPos new position of this element
+   * @param newPos new top-left position of this element
    */
   public setPos(newPos: Vector): void {
     this.pos = newPos;
@@ -188,10 +208,12 @@ export type UIElementStyle = {
   borderThickness?: number;
   borderStyle?: string | CanvasGradient | CanvasPattern;
   fillStyle?: string | CanvasGradient | CanvasPattern;
-  fontStyle?: string;
+  font?: string;
+  fontFill?: string | CanvasGradient | CanvasPattern;
   textAlign?: CanvasTextAlign;
   textBaseline?: CanvasTextBaseline;
   padding?: number;
   cornerRadius?: number;
   lineDash?: number[];
+  lineHeight?: number;
 };
