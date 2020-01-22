@@ -57,6 +57,7 @@ class WorldManager extends Manager {
     if (this.noisy) console.log(`WM: entering world ${world.getType()}`);
     if (this.currentWorld) this.currentWorld.exit();
     this.currentWorld = world;
+    this.currentWorld.enter();
   }
 
   /**

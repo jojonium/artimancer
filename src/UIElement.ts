@@ -86,6 +86,7 @@ export class UIElement {
     ctx.strokeStyle = this.style.borderStyle ?? "rgba(0, 0, 0, 0)";
     ctx.lineWidth = this.style.borderThickness ?? 0;
     ctx.fillStyle = this.style.fillStyle ?? "rgba(0, 0, 0, 0)";
+    ctx.setLineDash(this.style.lineDash ?? []);
     roundedRect(
       ctx,
       this.pos,
@@ -178,6 +179,9 @@ export class UIElement {
   }
 }
 
+/**
+ * A set of style information specifying how to draw this UI element
+ */
 export type UIElementStyle = {
   /** drawn below other attributes */
   bgSprite?: Sprite;
@@ -189,4 +193,5 @@ export type UIElementStyle = {
   textBaseline?: CanvasTextBaseline;
   padding?: number;
   cornerRadius?: number;
+  lineDash?: number[];
 };

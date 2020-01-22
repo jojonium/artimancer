@@ -475,6 +475,14 @@ class InputManager extends Manager {
   }
 
   /**
+   * Removes a button if it exists
+   * @param name name of the button to clear
+   */
+  public unregisterButton(name: string): void {
+    this.buttons.delete(name);
+  }
+
+  /**
    * Sets a function to execute when a button is pressed
    * @param name name of the button
    * @param handler function to execute when button is pressed

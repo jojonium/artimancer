@@ -60,8 +60,8 @@ export class WorldRoomEditor extends WorldFreeRoam {
     this.mousePos = new Vector(0, 0);
     this.uiElements = new Array<UIElement>(2);
     this.uiElements[0] = new UIElement("edit-menu-move");
-    this.uiElements[0].setWidth(200);
-    this.uiElements[0].setHeight(100);
+    this.uiElements[0].setWidth(300);
+    this.uiElements[0].setHeight(150);
     this.uiElements[0].style = {
       bgSprite: RM.getSprite("edit-menu-move")
     };
@@ -69,9 +69,7 @@ export class WorldRoomEditor extends WorldFreeRoam {
     this.uiElements[1].setWidth(300);
     this.uiElements[1].setHeight(150);
     this.uiElements[1].style = {
-      bgSprite: RM.getSprite("edit-menu-barrier"),
-      borderThickness: 5,
-      borderStyle: "blue"
+      bgSprite: RM.getSprite("edit-menu-barrier")
     };
     this.setMode(Mode.drawBarrier);
   }
@@ -117,11 +115,28 @@ export class WorldRoomEditor extends WorldFreeRoam {
    */
   public exit(): void {
     this.resetControls();
-    DM.setCornerUI("top right", undefined);
+    DM.setCornerUI("top left", undefined);
+    IM.unregisterButton("select-mode");
+    IM.unregisterButton("barrier-mode");
   }
 
   /**
-   * Removes all event listeners and clears all buttons
+   * Set default button inputs
+   */
+  public enter(): void {
+    IM.registerButton("select-mode", "m");
+    IM.setOnPressed("select-mode", () => {
+      this.setMode(Mode.select);
+    });
+    IM.registerButton("barrier-mode", "b");
+    IM.setOnPressed("barrier-mode", () => {
+      this.setMode(Mode.drawBarrier);
+    });
+  }
+
+  /**
+   * Removes all event listeners and clears all buttons, other than the ones to
+   * switch modes
    */
   private resetControls(): void {
     IM.setMouseDown(noOp);
@@ -184,6 +199,8 @@ export class WorldRoomEditor extends WorldFreeRoam {
       DM.setCornerUI("top left", this.uiElements[1]);
     } else if (this.mode === Mode.select) {
       // TODO implement
+      // set UI element
+      DM.setCornerUI("top left", this.uiElements[0]);
     }
   }
 }

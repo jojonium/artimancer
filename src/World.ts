@@ -62,4 +62,11 @@ export abstract class World {
   public exit(): void {
     return;
   }
+
+  /**
+   * optional method to call when we enter this world
+   */
+  public enter(): void {
+    return;
+  }
 }
