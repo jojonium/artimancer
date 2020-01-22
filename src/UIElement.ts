@@ -1,5 +1,6 @@
 import { Sprite } from "./Sprite";
 import { Vector } from "./Vector";
+import { roundedRect } from "./DisplayManager";
 
 /**
  * This class represents a UI element, such as a text box or button prompt. UI
@@ -11,7 +12,7 @@ export class UIElement {
   /** sub-elements contained within this one */
   private children: UIElement[];
   /** how to draw this element */
-  private style: UIElementStyle;
+  public style: UIElementStyle;
   /** how to align this element in its container */
   private alignment: UIElementAlignment;
   /** position of this element relative to its parent */
@@ -20,6 +21,8 @@ export class UIElement {
   private height: number;
   /** width of this element. Set to 0 for auto */
   private width: number;
+  /** text to display */
+  private text: string;
 
   /**
    * @param label a unique string identifier for this UI Element
@@ -39,9 +42,63 @@ export class UIElement {
   public addChild(childLabel: string): void {
     const child = new UIElement(childLabel);
     child.setAlignment(this.alignment);
-    child.setStyle(this.style);
+    child.style = this.style;
     child.setPos(this.pos);
     this.children.push(child);
+  }
+
+  /**
+   * recursively finds how wide this should be based on the widths of its
+   * children
+   */
+  private calculateWidth(): number {
+    if (this.children.length === 0 || this.width !== 0) {
+      return this.width + this.style.padding * 2;
+    }
+    if (this.style.layout === "row") {
+      // find total width of this and its children
+      return this.children.reduce<number>(
+        (accum, child) => accum + child.calculateWidth(),
+        this.style.padding * 2
+      );
+    } else {
+      // find max width of this elements children
+      return (
+        Math.max(...this.children.map(child => child.calculateWidth())) +
+        this.style.padding * 2
+      );
+    }
+  }
+
+  /**
+   * recursively finds how tall this should be based on the heights of its
+   * children
+   */
+  private calculateHeight(): number {
+    if (this.children.length === 0 || this.height !== 0) {
+      return this.height + this.style.padding * 2;
+    }
+    if (this.style.layout === "column") {
+      // find total height of this and its children
+      return this.children.reduce<number>(
+        (accum, child) => accum + child.calculateHeight(),
+        this.style.padding * 2
+      );
+    } else {
+      // find max height of this elements children
+      return (
+        Math.max(...this.children.map(child => child.calculateHeight())) +
+        this.style.padding * 2
+      );
+    }
+  }
+
+  /**
+   * draws this UI element and all its children
+   * @param ctx canvas context to draw on
+   */
+  public draw(ctx: CanvasRenderingContext2D): void {
+    // TODO implement
   }
 
   /**
@@ -49,20 +106,6 @@ export class UIElement {
    */
   public getLabel(): string {
     return this.label;
-  }
-
-  /**
-   * Get attributes for drawing this element
-   */
-  public getStyle(): UIElementStyle {
-    return this.style;
-  }
-
-  /**
-   * @param newStyle new attributes for drawing this element
-   */
-  public setStyle(newStyle: UIElementStyle): void {
-    this.style = newStyle;
   }
 
   /**
@@ -114,6 +157,17 @@ export class UIElement {
   public setHeight(newHeight: number): void {
     this.height = newHeight;
   }
+
+  public getText(): string {
+    return this.text;
+  }
+
+  /**
+   * @param newText text to display
+   */
+  public setText(newText: string): void {
+    this.text = newText;
+  }
 }
 
 export type UIElementStyle = {
@@ -126,6 +180,8 @@ export type UIElementStyle = {
   textAlign?: CanvasTextAlign;
   textBaselint?: CanvasTextBaseline;
   padding?: number;
+  cornerRadius?: number;
+  layout?: "column" | "row";
 };
 
 export enum UIElementAlignment {
