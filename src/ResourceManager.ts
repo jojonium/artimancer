@@ -41,6 +41,8 @@ export class ResourceManager extends Manager {
   private constructor() {
     super();
     this.setType("Resource Manager");
+    this.sprites = new Map<string, Sprite>();
+    this.percentLoaded = 0;
   }
 
   /**
@@ -96,9 +98,11 @@ export class ResourceManager extends Manager {
             if (this.noisy)
               console.log(`RM: successfully loaded ${i.filename}`);
             const frame = new Frame(img);
-            this.sprites.get(i.spriteLabel).setFrame(i.index, frame);
-            this.percentLoaded += 1 / totalLength;
-            // round percentLoaded to the nearest hundredth
+            const spr = this.sprites.get(i.spriteLabel);
+            if (spr !== null && spr !== undefined) {
+              spr.setFrame(i.index, frame);
+              this.percentLoaded += 1 / totalLength;
+            }
           },
           reason => {
             console.error(reason);
@@ -153,7 +157,7 @@ export class ResourceManager extends Manager {
    * Gets a particular sprite
    * @param label name of the sprite to get
    */
-  public getSprite(label: string): Sprite {
+  public getSprite(label: string): Sprite | undefined {
     return this.sprites.get(label);
   }
 

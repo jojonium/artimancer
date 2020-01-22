@@ -34,6 +34,7 @@ export class WorldDisplayTest extends World {
   public constructor() {
     super();
     this.setType("Display Test");
+    this.stepCount = 0;
   }
 
   /**

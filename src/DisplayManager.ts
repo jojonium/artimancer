@@ -48,6 +48,18 @@ class DisplayManager extends Manager {
   private constructor() {
     super();
     this.setType("Display Manager");
+
+    // set these temporarily until we startUp
+    this.canvas = document.createElement("canvas");
+    this.backCanvas = document.createElement("canvas");
+    let tempCtx = this.canvas.getContext("2d");
+    if (tempCtx === null)
+      throw new Error("DM: can't get 2d context from fake canvas");
+    this.context = tempCtx;
+    tempCtx = this.backCanvas.getContext("2d");
+    if (tempCtx === null)
+      throw new Error("DM: can't get 2d context from fake back canvas");
+    this.backContext = tempCtx;
   }
 
   /**
@@ -63,21 +75,31 @@ class DisplayManager extends Manager {
    */
   public startUp(): void {
     const canvasHolder = document.getElementById("canvas-holder");
+    if (canvasHolder === null || canvasHolder === undefined)
+      throw new Error("DM: no canvas-holder element");
+
     // remove any existing canvas
     while (canvasHolder.firstChild) {
       canvasHolder.removeChild(canvasHolder.firstChild);
     }
+
     // create new canvas
     this.canvas = document.createElement("canvas");
     this.canvas.id = "canvas";
-    this.context = this.canvas.getContext("2d");
+    let tempCtx = this.canvas.getContext("2d");
+    if (tempCtx === null)
+      throw new Error("DM: can't get 2d context from canvas");
+    this.context = tempCtx;
     this.context.imageSmoothingEnabled = false;
     canvasHolder.appendChild(this.canvas);
 
     // Create back canvas that is the size of the actual screen. We'll draw
     // everything on this and then scale and swap it to the front canvas
     this.backCanvas = document.createElement("canvas");
-    this.backContext = this.backCanvas.getContext("2d");
+    tempCtx = this.backCanvas.getContext("2d");
+    if (tempCtx === null)
+      throw new Error("DM: can't get 2d context from back-canvas");
+    this.backContext = tempCtx;
     this.backContext.imageSmoothingEnabled = false;
 
     this.adjustCanvasSize();

@@ -45,6 +45,8 @@ export abstract class FreeRoamEntity {
     this.pos = pos;
     // start facing right
     this.dir = new Vector(1, 0);
+    this.width = 0;
+    this.height = 0;
   }
 
   /**

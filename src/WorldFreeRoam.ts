@@ -25,7 +25,7 @@ import { Room } from "./Room";
  * and encounter enemies
  */
 export class WorldFreeRoam extends World {
-  private currentRoom: Room;
+  private currentRoom: Room | undefined;
 
   /**
    * Creates a new WorldFreeRoam
@@ -40,7 +40,9 @@ export class WorldFreeRoam extends World {
    * @param ctx the canvas context to draw on
    */
   public draw(ctx: CanvasRenderingContext2D): void {
-    this.currentRoom.draw(ctx);
+    if (this.currentRoom !== null && this.currentRoom !== undefined) {
+      this.currentRoom.draw(ctx);
+    }
   }
 
   /**

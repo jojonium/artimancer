@@ -21,12 +21,14 @@
  * Manager super-class that other Managers inherit from
  */
 export class Manager {
-  private isStarted: boolean; // true if this manager has started
-  private type: string; // type identifier
+  /** true if this manager has started */
+  private isStarted: boolean;
+  /** unique string identifier */
+  private type: string;
 
   public constructor() {
     this.isStarted = false;
-    this.setType("Manager");
+    this.type = "Manager";
   }
 
   /**
@@ -37,9 +39,23 @@ export class Manager {
   }
 
   /**
+   * get whether or not the manager has started
+   */
+  public getIsStarted(): boolean {
+    return this.isStarted;
+  }
+
+  /**
    * @param newType new type identifier for this manager
    */
   protected setType(newType: string): void {
     this.type = newType;
+  }
+
+  /**
+   * get unique type identifier
+   */
+  public getType(): string {
+    return this.type;
   }
 }

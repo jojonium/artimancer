@@ -23,10 +23,6 @@ import { Clock } from "./Clock";
  * One frame of a sprite, consisting of an SVG image
  */
 export class Frame {
-  /** width of this frame in pixels */
-  private width: number;
-  /** height of this frame in pixels */
-  private height: number;
   /** Image for this frame */
   private img: HTMLImageElement;
 
@@ -48,7 +44,7 @@ export class Sprite {
   /** frames of this sprite */
   private frames: Frame[];
   /** clock for timing frames */
-  private clock: Clock;
+  private clock: Clock | undefined;
   /** current frame index to draw */
   private currentFrameNum: number;
 
@@ -84,16 +80,21 @@ export class Sprite {
    * stuff will happen
    */
   public getCurrentFrame(): Frame {
-    if (this.frames.length <= 1 || this.slowdown < 1) {
+    if (
+      this.clock === undefined ||
+      this.frames.length <= 1 ||
+      this.slowdown < 1
+    ) {
       // non-animating sprite
       return this.frames[0];
+    } else {
+      const timeElapsed = this.clock.split();
+      if (timeElapsed >= this.slowdown) {
+        // time to move up to the next frame
+        this.clock.delta();
+        this.currentFrameNum = (this.currentFrameNum + 1) % this.frames.length;
+      }
+      return this.frames[this.currentFrameNum];
     }
-    const timeElapsed = this.clock.split();
-    if (timeElapsed >= this.slowdown) {
-      // time to move up to the next frame
-      this.clock.delta();
-      this.currentFrameNum = (this.currentFrameNum + 1) % this.frames.length;
-    }
-    return this.frames[this.currentFrameNum];
   }
 }

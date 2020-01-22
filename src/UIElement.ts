@@ -21,6 +21,18 @@ import { Sprite } from "./Sprite";
 import { Vector } from "./Vector";
 import { roundedRect } from "./DisplayManager";
 
+export enum UIElementAlignment {
+  topLeft,
+  topMiddle,
+  topRight,
+  centerLeft,
+  centerMiddle,
+  centerRight,
+  bottomLeft,
+  bottomMiddle,
+  bottomRight
+}
+
 /**
  * This class represents a UI element, such as a text box or button prompt. UI
  * element are always drawn on top of the game world
@@ -28,13 +40,11 @@ import { roundedRect } from "./DisplayManager";
 export class UIElement {
   /** unique string identifier */
   private label: string;
-  /** sub-elements contained within this one */
-  private children: UIElement[];
   /** how to draw this element */
   public style: UIElementStyle;
   /** how to align this element in its container */
   private alignment: UIElementAlignment;
-  /** position of this element relative to its parent */
+  /** position of this element */
   private pos: Vector;
   /** height of this element. Set to 0 for auto */
   private height: number;
@@ -48,76 +58,30 @@ export class UIElement {
    */
   public constructor(label: string) {
     this.label = label;
-    this.children = new Array<UIElement>();
     this.pos = new Vector(0, 0);
     this.height = 0;
     this.width = 0;
+    this.style = {};
+    this.alignment = UIElementAlignment.topLeft;
+    this.text = "";
   }
 
   /**
-   * appends a new child element that inherits all attributes from this one
-   * @param childLabel label for the child UIElement
-   */
-  public addChild(childLabel: string): void {
-    const child = new UIElement(childLabel);
-    child.setAlignment(this.alignment);
-    child.style = this.style;
-    child.setPos(this.pos);
-    this.children.push(child);
-  }
-
-  /**
-   * recursively finds how wide this should be based on the widths of its
-   * children
-   */
-  private calculateWidth(): number {
-    if (this.children.length === 0 || this.width !== 0) {
-      return this.width + this.style.padding * 2;
-    }
-    if (this.style.layout === "row") {
-      // find total width of this and its children
-      return this.children.reduce<number>(
-        (accum, child) => accum + child.calculateWidth(),
-        this.style.padding * 2
-      );
-    } else {
-      // find max width of this elements children
-      return (
-        Math.max(...this.children.map(child => child.calculateWidth())) +
-        this.style.padding * 2
-      );
-    }
-  }
-
-  /**
-   * recursively finds how tall this should be based on the heights of its
-   * children
-   */
-  private calculateHeight(): number {
-    if (this.children.length === 0 || this.height !== 0) {
-      return this.height + this.style.padding * 2;
-    }
-    if (this.style.layout === "column") {
-      // find total height of this and its children
-      return this.children.reduce<number>(
-        (accum, child) => accum + child.calculateHeight(),
-        this.style.padding * 2
-      );
-    } else {
-      // find max height of this elements children
-      return (
-        Math.max(...this.children.map(child => child.calculateHeight())) +
-        this.style.padding * 2
-      );
-    }
-  }
-
-  /**
-   * draws this UI element and all its children
+   * draws this UI element
    * @param ctx canvas context to draw on
    */
   public draw(ctx: CanvasRenderingContext2D): void {
     // TODO implement
+    // draw sprite
+    if (this.style.bgSprite) {
+      ctx.drawImage(
+        this.style.bgSprite.getCurrentFrame().getImage(),
+        this.pos.x,
+        this.pos.y,
+        this.width - (this.style.padding ?? 0),
+        this.height - (this.style.padding ?? 0)
+      );
+    }
   }
 
   /**
@@ -128,28 +92,28 @@ export class UIElement {
   }
 
   /**
-   * get how this element is aligned in its parent
+   * get how this element is aligned
    */
   public getAlignment(): UIElementAlignment {
     return this.alignment;
   }
 
   /**
-   * @param newAlignment how this element is aligned in its parent
+   * @param newAlignment how this element is aligned
    */
   public setAlignment(newAlignment: UIElementAlignment): void {
     this.alignment = newAlignment;
   }
 
   /**
-   * get position of this element relative to its parent
+   * get position of this element
    */
   public getPos(): Vector {
     return this.pos;
   }
 
   /**
-   * @param newPos new position of this element relative to its parent
+   * @param newPos new position of this element
    */
   public setPos(newPos: Vector): void {
     this.pos = newPos;
@@ -202,15 +166,3 @@ export type UIElementStyle = {
   cornerRadius?: number;
   layout?: "column" | "row";
 };
-
-export enum UIElementAlignment {
-  topLeft,
-  topMiddle,
-  topRight,
-  centerLeft,
-  centerMiddle,
-  centerRight,
-  bottomLeft,
-  bottomMiddle,
-  bottomRight
-}

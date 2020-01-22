@@ -29,7 +29,7 @@ class WorldManager extends Manager {
   /** singleton instance */
   private static _instance = new WorldManager();
   /** current world the game is in */
-  private currentWorld: World;
+  private currentWorld: World | undefined;
   /** whether to log extra info */
   private noisy = true;
 
@@ -39,6 +39,7 @@ class WorldManager extends Manager {
   private constructor() {
     super();
     this.setType("World Manager");
+    this.currentWorld = undefined;
   }
 
   /**
@@ -63,7 +64,9 @@ class WorldManager extends Manager {
    * @param stepCount number of current step
    */
   public step(stepCount: number): void {
-    this.currentWorld.step(stepCount);
+    if (this.currentWorld !== undefined) {
+      this.currentWorld.step(stepCount);
+    }
   }
 
   /**
@@ -71,7 +74,9 @@ class WorldManager extends Manager {
    * @param ctx the canvas context to draw on
    */
   public draw(ctx: CanvasRenderingContext2D): void {
-    this.currentWorld.draw(ctx);
+    if (this.currentWorld !== undefined) {
+      this.currentWorld.draw(ctx);
+    }
   }
 
   /**

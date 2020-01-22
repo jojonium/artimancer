@@ -26,7 +26,7 @@ export abstract class World {
   private type: string;
 
   public constructor() {
-    this.setType("World");
+    this.type = "World";
   }
 
   /**

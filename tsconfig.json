@@ -8,6 +8,10 @@
     "sourceMap": true,
     "outDir": "dist",
     "baseUrl": ".",
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
     "diagnostics": true,
     "paths": {
       "*": [

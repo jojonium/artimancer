@@ -22,7 +22,7 @@ import { WorldFreeRoam } from "./WorldFreeRoam";
 import { Vector } from "./Vector";
 import { Polygon } from "./Polygon";
 import { DM } from "./DisplayManager";
-import { IM } from "./InputManager";
+import { IM, noOp } from "./InputManager";
 
 enum Mode {
   select,
@@ -37,7 +37,7 @@ export class WorldRoomEditor extends WorldFreeRoam {
   /** all finished bounding polygons */
   private completedPolygons: Polygon[];
   /** the polygon currently being worked on */
-  private currentPolygon: Polygon;
+  private currentPolygon: Polygon | undefined;
   /** current mouse location */
   private mousePos: Vector;
   /** current editing mode */
@@ -52,6 +52,8 @@ export class WorldRoomEditor extends WorldFreeRoam {
     this.setType("Room Editor");
     this.setRoom(room);
     this.completedPolygons = new Array<Polygon>();
+    this.mode = Mode.drawBarrier;
+    this.mousePos = new Vector(0, 0);
     this.setMode(Mode.drawBarrier);
   }
 
@@ -70,7 +72,7 @@ export class WorldRoomEditor extends WorldFreeRoam {
       // try to close the polygon
       if (this.currentPolygon.getPoints().length > 2) {
         this.completedPolygons.push(this.currentPolygon);
-        this.currentPolygon = null;
+        this.currentPolygon = undefined;
       }
     }
   }
@@ -79,7 +81,7 @@ export class WorldRoomEditor extends WorldFreeRoam {
    * cancels any pending operations, such as drawing a polygon
    */
   public cancel(): void {
-    this.currentPolygon = null;
+    this.currentPolygon = undefined;
   }
 
   /**
@@ -102,15 +104,8 @@ export class WorldRoomEditor extends WorldFreeRoam {
    * Removes all event listeners and clears all buttons
    */
   private resetControls(): void {
-    document
-      .getElementById("canvas")
-      .removeEventListener("mousedown", this.drawMousedownHandler.bind(this));
-    document
-      .getElementById("canvas")
-      .removeEventListener("mousemove", this.mousemoveHandler.bind(this));
-    const noOp = (): void => {
-      return;
-    };
+    IM.setMouseDown(noOp);
+    IM.setMouseMove(noOp);
     IM.setOnPressed("escape", noOp);
   }
 
@@ -162,14 +157,8 @@ export class WorldRoomEditor extends WorldFreeRoam {
     if (this.mode === Mode.drawBarrier) {
       // set button controls
       IM.setOnPressed("escape", this.cancel.bind(this));
-
-      // add event listeners to the canvas
-      document
-        .getElementById("canvas")
-        .addEventListener("mousedown", this.drawMousedownHandler.bind(this));
-      document
-        .getElementById("canvas")
-        .addEventListener("mousemove", this.mousemoveHandler.bind(this));
+      IM.setMouseDown(this.drawMousedownHandler.bind(this));
+      IM.setMouseMove(this.mousemoveHandler.bind(this));
     } else if (this.mode === Mode.select) {
       // TODO implement
     }

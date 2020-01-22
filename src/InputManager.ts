@@ -21,6 +21,13 @@ import { Manager } from "./Manager";
 import { Vector } from "./Vector";
 
 /**
+ * function that does nothing
+ */
+export const noOp = (): void => {
+  return;
+};
+
+/**
  * Represents the status of a button
  */
 class Status {
@@ -54,9 +61,9 @@ class Status {
 class Button {
   public key: string;
   public readonly status: Status;
-  public gpButtonIndex: number;
-  public onPressed: () => void;
-  public onReleased: () => void;
+  public gpButtonIndex: number | undefined;
+  public onPressed = noOp;
+  public onReleased = noOp;
 
   /**
    * Constructs a new button combining a keyboard key and joystick button
@@ -79,8 +86,8 @@ class Directional {
   public rightButton: Button;
   public downButton: Button;
   public leftButton: Button;
-  public hAxisIndex: number;
-  public vAxisIndex: number;
+  public hAxisIndex: number | undefined;
+  public vAxisIndex: number | undefined;
   public vec: Vector;
 
   /**
@@ -128,7 +135,6 @@ class Directional {
     return [this.upButton, this.rightButton, this.downButton, this.leftButton];
   }
 }
-
 /**
  * The InputManager class deals with getting input from the keyboard and
  * controllers, abstracting them into an 'input' object that is updated every
@@ -149,6 +155,11 @@ class InputManager extends Manager {
   private stickSensitivity = 1.4;
   /** whether to log extra information */
   private noisy = true;
+  private mouseFuncs: {
+    down: (ev: MouseEvent) => void;
+    up: (ev: MouseEvent) => void;
+    move: (ev: MouseEvent) => void;
+  };
 
   /**
    * Private because managers are supposed to be singleton
@@ -156,6 +167,14 @@ class InputManager extends Manager {
   private constructor() {
     super();
     this.setType("Input Manager");
+    this.directionals = new Map<string, Directional>();
+    this.buttons = new Map<string, Button>();
+    this.usingKeyboard = false;
+    this.mouseFuncs = {
+      down: noOp,
+      up: noOp,
+      move: noOp
+    };
   }
 
   /**
@@ -352,11 +371,35 @@ class InputManager extends Manager {
   }
 
   /**
+   * handler for mousedown events
+   * @param e the mouse event created by the mouse click
+   */
+  private mousedownHandler(e: MouseEvent): void {
+    this.mouseFuncs.down(e);
+  }
+
+  /**
+   * handler for mouseup events
+   * @param e the mouse event created by the mouse release
+   */
+  private mouseupHandler(e: MouseEvent): void {
+    this.mouseFuncs.up(e);
+  }
+
+  /**
+   * handler for mousemove events
+   * @param e the mouse event created by the mouse movement
+   */
+  private mousemoveHandler(e: MouseEvent): void {
+    this.mouseFuncs.move(e);
+  }
+
+  /**
    * handles gamepadconnect events
    * @param e the GamepadEvent created by the event
    */
-  private gamepadconnectHandler(e: GamepadEvent): void {
-    if (this.noisy) console.log("gamepad connected: " + e.gamepad.index);
+  private gamepadconnectHandler(): void {
+    if (this.noisy) console.log("IM: gamepad connected");
     this.usingKeyboard = false;
   }
 
@@ -364,8 +407,8 @@ class InputManager extends Manager {
    * handles gamepaddisconnect events
    * @param e the GamepadEvent created by the event
    */
-  private gamepaddisconnectHandler(e: GamepadEvent): void {
-    if (this.noisy) console.log("gamepad disconnected: " + e.gamepad.index);
+  private gamepaddisconnectHandler(): void {
+    if (this.noisy) console.log("IM: gamepad disconnected");
     this.usingKeyboard = true;
   }
 
@@ -384,6 +427,9 @@ class InputManager extends Manager {
       "gamepaddisconnected",
       this.gamepaddisconnectHandler.bind(this)
     );
+    document.removeEventListener("mousedown", this.mousedownHandler.bind(this));
+    document.removeEventListener("mouseup", this.mouseupHandler.bind(this));
+    document.removeEventListener("mousemove", this.mousemoveHandler.bind(this));
     document.addEventListener("keydown", this.keydownHandler.bind(this));
     document.addEventListener("keyup", this.keyupHandler.bind(this));
     window.addEventListener(
@@ -394,6 +440,9 @@ class InputManager extends Manager {
       "gamepaddisconnected",
       this.gamepaddisconnectHandler.bind(this)
     );
+    document.addEventListener("mousedown", this.mousedownHandler.bind(this));
+    document.addEventListener("mouseup", this.mouseupHandler.bind(this));
+    document.addEventListener("mousemove", this.mousemoveHandler.bind(this));
     if (this.noisy) console.log("IM: listeners set");
   }
 
@@ -432,8 +481,9 @@ class InputManager extends Manager {
    * @return true if successfully set, false if the name doesn't exist
    */
   public setOnPressed(name: string, handler: () => void): boolean {
-    if (this.buttons.has(name)) {
-      this.buttons.get(name).onPressed = handler;
+    const but = this.buttons.get(name);
+    if (but !== undefined && but !== null) {
+      but.onPressed = handler;
       return true;
     } else {
       return false;
@@ -447,8 +497,9 @@ class InputManager extends Manager {
    * @return true if successfully set, false if the name doesn't exist
    */
   public setOnReleased(name: string, handler: () => void): boolean {
-    if (this.buttons.has(name)) {
-      this.buttons.get(name).onReleased = handler;
+    const but = this.buttons.get(name);
+    if (but !== undefined && but !== null) {
+      but.onReleased = handler;
       return true;
     } else {
       return false;
@@ -486,6 +537,27 @@ class InputManager extends Manager {
   public unregisterAll(): void {
     this.buttons = new Map<string, Button>();
     this.directionals = new Map<string, Directional>();
+  }
+
+  /**
+   * @param func handler for mousedown events
+   */
+  public setMouseDown(func: (this: Document, ev: MouseEvent) => void): void {
+    this.mouseFuncs.down = func;
+  }
+
+  /**
+   * @param func handler for mouseup events
+   */
+  public setMouseUp(func: (this: Document, ev: MouseEvent) => void): void {
+    this.mouseFuncs.up = func;
+  }
+
+  /**
+   * @param func handler for mousemove events
+   */
+  public setMouseMove(func: (this: Document, ev: MouseEvent) => void): void {
+    this.mouseFuncs.move = func;
   }
 
   /**

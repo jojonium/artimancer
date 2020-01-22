@@ -74,13 +74,10 @@ export class WorldLoading extends World {
     if (1 - this.percentLoaded <= 0.01) {
       // TODO move on to next world
       const room = new Room("Test Room");
-      room.addBackground(
-        RM.getSprite("test-bg"),
-        new Vector(500, 300),
-        600,
-        200,
-        0
-      );
+      const spr = RM.getSprite("test-bg");
+      if (spr !== null && spr !== undefined) {
+        room.addBackground(spr, new Vector(500, 300), 600, 200, 0);
+      }
       WM.enterWorld(new WorldRoomEditor(room));
     }
   }
