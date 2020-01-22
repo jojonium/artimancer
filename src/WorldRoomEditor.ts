@@ -5,6 +5,11 @@ import { Polygon } from "./Polygon";
 import { DM } from "./DisplayManager";
 import { IM } from "./InputManager";
 
+enum Mode {
+  select,
+  drawBarrier
+}
+
 /**
  * This class is for development purposes, and allows for easy graphical
  * editing of room backgrounds and collisison boundaries
@@ -16,6 +21,8 @@ export class WorldRoomEditor extends WorldFreeRoam {
   private currentPolygon: Polygon;
   /** current mouse location */
   private mousePos: Vector;
+  /** current editing mode */
+  private mode: Mode;
 
   /**
    * Constructs a new RoomEditor world for a given room
@@ -26,30 +33,14 @@ export class WorldRoomEditor extends WorldFreeRoam {
     this.setType("Room Editor");
     this.setRoom(room);
     this.completedPolygons = new Array<Polygon>();
-
-    // set button controls
-    IM.setOnPressed("escape", this.cancel.bind(this));
-
-    // add event listeners to the canvas
-    document
-      .getElementById("canvas")
-      .removeEventListener("mousedown", this.mousedownHandler.bind(this));
-    document
-      .getElementById("canvas")
-      .addEventListener("mousedown", this.mousedownHandler.bind(this));
-    document
-      .getElementById("canvas")
-      .removeEventListener("mousemove", this.mousemoveHandler.bind(this));
-    document
-      .getElementById("canvas")
-      .addEventListener("mousemove", this.mousemoveHandler.bind(this));
+    this.setMode(Mode.drawBarrier);
   }
 
   /**
-   * handles the user clicking on the canvas
+   * handles the user clicking on the canvas in draw mode
    * @param ev the mouse event produced by the click
    */
-  public mousedownHandler(ev: MouseEvent): void {
+  private drawMousedownHandler(ev: MouseEvent): void {
     const vec = DM.windowToWorldCoord(new Vector(ev.clientX, ev.clientY));
     this.mousePos = vec;
     if (this.currentPolygon === null || this.currentPolygon === undefined) {
@@ -76,17 +67,25 @@ export class WorldRoomEditor extends WorldFreeRoam {
    * handles mouse movements over the canvas, updating this.mousePos
    * @param ev the mouse event produced by the mouse movement
    */
-  public mousemoveHandler(ev: MouseEvent): void {
+  private mousemoveHandler(ev: MouseEvent): void {
     this.mousePos = DM.windowToWorldCoord(new Vector(ev.clientX, ev.clientY));
   }
 
   /**
    * remove event listeners and clear buttons
+   * @override
    */
   public exit(): void {
+    this.resetControls();
+  }
+
+  /**
+   * Removes all event listeners and clears all buttons
+   */
+  private resetControls(): void {
     document
       .getElementById("canvas")
-      .removeEventListener("mousedown", this.mousedownHandler.bind(this));
+      .removeEventListener("mousedown", this.drawMousedownHandler.bind(this));
     document
       .getElementById("canvas")
       .removeEventListener("mousemove", this.mousemoveHandler.bind(this));
@@ -133,6 +132,27 @@ export class WorldRoomEditor extends WorldFreeRoam {
         ctx.closePath();
         ctx.stroke();
       }
+    }
+  }
+
+  public setMode(newMode: Mode): void {
+    this.mode = newMode;
+
+    // remove existing event handlers
+    this.resetControls();
+    if (this.mode === Mode.drawBarrier) {
+      // set button controls
+      IM.setOnPressed("escape", this.cancel.bind(this));
+
+      // add event listeners to the canvas
+      document
+        .getElementById("canvas")
+        .addEventListener("mousedown", this.drawMousedownHandler.bind(this));
+      document
+        .getElementById("canvas")
+        .addEventListener("mousemove", this.mousemoveHandler.bind(this));
+    } else if (this.mode === Mode.select) {
+      // TODO implement
     }
   }
 }
