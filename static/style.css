@@ -19,6 +19,9 @@ body {
 
 h1 {
   text-align: center;
+  text-transform: uppercase;
+  font-family: bitter;
+  font-size: 2.5em;
 }
 
 div#canvas-holder {
@@ -29,4 +32,9 @@ div#canvas-holder {
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
+}
+
+canvas {
+  border-radius: 25px;
+  box-shadow: 0 0 50px 10px #232629;
 }
