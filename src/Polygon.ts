@@ -87,4 +87,23 @@ export class Polygon {
     // Return true if count is odd, false otherwise
     return count % 2 == 1;
   }
+
+  /**
+   * adds a vector to each point
+   * @param delta vector to add to each of this polygons points
+   */
+  public translate(delta: Vector): void;
+
+  /**
+   * adds an x and y value to each point
+   * @param dx x value to add
+   * @param dy y value to add, equal to dx if omitted
+   */
+  public translate(dx: number, dy: number): void;
+
+  public translate(arg1: number | Vector, arg2?: number): void {
+    const dx = (arg1 as Vector).x ?? (arg1 as number);
+    const dy = (arg1 as Vector).y ?? arg2 ?? dx;
+    this.points = this.points.map(point => point.add(dx, dy));
+  }
 }
