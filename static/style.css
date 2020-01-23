@@ -35,6 +35,6 @@ div#canvas-holder {
 }
 
 canvas {
-  border-radius: 25px;
-  box-shadow: 0 0 50px 10px #232629;
+  border-radius: 20px;
+  box-shadow: 0 0 55px 5px rgba(35, 38, 41, 0.5)
 }

@@ -26,19 +26,19 @@ import { Vector } from "./Vector";
 export abstract class FreeRoamEntity {
   /** string identifier for this entity */
   private label: string;
-  /** position of this entity */
-  private pos: Vector;
+  /** center position of this entity */
+  public pos: Vector;
   /** direction the entity is facing */
   private dir: Vector;
   /** width of this entity in pixels on a CANV_SIZE by CANV_SIZE canvas */
-  private width: number;
+  public width: number;
   /** height of this entity in pixels on a CANV_SIZE by CANV_SIZE canvas */
-  private height: number;
+  public height: number;
 
   /**
    * Constructs a new FreeRoamEntity
    * @param label string identifier for this entity
-   * @param pos where this entity is
+   * @param pos center position of this entity
    */
   public constructor(label: string, pos: Vector) {
     this.label = label;

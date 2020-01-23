@@ -111,4 +111,11 @@ export class Room {
   public getBackgrounds(): bgObject[][] {
     return this.backgrounds;
   }
+
+  /**
+   * get all the free roam entities in this room
+   */
+  public getEntities(): FreeRoamEntity[] {
+    return this.entities;
+  }
 }
