@@ -41,7 +41,7 @@ export class WorldRoomEditor extends WorldFreeRoam {
   /** all finished bounding polygons */
   private completedPolygons: Polygon[];
   /** the polygon currently being worked on */
-  private currentPolygon: Polygon | undefined;
+  private selectedPolygon: Polygon | undefined;
   /** the currently selected background element */
   private selectedBgObj: bgObject | undefined;
   /** the currently selected FreeRoamEntity */
@@ -111,8 +111,9 @@ export class WorldRoomEditor extends WorldFreeRoam {
    * everything
    */
   public cancel(): void {
-    this.currentPolygon = undefined;
+    this.selectedPolygon = undefined;
     this.selectedBgObj = undefined;
+    this.selectedEntity = undefined;
   }
 
   /**
@@ -124,12 +125,16 @@ export class WorldRoomEditor extends WorldFreeRoam {
     if (this.mouseIsDown && this.mousePos && this.mode === Mode.select) {
       const delta = vec.subtract(this.mousePos);
       // drag polygons
-      if (this.currentPolygon !== undefined) {
-        this.currentPolygon.translate(delta);
+      if (this.selectedPolygon !== undefined) {
+        this.selectedPolygon.translate(delta);
       }
       // drag bg sprites
       if (this.selectedBgObj !== undefined) {
         this.selectedBgObj.centerPos = this.selectedBgObj.centerPos.add(delta);
+      }
+      // drag entities
+      if (this.selectedEntity !== undefined) {
+        this.selectedEntity.pos = this.selectedEntity.pos.add(delta);
       }
     }
     this.mousePos = vec;
@@ -195,12 +200,12 @@ export class WorldRoomEditor extends WorldFreeRoam {
     }
 
     // draw current polygon in red
-    if (this.currentPolygon && this.currentPolygon.getPoints().length > 0) {
+    if (this.selectedPolygon && this.selectedPolygon.getPoints().length > 0) {
       ctx.lineWidth = 3;
       ctx.strokeStyle = "rgba(255, 0, 0, 1)";
       ctx.fillStyle = "rgba(255, 0, 0, 0.4)";
       ctx.beginPath();
-      const points = this.currentPolygon.getPoints();
+      const points = this.selectedPolygon.getPoints();
       ctx.moveTo(points[0].x, points[0].y);
       points.forEach(point => ctx.lineTo(point.x, point.y));
       if (this.mode === Mode.select) {
@@ -262,15 +267,15 @@ export class WorldRoomEditor extends WorldFreeRoam {
     this.mousePos = vec;
 
     if (this.mode === Mode.drawBarrier) {
-      if (this.currentPolygon === null || this.currentPolygon === undefined) {
-        this.currentPolygon = new Polygon();
+      if (this.selectedPolygon === null || this.selectedPolygon === undefined) {
+        this.selectedPolygon = new Polygon();
       }
-      this.currentPolygon.addPoints(vec);
+      this.selectedPolygon.addPoints(vec);
       if (ev.shiftKey) {
         // try to close the polygon
-        if (this.currentPolygon.getPoints().length > 2) {
-          this.completedPolygons.push(this.currentPolygon);
-          this.currentPolygon = undefined;
+        if (this.selectedPolygon.getPoints().length > 2) {
+          this.completedPolygons.push(this.selectedPolygon);
+          this.selectedPolygon = undefined;
         }
       }
     } else if (this.mode === Mode.select) {
@@ -279,7 +284,7 @@ export class WorldRoomEditor extends WorldFreeRoam {
       // did we click on a polygon?
       for (const p of this.completedPolygons) {
         if (p.contains(vec)) {
-          this.currentPolygon = p;
+          this.selectedPolygon = p;
           return;
         }
       }
@@ -321,15 +326,15 @@ export class WorldRoomEditor extends WorldFreeRoam {
    * deletes the currently selected element
    */
   private delete(): void {
-    if (this.currentPolygon) {
-      const index = this.completedPolygons.indexOf(this.currentPolygon);
+    if (this.selectedPolygon) {
+      const index = this.completedPolygons.indexOf(this.selectedPolygon);
       if (index > -1) {
         this.completedPolygons.splice(index, 1);
-        this.currentPolygon = undefined;
+        this.selectedPolygon = undefined;
       }
       return;
     }
-    if (this.selectedBgObj && this.currentRoom) {
+    if (this.currentRoom && this.selectedBgObj) {
       const layers = this.currentRoom.getBackgrounds();
       for (const layer of layers) {
         const index = layer.indexOf(this.selectedBgObj);
@@ -338,6 +343,13 @@ export class WorldRoomEditor extends WorldFreeRoam {
           this.selectedBgObj = undefined;
           return;
         }
+      }
+    }
+    if (this.currentRoom && this.selectedEntity) {
+      const index = this.currentRoom.getEntities().indexOf(this.selectedEntity);
+      if (index > -1) {
+        this.currentRoom.getEntities().splice(index, 1);
+        this.selectedEntity = undefined;
       }
     }
   }
@@ -356,7 +368,7 @@ export class WorldRoomEditor extends WorldFreeRoam {
    * @param newMode the mode to enter
    */
   public setMode(newMode: Mode): void {
-    this.currentPolygon = undefined;
+    this.selectedPolygon = undefined;
     this.selectedBgObj = undefined;
     this.mode = newMode;
 

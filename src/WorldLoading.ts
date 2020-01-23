@@ -24,6 +24,7 @@ import { CANV_SIZE } from "./DisplayManager";
 import { WorldRoomEditor } from "./WorldRoomEditor";
 import { Room } from "./Room";
 import { Vector } from "./Vector";
+import { EntityTest } from "./EntityTest";
 
 /**
  * a World that displays a loading bar while resources are being loaded
@@ -75,8 +76,19 @@ export class WorldLoading extends World {
       // TODO move on to next world
       const room = new Room("Test Room");
       const spr = RM.getSprite("test-bg");
-      if (spr !== null && spr !== undefined) {
+      if (spr !== undefined) {
         room.addBackground(spr, new Vector(500, 300), 600, 200, 0);
+      }
+      const ballSpr = RM.getSprite("test");
+      if (ballSpr !== undefined) {
+        const e = new EntityTest(
+          "Test Ball",
+          new Vector(350, 700),
+          100,
+          100,
+          ballSpr
+        );
+        room.addEntity(e);
       }
       WM.enterWorld(new WorldRoomEditor(room));
     }

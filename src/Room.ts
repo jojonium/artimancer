@@ -113,6 +113,14 @@ export class Room {
   }
 
   /**
+   * Adds an entity to this room
+   * @param ent the entity to add
+   */
+  public addEntity(ent: FreeRoamEntity): void {
+    this.entities.push(ent);
+  }
+
+  /**
    * get all the free roam entities in this room
    */
   public getEntities(): FreeRoamEntity[] {
