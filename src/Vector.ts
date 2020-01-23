@@ -188,4 +188,17 @@ export class Vector {
   public getMidpoint(other: Vector): Vector {
     return new Vector((this.x + other.x) / 2, (this.y + other.y) / 2);
   }
+
+  /**
+   * Find th orientation of three ordered points, (p, q, r)
+   * @param p first vector
+   * @param q second vector
+   * @param r third vector
+   * @return 0 if colinear, 1 if clockwise, or -1 if counterclockwise
+   */
+  public static orientation(p: Vector, q: Vector, r: Vector): -1 | 0 | 1 {
+    const val = (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y);
+    if (val == 0) return 0; // colinear
+    return val > 0 ? 1 : -1; // clockwise or counterclockwise
+  }
 }
