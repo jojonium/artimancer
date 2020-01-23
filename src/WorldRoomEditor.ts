@@ -102,7 +102,9 @@ export class WorldRoomEditor extends WorldFreeRoam {
       textAlign: "right",
       padding: 5
     };
-    this.uiElements[3].setText("Click+drag to move\nDelete to delete");
+    this.uiElements[3].setText(
+      "Click+drag to move\nShift+drag to scale\nDelete to delete"
+    );
     this.setMode(Mode.drawBarrier);
   }
 
@@ -124,17 +126,30 @@ export class WorldRoomEditor extends WorldFreeRoam {
     const vec = DM.windowToWorldCoord(new Vector(ev.clientX, ev.clientY));
     if (this.mouseIsDown && this.mousePos && this.mode === Mode.select) {
       const delta = vec.subtract(this.mousePos);
-      // drag polygons
-      if (this.selectedPolygon !== undefined) {
-        this.selectedPolygon.translate(delta);
-      }
-      // drag bg sprites
-      if (this.selectedBgObj !== undefined) {
-        this.selectedBgObj.centerPos = this.selectedBgObj.centerPos.add(delta);
-      }
-      // drag entities
-      if (this.selectedEntity !== undefined) {
-        this.selectedEntity.pos = this.selectedEntity.pos.add(delta);
+      if (ev.shiftKey) {
+        // if holding shift, scale whatever's selected
+        // scale polygons
+        if (this.selectedPolygon !== undefined) {
+          this.selectedPolygon.scale(
+            delta.distanceTo(this.selectedPolygon.getCenter())
+          );
+        }
+      } else {
+        // otherwise drag whatever's selected
+        // drag polygons
+        if (this.selectedPolygon !== undefined) {
+          this.selectedPolygon.translate(delta);
+        }
+        // drag bg sprites
+        if (this.selectedBgObj !== undefined) {
+          this.selectedBgObj.centerPos = this.selectedBgObj.centerPos.add(
+            delta
+          );
+        }
+        // drag entities
+        if (this.selectedEntity !== undefined) {
+          this.selectedEntity.pos = this.selectedEntity.pos.add(delta);
+        }
       }
     }
     this.mousePos = vec;

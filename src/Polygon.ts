@@ -99,11 +99,47 @@ export class Polygon {
    * @param dx x value to add
    * @param dy y value to add, equal to dx if omitted
    */
-  public translate(dx: number, dy: number): void;
+  public translate(dx: number, dy?: number): void;
 
   public translate(arg1: number | Vector, arg2?: number): void {
     const dx = (arg1 as Vector).x ?? (arg1 as number);
     const dy = (arg1 as Vector).y ?? arg2 ?? dx;
     this.points = this.points.map(point => point.add(dx, dy));
+  }
+
+  /**
+   * Finds the center point of this polygon. If the polygon has no points it
+   * will return a Vector with components (-Infinity, -Infinity)
+   */
+  public getCenter(): Vector {
+    // TODO implement
+    return new Vector(0, 0);
+  }
+
+  /**
+   * Scales around the center-point by (dx, dy)
+   * @param dx x value to scale by
+   * @param dy y value to scale by, equal to dx if omitted
+   */
+  public scale(dx: number, dy?: number): void;
+
+  /**
+   * Scales around the center-point
+   * @param delta vector to scale by
+   */
+  public scale(delta: Vector): void;
+
+  public scale(arg1: number | Vector, arg2?: number): void {
+    const dx = (arg1 as Vector).x ?? (arg1 as number);
+    const dy = (arg1 as Vector).y ?? arg2 ?? dx;
+    const center = this.getCenter();
+    for (let i = 0; i < this.points.length; ++i) {
+      // normalize by subtracting the center from each point
+      let p = this.points[i].subtract(center);
+      p = p.scale(dx, dy);
+      p = p.add(center);
+      this.points[i] = p;
+      console.log(p);
+    }
   }
 }
