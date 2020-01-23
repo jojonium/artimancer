@@ -18,6 +18,8 @@
  */
 
 import { Vector } from "./Vector";
+import { Line } from "./Line";
+import { CANV_SIZE } from "./DisplayManager";
 
 /**
  * This class represents a polygon of any number of points, represented by
@@ -53,5 +55,36 @@ export class Polygon {
    */
   public getPoints(): Vector[] {
     return this.points;
+  }
+
+  /**
+   * Tests whether a point is inside the polygon by drawing a ray from the
+   * point to infinity and counting the number of edges of the polygon it
+   * intersects
+   * @param vec the point to test
+   */
+  public contains(vec: Vector): boolean {
+    if (this.points.length < 3) return false;
+    // create a ray from vec to infinity
+    const ray = new Line(vec, new Vector(CANV_SIZE * 100, vec.y));
+    let count = 0;
+    let i = 0;
+    do {
+      const next = (i + 1) % this.points.length;
+      const line = new Line(this.points[i], this.points[next]);
+
+      // check if the ray intersects the line from points[i] to points[next]
+      if (line.intersects(ray)) {
+        // if the point is on the line then it is obviously inside the polygon
+        if (Vector.orientation(line.p1, vec, line.p2) === 0) {
+          return line.intersects(vec);
+        }
+        count++;
+      }
+      i = next;
+    } while (i != 0);
+
+    // Return true if count is odd, false otherwise
+    return count % 2 == 1;
   }
 }
