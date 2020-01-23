@@ -19,6 +19,10 @@
 
 import { Vector } from "./Vector";
 
+/**
+ * A Line is a geometric segment between two points, and is useful for various
+ * abstract mathematical operations
+ */
 export class Line {
   /** starting point */
   public p1: Vector;

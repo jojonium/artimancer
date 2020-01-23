@@ -22,6 +22,12 @@ import { Vector } from "./Vector";
 import { FreeRoamEntity } from "./FreeRoamEntity";
 
 export type Layer = 0 | 1 | 2 | 3 | 4 | 5;
+export type bgObject = {
+  sprite: Sprite;
+  centerPos: Vector;
+  width: number; // pixels, scaled to a CANV_SIZE by CANV_SIZE canvas
+  height: number; // pixels, scaled to a CANV_SIZE by CANV_SIZE canvas
+};
 
 /**
  * The Room class represents a single area of the free-roam world, and includes
@@ -31,12 +37,7 @@ export class Room {
   /** unique identifier for this room */
   private label: string;
   /** elements that make up the visual background of this room */
-  private backgrounds: {
-    sprite: Sprite;
-    centerPos: Vector;
-    width: number; // pixels, scaled to a CANV_SIZE by CANV_SIZE canvas
-    height: number; // pixels, scaled to a CANV_SIZE by CANV_SIZE canvas
-  }[][];
+  private backgrounds: bgObject[][];
   /** all free roam entities in this room */
   private entities: FreeRoamEntity[];
 
@@ -102,5 +103,12 @@ export class Room {
 
     // draw all entities on top of the background
     this.entities.map(ent => ent.draw(ctx));
+  }
+
+  /**
+   * get objects representing this room's background sprites, organized by layer
+   */
+  public getBackgrounds(): bgObject[][] {
+    return this.backgrounds;
   }
 }

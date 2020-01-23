@@ -25,7 +25,7 @@ import { Room } from "./Room";
  * and encounter enemies
  */
 export class WorldFreeRoam extends World {
-  private currentRoom: Room | undefined;
+  protected currentRoom: Room | undefined;
 
   /**
    * Creates a new WorldFreeRoam
