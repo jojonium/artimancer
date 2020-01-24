@@ -133,6 +133,28 @@ export class WorldRoomEditor extends WorldFreeRoam {
             delta.distanceTo(this.selectedPolygon.getCenter())
           );
         }
+
+        // scale bg sprites
+        if (this.selectedBgObj !== undefined) {
+          const b = this.selectedBgObj.box;
+          const x = vec.subtract(b.getCenter()).x > 0 ? delta.x : -delta.x;
+          const y = vec.subtract(b.getCenter()).y > 0 ? delta.y : -delta.y;
+          b.topLeft = b.topLeft.subtract(x / 2, y / 2);
+          b.width += x;
+          b.height += y;
+          this.selectedBgObj.box = b;
+        }
+
+        // scale entities
+        if (this.selectedEntity !== undefined) {
+          const b = this.selectedEntity.drawBox;
+          const x = vec.subtract(b.getCenter()).x > 0 ? delta.x : -delta.x;
+          const y = vec.subtract(b.getCenter()).y > 0 ? delta.y : -delta.y;
+          b.topLeft = b.topLeft.subtract(x / 2, y / 2);
+          b.width += x;
+          b.height += y;
+          this.selectedEntity.drawBox = b;
+        }
       } else {
         // otherwise drag whatever's selected
         // drag polygons
@@ -147,9 +169,8 @@ export class WorldRoomEditor extends WorldFreeRoam {
         }
         // drag entities
         if (this.selectedEntity !== undefined) {
-          this.selectedEntity.drawBox.topLeft = this.selectedEntity.drawBox.topLeft.add(
-            delta
-          );
+          const b = this.selectedEntity.drawBox;
+          b.topLeft = b.topLeft.add(delta);
         }
       }
     }
@@ -281,7 +302,7 @@ export class WorldRoomEditor extends WorldFreeRoam {
           this.selectedPolygon = undefined;
         }
       }
-    } else if (this.mode === Mode.select) {
+    } else if (this.mode === Mode.select && !ev.shiftKey) {
       this.cancel();
 
       // did we click on a polygon?
@@ -362,12 +383,11 @@ export class WorldRoomEditor extends WorldFreeRoam {
    * @param newMode the mode to enter
    */
   public setMode(newMode: Mode): void {
-    this.selectedPolygon = undefined;
-    this.selectedBgObj = undefined;
     this.mode = newMode;
 
     // remove existing event handlers
     this.resetControls();
+    this.cancel();
     if (this.mode === Mode.drawBarrier) {
       // set button controls
       IM.setOnPressed("escape", this.cancel.bind(this));
