@@ -44,6 +44,13 @@ export class Box {
   }
 
   /**
+   * returns the center-point of this box
+   */
+  public getCenter(): Vector {
+    return this.topLeft.add(this.width / 2, this.height / 2);
+  }
+
+  /**
    * test whether a point is inside this box
    * @param point the point to test
    */
@@ -53,5 +60,13 @@ export class Box {
     return (
       point.x >= p1.x && point.x <= p2.x && point.y >= p1.y && point.y <= p2.y
     );
+  }
+
+  /**
+   * draws a rect with the dimensions of this box on the canvas
+   * @param ctx the canvas context to draw on
+   */
+  public drawRect(ctx: CanvasRenderingContext2D): void {
+    ctx.rect(this.topLeft.x, this.topLeft.y, this.width, this.height);
   }
 }

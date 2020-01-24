@@ -25,7 +25,6 @@ import { DM } from "./DisplayManager";
 import { IM, noOp } from "./InputManager";
 import { UIElement } from "./UIElement";
 import { RM } from "./ResourceManager";
-import { Box } from "./Box";
 import { FreeRoamEntity } from "./FreeRoamEntity";
 
 enum Mode {
@@ -128,7 +127,7 @@ export class WorldRoomEditor extends WorldFreeRoam {
       const delta = vec.subtract(this.mousePos);
       if (ev.shiftKey) {
         // if holding shift, scale whatever's selected
-        // scale polygons
+        // scale polygons TODO implement
         if (this.selectedPolygon !== undefined) {
           this.selectedPolygon.scale(
             delta.distanceTo(this.selectedPolygon.getCenter())
@@ -142,13 +141,15 @@ export class WorldRoomEditor extends WorldFreeRoam {
         }
         // drag bg sprites
         if (this.selectedBgObj !== undefined) {
-          this.selectedBgObj.centerPos = this.selectedBgObj.centerPos.add(
+          this.selectedBgObj.box.topLeft = this.selectedBgObj.box.topLeft.add(
             delta
           );
         }
         // drag entities
         if (this.selectedEntity !== undefined) {
-          this.selectedEntity.pos = this.selectedEntity.pos.add(delta);
+          this.selectedEntity.drawBox.topLeft = this.selectedEntity.drawBox.topLeft.add(
+            delta
+          );
         }
       }
     }
@@ -244,11 +245,7 @@ export class WorldRoomEditor extends WorldFreeRoam {
       ctx.strokeStyle = "rgba(255, 0, 0, 1)";
       ctx.fillStyle = "rgba(0, 0, 0, 0)";
       ctx.beginPath();
-      const tl = this.selectedBgObj.centerPos.subtract(
-        this.selectedBgObj.width / 2,
-        this.selectedBgObj.height / 2
-      );
-      ctx.rect(tl.x, tl.y, this.selectedBgObj.width, this.selectedBgObj.height);
+      this.selectedBgObj.box.drawRect(ctx);
       ctx.stroke();
     }
 
@@ -258,16 +255,7 @@ export class WorldRoomEditor extends WorldFreeRoam {
       ctx.strokeStyle = "rgba(255, 0, 0, 1)";
       ctx.fillStyle = "rgba(0, 0, 0, 0)";
       ctx.beginPath();
-      const tl = this.selectedEntity.pos.subtract(
-        this.selectedEntity.width / 2,
-        this.selectedEntity.height / 2
-      );
-      ctx.rect(
-        tl.x,
-        tl.y,
-        this.selectedEntity.width,
-        this.selectedEntity.height
-      );
+      this.selectedEntity.drawBox.drawRect(ctx);
       ctx.stroke();
     }
   }
@@ -305,32 +293,23 @@ export class WorldRoomEditor extends WorldFreeRoam {
       }
 
       if (this.currentRoom !== undefined) {
-        // did we click on a background?
         const layers = this.currentRoom.getBackgrounds();
-        for (let i = layers.length - 1; i >= 0; --i) {
-          // check from the top down
-          for (const s of layers[i]) {
-            const b = new Box(
-              s.centerPos.subtract(s.width / 2, s.height / 2),
-              s.width,
-              s.height
-            );
-            if (b.contains(vec)) {
-              this.selectedBgObj = s;
-              return;
-            }
+        // did we click an entity?
+        for (const e of this.currentRoom.getEntities()) {
+          if (e.drawBox.contains(vec)) {
+            this.selectedEntity = e;
+            return;
           }
         }
 
-        for (const e of this.currentRoom.getEntities()) {
-          const b = new Box(
-            e.pos.subtract(e.width / 2, e.height / 2),
-            e.width,
-            e.height
-          );
-          if (b.contains(vec)) {
-            this.selectedEntity = e;
-            return;
+        // did we click on a background?
+        for (let i = layers.length - 1; i >= 0; --i) {
+          // check from the top down
+          for (const s of layers[i]) {
+            if (s.box.contains(vec)) {
+              this.selectedBgObj = s;
+              return;
+            }
           }
         }
       }

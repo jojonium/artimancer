@@ -19,6 +19,7 @@
 
 import { Vector } from "./Vector";
 import { Sprite } from "./Sprite";
+import { Box } from "./Box";
 
 /**
  * This class represents an entity, such as a player character, NPC, or enemy,
@@ -27,29 +28,23 @@ import { Sprite } from "./Sprite";
 export abstract class FreeRoamEntity {
   /** string identifier for this entity */
   private label: string;
-  /** center position of this entity */
-  public pos: Vector;
   /** direction the entity is facing */
   private dir: Vector;
-  /** width of this entity in pixels on a CANV_SIZE by CANV_SIZE canvas */
-  public width: number;
-  /** height of this entity in pixels on a CANV_SIZE by CANV_SIZE canvas */
-  public height: number;
   /** optional sprite for this entity to display */
   private sprite: Sprite | undefined;
+  /** location and dimensions for where to draw this entity */
+  public drawBox: Box;
 
   /**
    * Constructs a new FreeRoamEntity
    * @param label string identifier for this entity
    * @param pos center position of this entity
    */
-  public constructor(label: string, pos: Vector) {
+  public constructor(label: string) {
     this.label = label;
-    this.pos = pos;
     // start facing right
     this.dir = new Vector(1, 0);
-    this.width = 0;
-    this.height = 0;
+    this.drawBox = new Box(new Vector(0, 0), 0, 0);
     this.sprite = undefined;
   }
 
@@ -76,10 +71,10 @@ export abstract class FreeRoamEntity {
     if (this.sprite !== undefined) {
       ctx.drawImage(
         this.sprite.getCurrentFrame().getImage(),
-        this.pos.x - this.width / 2,
-        this.pos.y - this.height / 2,
-        this.width,
-        this.height
+        this.drawBox.topLeft.x,
+        this.drawBox.topLeft.y,
+        this.drawBox.width,
+        this.drawBox.height
       );
     }
   }

@@ -130,16 +130,7 @@ export class Polygon {
   public scale(delta: Vector): void;
 
   public scale(arg1: number | Vector, arg2?: number): void {
-    const dx = (arg1 as Vector).x ?? (arg1 as number);
-    const dy = (arg1 as Vector).y ?? arg2 ?? dx;
-    const center = this.getCenter();
-    for (let i = 0; i < this.points.length; ++i) {
-      // normalize by subtracting the center from each point
-      let p = this.points[i].subtract(center);
-      p = p.scale(dx, dy);
-      p = p.add(center);
-      this.points[i] = p;
-      console.log(p);
-    }
+    // TODO implement
+    return;
   }
 }

@@ -2,7 +2,6 @@
  * Copyright (C) 2020 Joseph Petitti
  *
  * This file is part of Artimancer, a simple turn-based RPG for the web.
- *
  * Artimancer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by the
  * Free Software Foundation, either version 3 of the License, or (at your
@@ -20,13 +19,12 @@
 import { Sprite } from "./Sprite";
 import { Vector } from "./Vector";
 import { FreeRoamEntity } from "./FreeRoamEntity";
+import { Box } from "./Box";
 
 export type Layer = 0 | 1 | 2 | 3 | 4 | 5;
 export type bgObject = {
   sprite: Sprite;
-  centerPos: Vector;
-  width: number; // pixels, scaled to a CANV_SIZE by CANV_SIZE canvas
-  height: number; // pixels, scaled to a CANV_SIZE by CANV_SIZE canvas
+  box: Box; // drawing box, scaled to CANV_SIZE
 };
 
 /**
@@ -75,9 +73,7 @@ export class Room {
   ): void {
     this.backgrounds[layer].push({
       sprite: sprite,
-      centerPos: centerPos,
-      width: width,
-      height: height
+      box: new Box(centerPos.subtract(width / 2, height / 2), width, height)
     });
   }
 
@@ -89,14 +85,12 @@ export class Room {
     // draw all backgrounds layer by layer
     this.backgrounds.forEach(layer => {
       layer.forEach(obj => {
-        const x = obj.centerPos.x - obj.width / 2;
-        const y = obj.centerPos.y - obj.height / 2;
         ctx.drawImage(
           obj.sprite.getCurrentFrame().getImage(),
-          x,
-          y,
-          obj.width,
-          obj.height
+          obj.box.topLeft.x,
+          obj.box.topLeft.y,
+          obj.box.width,
+          obj.box.height
         );
       });
     });

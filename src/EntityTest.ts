@@ -20,6 +20,7 @@
 import { FreeRoamEntity } from "./FreeRoamEntity";
 import { Sprite } from "./Sprite";
 import { Vector } from "./Vector";
+import { Box } from "./Box";
 
 /**
  * This class is a free roam entity used only for testing
@@ -27,21 +28,24 @@ import { Vector } from "./Vector";
 export class EntityTest extends FreeRoamEntity {
   /**
    * @param label string identifier for this entity
-   * @param pos center location of this entity
+   * @param drawPos center location of this entity
    * @param width
    * @param height
    * @param sprite sprite for this entity
    */
   public constructor(
     label: string,
-    pos: Vector,
+    drawPos: Vector,
     width: number,
     height: number,
     sprite: Sprite
   ) {
-    super(label, pos);
-    this.height = height;
-    this.width = width;
+    super(label);
+    this.drawBox = new Box(
+      drawPos.subtract(width / 2, height / 2),
+      width,
+      height
+    );
     this.setSprite(sprite);
   }
 }
