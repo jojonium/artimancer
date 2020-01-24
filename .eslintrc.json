@@ -21,6 +21,7 @@
     "@typescript-eslint/no-extraneous-class": ["error"],
     "@typescript-eslint/no-require-imports": ["error"],
     "@typescript-eslint/prefer-for-of": ["error"],
-    "@typescript-eslint/prefer-function-type": ["error"]
+    "@typescript-eslint/prefer-function-type": ["error"],
+    "max-len": ["error", { "code": 80, "tabWidth": 2, "ignoreComments": false }]
   }
 }
