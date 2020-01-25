@@ -235,7 +235,7 @@ class DisplayManager extends Manager {
           this.cornerUI.br.getWidth() +
           Math.min(horizontalSpace, this.cornerUI.br.getWidth()),
         CANV_SIZE -
-          this.cornerUI.br.getHeight() -
+          this.cornerUI.br.getHeight() +
           Math.min(verticalSpace, this.cornerUI.br.getHeight())
       );
       this.cornerUI.br.draw(this.backContext);
@@ -248,7 +248,7 @@ class DisplayManager extends Manager {
       this.backContext.translate(
         -Math.min(horizontalSpace, this.cornerUI.bl.getWidth()),
         CANV_SIZE -
-          this.cornerUI.bl.getHeight() -
+          this.cornerUI.bl.getHeight() +
           Math.min(verticalSpace, this.cornerUI.bl.getHeight())
       );
       this.cornerUI.bl.draw(this.backContext);

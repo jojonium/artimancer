@@ -21,7 +21,7 @@ import { Room, bgObject } from "./Room";
 import { WorldFreeRoam } from "./WorldFreeRoam";
 import { Vector } from "./Vector";
 import { Polygon } from "./Polygon";
-import { DM, CANV_SIZE } from "./DisplayManager";
+import { DM } from "./DisplayManager";
 import { IM, noOp } from "./InputManager";
 import { UIElement } from "./UIElement";
 import { RM } from "./ResourceManager";
@@ -116,8 +116,8 @@ export class WorldRoomEditor extends WorldFreeRoam {
       "Click+drag to move\nShift+drag to scale\nDelete to delete"
     );
     this.uiElements[4] = new UIElement("edit-menu-export");
-    this.uiElements[4].setWidth(180);
-    this.uiElements[4].setHeight(180);
+    this.uiElements[4].setWidth(150);
+    this.uiElements[4].setHeight(150);
     this.uiElements[4].style = {
       bgSprite: RM.getSprite("edit-menu-export")
     };
