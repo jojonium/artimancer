@@ -127,11 +127,11 @@ export class WorldRoomEditor extends WorldFreeRoam {
       const delta = vec.subtract(this.mousePos);
       if (ev.shiftKey) {
         // if holding shift, scale whatever's selected
-        // scale polygons TODO implement
+        // scale polygons
+        // this is pretty wonky, and based on the canvas origin rather than the
+        // polygon centroid, but whatever
         if (this.selectedPolygon !== undefined) {
-          this.selectedPolygon.scale(
-            delta.distanceTo(this.selectedPolygon.getCenter())
-          );
+          this.selectedPolygon.scale(vec.divide(this.mousePos));
         }
 
         // scale bg sprites
@@ -234,6 +234,16 @@ export class WorldRoomEditor extends WorldFreeRoam {
       ctx.closePath();
       ctx.fill();
       ctx.stroke();
+      // draw crosshair in center
+      ctx.strokeStyle = "green";
+      ctx.fillStyle = "green";
+      ctx.lineWidth = 3;
+      const cp = p.getCentroid();
+      ctx.beginPath();
+      ctx.rect(cp.x - 2, cp.y - 10, 4, 20);
+      ctx.rect(cp.x - 10, cp.y - 2, 20, 4);
+      ctx.stroke();
+      ctx.fill();
     }
 
     // draw current polygon in red

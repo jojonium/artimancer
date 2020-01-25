@@ -109,11 +109,24 @@ export class Polygon {
 
   /**
    * Finds the center point of this polygon. If the polygon has no points it
-   * will return a Vector with components (-Infinity, -Infinity)
+   * will return a Vector with components (0, 0)
    */
-  public getCenter(): Vector {
-    // TODO implement
-    return new Vector(0, 0);
+  public getCentroid(): Vector {
+    let xAccum = 0;
+    let yAccum = 0;
+    let area = 0;
+    for (let i = 0; i < this.points.length; ++i) {
+      const cur = this.points[i];
+      const next =
+        i < this.points.length - 1 ? this.points[i + 1] : this.points[0];
+      const shoelace = cur.x * next.y - next.x * cur.y; // shoelace formula
+      xAccum += (cur.x + next.x) * shoelace;
+      yAccum += (cur.y + next.y) * shoelace;
+      area += shoelace;
+    }
+    area /= 2;
+    if (area === 0) return new Vector(0, 0);
+    return new Vector(xAccum / (6 * area), yAccum / (6 * area));
   }
 
   /**
@@ -130,7 +143,15 @@ export class Polygon {
   public scale(delta: Vector): void;
 
   public scale(arg1: number | Vector, arg2?: number): void {
-    // TODO implement
-    return;
+    const dx = (arg1 as Vector).x ?? (arg1 as number);
+    const dy = (arg1 as Vector).y ?? arg2 ?? dx;
+    const center = this.getCentroid();
+    // translate to origin, scale, translate back
+    this.points = this.points.map(point =>
+      point
+        .add(center.multiply(-1))
+        .multiply(dx, dy)
+        .add(center)
+    );
   }
 }
