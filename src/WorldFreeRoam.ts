@@ -19,6 +19,7 @@
 
 import { World } from "./World";
 import { Room } from "./Room";
+import { Vector } from "./Vector";
 
 /**
  * This is a world in which the player character can walk around, talk to NPCs,
@@ -26,6 +27,8 @@ import { Room } from "./Room";
  */
 export class WorldFreeRoam extends World {
   protected currentRoom: Room | undefined;
+  /** camera offset from the canvas origin */
+  public cameraOffset: Vector;
 
   /**
    * Creates a new WorldFreeRoam
@@ -33,6 +36,7 @@ export class WorldFreeRoam extends World {
   public constructor() {
     super();
     this.setType("Free Roam");
+    this.cameraOffset = new Vector(0, 0);
   }
 
   /**
@@ -40,9 +44,13 @@ export class WorldFreeRoam extends World {
    * @param ctx the canvas context to draw on
    */
   public draw(ctx: CanvasRenderingContext2D): void {
+    // translate based on camera offset
+    ctx.translate(this.cameraOffset.x, this.cameraOffset.y);
     if (this.currentRoom !== null && this.currentRoom !== undefined) {
       this.currentRoom.draw(ctx);
     }
+    // translate back
+    ctx.translate(-this.cameraOffset.x, -this.cameraOffset.y);
   }
 
   /**

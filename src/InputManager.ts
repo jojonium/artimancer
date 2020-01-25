@@ -155,11 +155,14 @@ class InputManager extends Manager {
   private stickSensitivity = 1.4;
   /** whether to log extra information */
   private noisy = true;
+  /** functions to execute on various mouse events */
   private mouseFuncs: {
     down: (ev: MouseEvent) => void;
     up: (ev: MouseEvent) => void;
     move: (ev: MouseEvent) => void;
   };
+  /** whether to suppress the right-click context menu on the canvas */
+  private noContextMenu = false;
 
   /**
    * Private because managers are supposed to be singleton
@@ -413,6 +416,19 @@ class InputManager extends Manager {
   }
 
   /**
+   * handles a context-menu event, preventing default if noContextMenu is
+   * enabled
+   * @param ev right-click mouse event
+   */
+  private contextmenuHandler(ev: MouseEvent): boolean {
+    if (this.noContextMenu) {
+      ev.preventDefault();
+      return false;
+    }
+    return true;
+  }
+
+  /**
    * Removes, then sets all event listeners for keyboard keys
    */
   private resetListeners(): void {
@@ -443,6 +459,17 @@ class InputManager extends Manager {
     document.addEventListener("mousedown", this.mousedownHandler.bind(this));
     document.addEventListener("mouseup", this.mouseupHandler.bind(this));
     document.addEventListener("mousemove", this.mousemoveHandler.bind(this));
+    const canvas = document.getElementById("canvas");
+    if (canvas !== null) {
+      canvas.removeEventListener(
+        "contextmenu",
+        this.contextmenuHandler.bind(this)
+      );
+      canvas.addEventListener(
+        "contextmenu",
+        this.contextmenuHandler.bind(this)
+      );
+    }
     if (this.noisy) console.log("IM: listeners set");
   }
 
@@ -566,6 +593,14 @@ class InputManager extends Manager {
    */
   public setMouseMove(func: (this: Document, ev: MouseEvent) => void): void {
     this.mouseFuncs.move = func;
+  }
+
+  /**
+   * @param arg0 whether or not to suppress right-click context menu on the
+   * canvas, default true
+   */
+  public suppressContextMenu(arg0 = true): void {
+    this.noContextMenu = arg0;
   }
 
   /**

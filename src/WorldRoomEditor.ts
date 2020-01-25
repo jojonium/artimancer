@@ -21,7 +21,7 @@ import { Room, bgObject } from "./Room";
 import { WorldFreeRoam } from "./WorldFreeRoam";
 import { Vector } from "./Vector";
 import { Polygon } from "./Polygon";
-import { DM } from "./DisplayManager";
+import { DM, CANV_SIZE } from "./DisplayManager";
 import { IM, noOp } from "./InputManager";
 import { UIElement } from "./UIElement";
 import { RM } from "./ResourceManager";
@@ -64,6 +64,8 @@ export class WorldRoomEditor extends WorldFreeRoam {
   private mode: Mode;
   /** UI elements this world displays */
   private uiElements: UIElement[];
+  /** whether or not we're dragging the world camera */
+  private dragging = false;
 
   /**
    * Constructs a new RoomEditor world for a given room
@@ -140,11 +142,17 @@ export class WorldRoomEditor extends WorldFreeRoam {
    * @param ev the mouse event produced by the mouse movement
    */
   private mousemoveHandler(ev: MouseEvent): void {
-    const vec = DM.windowToWorldCoord(new Vector(ev.clientX, ev.clientY));
-    if (this.mouseIsDown && this.mousePos && this.mode === Mode.select) {
-      const delta = vec.subtract(this.mousePos);
+    const vec = DM.windowToWorldCoord(
+      new Vector(ev.clientX, ev.clientY)
+    ).subtract(this.cameraOffset);
+    const delta = vec.subtract(this.mousePos);
+    if (this.mousePos && this.dragging) {
+      // TODO there's a weird bug here where dragging slowly causes the camera
+      // to jump around
+      this.cameraOffset = this.cameraOffset.add(delta);
+    } else if (this.mouseIsDown && this.mousePos && this.mode === Mode.select) {
+      // if holding shift, scale whatever's selected
       if (ev.shiftKey) {
-        // if holding shift, scale whatever's selected
         // scale polygons
         // this is pretty wonky, and based on the canvas origin rather than the
         // polygon centroid, but whatever
@@ -200,19 +208,24 @@ export class WorldRoomEditor extends WorldFreeRoam {
    * @override
    */
   public exit(): void {
-    this.resetControls();
+    IM.setOnPressed("delete", noOp);
     DM.setCornerUI("top left", undefined);
     DM.setCornerUI("top right", undefined);
     DM.setCornerUI("bottom left", undefined);
     IM.unregisterButton("select-mode");
     IM.unregisterButton("barrier-mode");
     IM.unregisterButton("export");
+    IM.setMouseDown(noOp);
+    IM.setMouseUp(noOp);
+    IM.setMouseMove(noOp);
+    IM.suppressContextMenu(false);
   }
 
   /**
    * Set default button inputs
    */
   public enter(): void {
+    IM.setOnPressed("escape", this.cancel.bind(this));
     IM.registerButton("select-mode", "m");
     IM.setOnPressed("select-mode", () => {
       this.setMode(Mode.select);
@@ -222,23 +235,17 @@ export class WorldRoomEditor extends WorldFreeRoam {
       this.setMode(Mode.drawBarrier);
     });
     IM.registerButton("delete", "Delete");
+    IM.setOnPressed("delete", this.delete.bind(this));
     IM.registerButton("export", "x");
     IM.setOnPressed("export", () => {
       navigator.clipboard.writeText(this.exportString()).then(() => {
         console.log("WorldRoomEditor: copied to clipboard");
       });
     });
-  }
-
-  /**
-   * Removes all event listeners and clears all buttons, other than the ones to
-   * switch modes
-   */
-  private resetControls(): void {
-    IM.setMouseDown(noOp);
-    IM.setMouseMove(noOp);
-    IM.setOnPressed("escape", noOp);
-    IM.setOnPressed("delete", noOp);
+    IM.setMouseDown(this.mousedownHandler.bind(this));
+    IM.setMouseUp(this.selectMouseupHandler.bind(this));
+    IM.setMouseMove(this.mousemoveHandler.bind(this));
+    IM.suppressContextMenu(true);
   }
 
   /**
@@ -248,6 +255,10 @@ export class WorldRoomEditor extends WorldFreeRoam {
    */
   public draw(ctx: CanvasRenderingContext2D): void {
     super.draw(ctx);
+
+    // translate based on camera offset
+    ctx.translate(this.cameraOffset.x, this.cameraOffset.y);
+
     // draw completed polygons in blue
     for (const p of this.completedPolygons) {
       ctx.lineWidth = 3;
@@ -293,6 +304,7 @@ export class WorldRoomEditor extends WorldFreeRoam {
         ctx.setLineDash([8, 5]);
         ctx.closePath();
         ctx.stroke();
+        ctx.setLineDash([]);
       }
     }
 
@@ -315,6 +327,20 @@ export class WorldRoomEditor extends WorldFreeRoam {
       this.selectedEntity.drawBox.drawRect(ctx);
       ctx.stroke();
     }
+
+    // draw a crosshair at the origin
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = "yellow";
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(0, CANV_SIZE);
+    ctx.stroke();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(CANV_SIZE, 0);
+    ctx.stroke();
+
+    // translate back to origin
+    ctx.translate(-this.cameraOffset.x, -this.cameraOffset.y);
   }
 
   /**
@@ -323,8 +349,17 @@ export class WorldRoomEditor extends WorldFreeRoam {
    */
   public mousedownHandler(ev: MouseEvent): void {
     this.mouseIsDown = true;
-    const vec = DM.windowToWorldCoord(new Vector(ev.clientX, ev.clientY));
+    const vec = DM.windowToWorldCoord(
+      new Vector(ev.clientX, ev.clientY)
+    ).subtract(this.cameraOffset);
     this.mousePos = vec;
+
+    // if it's a right-click we start dragging
+    if (ev.button === 2) {
+      this.dragging = true;
+      ev.preventDefault();
+      return;
+    }
 
     if (this.mode === Mode.drawBarrier) {
       if (this.selectedPolygon === null || this.selectedPolygon === undefined) {
@@ -411,7 +446,10 @@ export class WorldRoomEditor extends WorldFreeRoam {
    */
   public selectMouseupHandler(ev: MouseEvent): void {
     this.mouseIsDown = false;
-    const vec = DM.windowToWorldCoord(new Vector(ev.clientX, ev.clientY));
+    this.dragging = false;
+    const vec = DM.windowToWorldCoord(
+      new Vector(ev.clientX, ev.clientY)
+    ).subtract(this.cameraOffset);
     this.mousePos = vec;
   }
 
@@ -420,26 +458,13 @@ export class WorldRoomEditor extends WorldFreeRoam {
    */
   public setMode(newMode: Mode): void {
     this.mode = newMode;
-
-    // remove existing event handlers
-    this.resetControls();
+    // cancel pending operations and deselect everything
     this.cancel();
+    // set UI element
     if (this.mode === Mode.drawBarrier) {
-      // set button controls
-      IM.setOnPressed("escape", this.cancel.bind(this));
-      IM.setMouseDown(this.mousedownHandler.bind(this));
-      IM.setMouseMove(this.mousemoveHandler.bind(this));
-
-      // set UI element
       DM.setCornerUI("top left", this.uiElements[1]);
       DM.setCornerUI("top right", this.uiElements[2]);
     } else if (this.mode === Mode.select) {
-      IM.setOnPressed("escape", this.cancel.bind(this));
-      IM.setOnPressed("delete", this.delete.bind(this));
-      IM.setMouseDown(this.mousedownHandler.bind(this));
-      IM.setMouseUp(this.selectMouseupHandler.bind(this));
-      IM.setMouseMove(this.mousemoveHandler.bind(this));
-      // set UI element
       DM.setCornerUI("top left", this.uiElements[0]);
       DM.setCornerUI("top right", this.uiElements[3]);
     }
