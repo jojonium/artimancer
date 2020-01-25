@@ -21,16 +21,27 @@ import { Room, bgObject } from "./Room";
 import { WorldFreeRoam } from "./WorldFreeRoam";
 import { Vector } from "./Vector";
 import { Polygon } from "./Polygon";
-import { DM } from "./DisplayManager";
+import { DM, CANV_SIZE } from "./DisplayManager";
 import { IM, noOp } from "./InputManager";
 import { UIElement } from "./UIElement";
 import { RM } from "./ResourceManager";
 import { FreeRoamEntity } from "./FreeRoamEntity";
+import { Box } from "./Box";
 
 enum Mode {
   select,
   drawBarrier
 }
+
+/**
+ * a bare-bones definition of the dimensions and locations of the things needed
+ * to make a room
+ */
+export type roomDefinition = {
+  barriers: Polygon[];
+  bgObjects: bgObject[][]; // arranged in layers
+  entityDefinitions: { label: string; drawBox: Box }[];
+};
 
 /**
  * This class is for development purposes, and allows for easy graphical
@@ -67,7 +78,7 @@ export class WorldRoomEditor extends WorldFreeRoam {
     this.selectedEntity = undefined;
     this.mode = Mode.drawBarrier;
     this.mousePos = new Vector(0, 0);
-    this.uiElements = new Array<UIElement>(4);
+    this.uiElements = new Array<UIElement>(5);
     this.uiElements[0] = new UIElement("edit-menu-move");
     this.uiElements[0].setWidth(300);
     this.uiElements[0].setHeight(150);
@@ -104,6 +115,13 @@ export class WorldRoomEditor extends WorldFreeRoam {
     this.uiElements[3].setText(
       "Click+drag to move\nShift+drag to scale\nDelete to delete"
     );
+    this.uiElements[4] = new UIElement("edit-menu-export");
+    this.uiElements[4].setWidth(180);
+    this.uiElements[4].setHeight(180);
+    this.uiElements[4].style = {
+      bgSprite: RM.getSprite("edit-menu-export")
+    };
+    DM.setCornerUI("bottom left", this.uiElements[4]);
     this.setMode(Mode.drawBarrier);
   }
 
@@ -185,8 +203,10 @@ export class WorldRoomEditor extends WorldFreeRoam {
     this.resetControls();
     DM.setCornerUI("top left", undefined);
     DM.setCornerUI("top right", undefined);
+    DM.setCornerUI("bottom left", undefined);
     IM.unregisterButton("select-mode");
     IM.unregisterButton("barrier-mode");
+    IM.unregisterButton("export");
   }
 
   /**
@@ -202,6 +222,12 @@ export class WorldRoomEditor extends WorldFreeRoam {
       this.setMode(Mode.drawBarrier);
     });
     IM.registerButton("delete", "Delete");
+    IM.registerButton("export", "x");
+    IM.setOnPressed("export", () => {
+      navigator.clipboard.writeText(this.exportString()).then(() => {
+        console.log("WorldRoomEditor: copied to clipboard");
+      });
+    });
   }
 
   /**
@@ -417,5 +443,25 @@ export class WorldRoomEditor extends WorldFreeRoam {
       DM.setCornerUI("top left", this.uiElements[0]);
       DM.setCornerUI("top right", this.uiElements[3]);
     }
+  }
+
+  /**
+   * Creates a stringified JSON object of all the entities, background objects,
+   * and collision polygons in this room
+   */
+  public exportString(): string {
+    const entitiyDefinitions =
+      this.currentRoom?.getEntities().map(ent => {
+        return {
+          label: ent.getLabel(),
+          drawBox: ent.drawBox
+        };
+      }) ?? [];
+    const out: roomDefinition = {
+      barriers: this.completedPolygons,
+      bgObjects: this.currentRoom?.getBackgrounds() ?? [],
+      entityDefinitions: entitiyDefinitions
+    };
+    return JSON.stringify(out);
   }
 }

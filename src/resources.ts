@@ -27,7 +27,8 @@ export const resources = {
     { spriteLabel: "test", length: 6, slowdown: 48 },
     { spriteLabel: "test-bg", length: 1, slowdown: 0 },
     { spriteLabel: "edit-menu-move", length: 1, slowdown: 0 },
-    { spriteLabel: "edit-menu-barrier", length: 1, slowdown: 0 }
+    { spriteLabel: "edit-menu-barrier", length: 1, slowdown: 0 },
+    { spriteLabel: "edit-menu-export", length: 1, slowdown: 0 }
   ],
   images: [
     { filename: "images/f1.svg", spriteLabel: "test", index: 0 },
@@ -45,6 +46,11 @@ export const resources = {
     {
       filename: "images/edit-menu-barrier.svg",
       spriteLabel: "edit-menu-barrier",
+      index: 0
+    },
+    {
+      filename: "images/edit-menu-export.svg",
+      spriteLabel: "edit-menu-export",
       index: 0
     }
   ],

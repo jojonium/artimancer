@@ -49,6 +49,13 @@ export abstract class FreeRoamEntity {
   }
 
   /**
+   * get unique string identifier
+   */
+  public getLabel(): string {
+    return this.label;
+  }
+
+  /**
    * @param sprite new sprite for this entity
    */
   public setSprite(sprite: Sprite): void {
