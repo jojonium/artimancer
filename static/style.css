@@ -38,3 +38,7 @@ canvas {
   border-radius: 20px;
   box-shadow: 0 0 55px 5px rgba(35, 38, 41, 0.5)
 }
+
+canvas:fullscreen {
+  border-radius: 0;
+}
