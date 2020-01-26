@@ -22,7 +22,7 @@ import { WorldFreeRoam } from "./WorldFreeRoam";
 import { Vector } from "./Vector";
 import { Polygon } from "./Polygon";
 import { DM, CANV_SIZE } from "./DisplayManager";
-import { IM, noOp } from "./InputManager";
+import { IM } from "./InputManager";
 import { UIElement } from "./UIElement";
 import { RM } from "./ResourceManager";
 import { FreeRoamEntity } from "./FreeRoamEntity";
@@ -208,16 +208,16 @@ export class WorldRoomEditor extends WorldFreeRoam {
    * @override
    */
   public exit(): void {
-    IM.setOnPressed("delete", noOp);
+    IM.setOnPressed("delete", undefined);
     DM.setCornerUI("top left", undefined);
     DM.setCornerUI("top right", undefined);
     DM.setCornerUI("bottom left", undefined);
     IM.unregisterButton("select-mode");
     IM.unregisterButton("barrier-mode");
     IM.unregisterButton("export");
-    IM.setMouseDown(noOp);
-    IM.setMouseUp(noOp);
-    IM.setMouseMove(noOp);
+    IM.setMouseDown(undefined);
+    IM.setMouseUp(undefined);
+    IM.setMouseMove(undefined);
     IM.suppressContextMenu(false);
   }
 

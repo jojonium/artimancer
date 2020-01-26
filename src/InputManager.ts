@@ -23,7 +23,7 @@ import { Vector } from "./Vector";
 /**
  * function that does nothing
  */
-export const noOp = (): void => {
+const noOp = (): void => {
   return;
 };
 
@@ -512,13 +512,17 @@ class InputManager extends Manager {
   /**
    * Sets a function to execute when a button is pressed
    * @param name name of the button
-   * @param handler function to execute when button is pressed
+   * @param handler function to execute when button is pressed, or undefined to
+   * do nothing
    * @return true if successfully set, false if the name doesn't exist
    */
-  public setOnPressed(name: string, handler: () => void): boolean {
+  public setOnPressed(
+    name: string,
+    handler: (() => void) | undefined
+  ): boolean {
     const but = this.buttons.get(name);
     if (but !== undefined && but !== null) {
-      but.onPressed = handler;
+      but.onPressed = handler ?? noOp;
       return true;
     } else {
       return false;
@@ -528,13 +532,17 @@ class InputManager extends Manager {
   /**
    * Sets a function to execute when a button is released
    * @param name name of the button
-   * @param handler function to execute when button is released
+   * @param handler function to execute when button is released, or undefined
+   * to do nothing
    * @return true if successfully set, false if the name doesn't exist
    */
-  public setOnReleased(name: string, handler: () => void): boolean {
+  public setOnReleased(
+    name: string,
+    handler: (() => void) | undefined
+  ): boolean {
     const but = this.buttons.get(name);
     if (but !== undefined && but !== null) {
-      but.onReleased = handler;
+      but.onReleased = handler ?? noOp;
       return true;
     } else {
       return false;
@@ -583,24 +591,30 @@ class InputManager extends Manager {
   }
 
   /**
-   * @param func handler for mousedown events
+   * @param func handler for mousedown events, or undefined to do nothing
    */
-  public setMouseDown(func: (this: Document, ev: MouseEvent) => void): void {
-    this.mouseFuncs.down = func;
+  public setMouseDown(
+    func: ((this: Document, ev: MouseEvent) => void) | undefined
+  ): void {
+    this.mouseFuncs.down = func ?? noOp;
   }
 
   /**
-   * @param func handler for mouseup events
+   * @param func handler for mouseup events, or undefined to do nothing
    */
-  public setMouseUp(func: (this: Document, ev: MouseEvent) => void): void {
-    this.mouseFuncs.up = func;
+  public setMouseUp(
+    func: ((this: Document, ev: MouseEvent) => void) | undefined
+  ): void {
+    this.mouseFuncs.up = func ?? noOp;
   }
 
   /**
-   * @param func handler for mousemove events
+   * @param func handler for mousemove events, or undefined to do nothing
    */
-  public setMouseMove(func: (this: Document, ev: MouseEvent) => void): void {
-    this.mouseFuncs.move = func;
+  public setMouseMove(
+    func: ((this: Document, ev: MouseEvent) => void) | undefined
+  ): void {
+    this.mouseFuncs.move = func ?? noOp;
   }
 
   /**
