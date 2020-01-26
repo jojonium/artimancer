@@ -75,6 +75,8 @@ export class WorldRoomEditor extends WorldFreeRoam {
     super();
     this.setType("Room Editor");
     this.setRoom(room);
+    this.cameraDeadzone = 200;
+    this.setCameraEntity(this.currentRoom?.getEntities()[0]);
 
     this.completedPolygons = new Array<Polygon>();
     this.selectedEntity = undefined;
@@ -488,5 +490,17 @@ export class WorldRoomEditor extends WorldFreeRoam {
       entityDefinitions: entitiyDefinitions
     };
     return JSON.stringify(out);
+  }
+
+  /**
+   * @override
+   */
+  public step(): void {
+    const dir = IM.getDirectionalVec("move");
+    if (dir !== undefined && this.cameraEntity !== undefined) {
+      this.cameraEntity.drawBox.topLeft = this.cameraEntity.drawBox.topLeft.add(
+        dir.multiply(4)
+      );
+    }
   }
 }
