@@ -75,8 +75,6 @@ export class WorldRoomEditor extends WorldFreeRoam {
     super();
     this.setType("Room Editor");
     this.setRoom(room);
-    this.cameraDeadzone = 200;
-    this.setCameraEntity(this.currentRoom?.getEntities()[0]);
 
     this.completedPolygons = new Array<Polygon>();
     this.selectedEntity = undefined;
@@ -144,14 +142,14 @@ export class WorldRoomEditor extends WorldFreeRoam {
    * @param ev the mouse event produced by the mouse movement
    */
   private mousemoveHandler(ev: MouseEvent): void {
-    const vec = DM.windowToWorldCoord(
-      new Vector(ev.clientX, ev.clientY)
-    ).subtract(this.cameraOffset);
+    const vec = DM.windowToWorldCoord(new Vector(ev.clientX, ev.clientY)).add(
+      this.cameraOffset
+    );
     const delta = vec.subtract(this.mousePos);
     if (this.mousePos && this.dragging) {
       // TODO there's a weird bug here where dragging slowly causes the camera
       // to jump around
-      this.cameraOffset = this.cameraOffset.add(delta);
+      this.cameraOffset = this.cameraOffset.subtract(delta);
     } else if (this.mouseIsDown && this.mousePos && this.mode === Mode.select) {
       // if holding shift, scale whatever's selected
       if (ev.shiftKey) {
@@ -259,7 +257,7 @@ export class WorldRoomEditor extends WorldFreeRoam {
     super.draw(ctx);
 
     // translate based on camera offset
-    ctx.translate(this.cameraOffset.x, this.cameraOffset.y);
+    ctx.translate(-this.cameraOffset.x, -this.cameraOffset.y);
 
     // draw completed polygons in blue
     for (const p of this.completedPolygons) {
@@ -342,7 +340,7 @@ export class WorldRoomEditor extends WorldFreeRoam {
     ctx.stroke();
 
     // translate back to origin
-    ctx.translate(-this.cameraOffset.x, -this.cameraOffset.y);
+    ctx.translate(this.cameraOffset.x, this.cameraOffset.y);
   }
 
   /**
@@ -351,9 +349,9 @@ export class WorldRoomEditor extends WorldFreeRoam {
    */
   public mousedownHandler(ev: MouseEvent): void {
     this.mouseIsDown = true;
-    const vec = DM.windowToWorldCoord(
-      new Vector(ev.clientX, ev.clientY)
-    ).subtract(this.cameraOffset);
+    const vec = DM.windowToWorldCoord(new Vector(ev.clientX, ev.clientY)).add(
+      this.cameraOffset
+    );
     this.mousePos = vec;
 
     // if it's a right-click we start dragging
@@ -449,9 +447,9 @@ export class WorldRoomEditor extends WorldFreeRoam {
   public selectMouseupHandler(ev: MouseEvent): void {
     this.mouseIsDown = false;
     this.dragging = false;
-    const vec = DM.windowToWorldCoord(
-      new Vector(ev.clientX, ev.clientY)
-    ).subtract(this.cameraOffset);
+    const vec = DM.windowToWorldCoord(new Vector(ev.clientX, ev.clientY)).add(
+      this.cameraOffset
+    );
     this.mousePos = vec;
   }
 

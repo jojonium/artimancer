@@ -34,8 +34,8 @@ export class WorldFreeRoam extends World {
   /** entity that the camera will follow */
   protected cameraEntity: FreeRoamEntity | undefined;
   /**
-   * dimensions of a box in the center of the screen in which the cameraEntity
-   * can move freely. If it moves outside this box the camera will begin
+   * radius of a circle in the center of the screen in which the cameraEntity
+   * can move freely. If it moves outside this circle the camera will begin
    * moving. Set to 0 for the camera to always follow the cameraEntity
    */
   public cameraDeadzone: number;
@@ -64,38 +64,30 @@ export class WorldFreeRoam extends World {
         this.cameraDeadzone < this.cameraEntity.drawBox.width ||
         this.cameraDeadzone < this.cameraEntity.drawBox.height
       ) {
-        this.cameraOffset = this.cameraEntity.drawBox.getCenter();
+        this.cameraOffset = this.cameraEntity.drawBox
+          .getCenter()
+          .subtract(CANV_SIZE / 2, CANV_SIZE / 2);
       } else {
-        // TODO make sure this works
-        const top = this.cameraEntity.drawBox.topLeft.y;
-        if (top < this.cameraOffset.y + CANV_SIZE / 2 - this.cameraDeadzone) {
-          this.cameraOffset.y = top - CANV_SIZE / 2;
-        }
-        const left = this.cameraEntity.drawBox.topLeft.x;
-        if (left < this.cameraOffset.x + CANV_SIZE / 2 - this.cameraDeadzone) {
-          this.cameraOffset.x = left - CANV_SIZE / 2;
-        }
-        const bot =
-          this.cameraEntity.drawBox.topLeft.y +
-          this.cameraEntity.drawBox.height;
-        if (bot > this.cameraOffset.y + CANV_SIZE / 2 + this.cameraDeadzone) {
-          this.cameraOffset.y = bot + CANV_SIZE / 2;
-        }
-        const right =
-          this.cameraEntity.drawBox.topLeft.x + this.cameraEntity.drawBox.width;
-        if (right > this.cameraOffset.x + CANV_SIZE / 2 + this.cameraDeadzone) {
-          this.cameraOffset.x = right + CANV_SIZE / 2;
+        const diff = this.cameraEntity.drawBox
+          .getCenter()
+          .subtract(this.cameraOffset.add(CANV_SIZE / 2));
+        const distToAdjust = diff.getMagnitude() - this.cameraDeadzone;
+        if (distToAdjust > 0) {
+          // outside the deadzone
+          this.cameraOffset = this.cameraOffset.add(
+            diff.normalize().scale(distToAdjust)
+          );
         }
       }
     }
 
     // translate based on camera offset
-    ctx.translate(this.cameraOffset.x, this.cameraOffset.y);
+    ctx.translate(-this.cameraOffset.x, -this.cameraOffset.y);
     if (this.currentRoom !== null && this.currentRoom !== undefined) {
       this.currentRoom.draw(ctx);
     }
     // translate back
-    ctx.translate(-this.cameraOffset.x, -this.cameraOffset.y);
+    ctx.translate(this.cameraOffset.x, this.cameraOffset.y);
   }
 
   /**
