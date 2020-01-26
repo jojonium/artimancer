@@ -567,6 +567,14 @@ class InputManager extends Manager {
   }
 
   /**
+   * gets the Vector of a directional if it exists
+   * @param name the name of the directional
+   */
+  public getDirectionalVec(name: string): Vector | undefined {
+    return this.directionals.get(name)?.vec;
+  }
+
+  /**
    * Unregister all buttons and directionals
    */
   public unregisterAll(): void {
