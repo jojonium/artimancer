@@ -147,9 +147,8 @@ export class WorldRoomEditor extends WorldFreeRoam {
     );
     const delta = vec.subtract(this.mousePos);
     if (this.mousePos && this.dragging) {
-      // TODO there's a weird bug here where dragging slowly causes the camera
-      // to jump around
       this.cameraOffset = this.cameraOffset.subtract(delta);
+      return;
     } else if (this.mouseIsDown && this.mousePos && this.mode === Mode.select) {
       // if holding shift, scale whatever's selected
       if (ev.shiftKey) {
