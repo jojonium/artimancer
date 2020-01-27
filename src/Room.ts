@@ -21,11 +21,26 @@ import { Vector } from "./Vector";
 import { FreeRoamEntity } from "./FreeRoamEntity";
 import { Box } from "./Box";
 
-export type Layer = 0 | 1 | 2 | 3 | 4 | 5;
-export type bgObject = {
-  sprite: Sprite;
-  box: Box; // drawing box, scaled to CANV_SIZE
-};
+export class Background {
+  public constructor(
+    /** sprite for this bgObject */
+    public sprite: Sprite,
+    /** dimensions to draw the sprite in */
+    public box: Box,
+    /** higher altitudes are drawn on top of lower altitudes */
+    public altitude: number
+  ) {}
+
+  public draw(ctx: CanvasRenderingContext2D): void {
+    ctx.drawImage(
+      this.sprite.getCurrentFrame().getImage(),
+      this.box.topLeft.x,
+      this.box.topLeft.y,
+      this.box.width,
+      this.box.height
+    );
+  }
+}
 
 /**
  * The Room class represents a single area of the free-roam world, and includes
@@ -34,10 +49,17 @@ export type bgObject = {
 export class Room {
   /** unique identifier for this room */
   private label: string;
-  /** elements that make up the visual background of this room */
-  private backgrounds: bgObject[][];
+  /**
+   * elements that make up the visual background of this room, sorted in order
+   * of nondecreasing altitude
+   */
+  private backgrounds: Background[];
   /** all free roam entities in this room */
   private entities: FreeRoamEntity[];
+  /** array of all things to draw */
+  private drawables: (Background | FreeRoamEntity)[];
+  /** whether or not the drawables array has been sorted yet  */
+  private sorted = false;
 
   /**
    * Constructs a new room
@@ -45,11 +67,9 @@ export class Room {
    */
   public constructor(label: string) {
     this.label = label;
-    this.backgrounds = new Array<[]>(6);
-    for (let i = 0; i < 6; ++i) {
-      this.backgrounds[i] = [];
-    }
+    this.backgrounds = [];
     this.entities = [];
+    this.drawables = [];
   }
 
   /**
@@ -62,19 +82,32 @@ export class Room {
   /**
    * Adds a piece of the background for this room
    * @param sprite the sprite of this background piece
-   * @param layer 0-5, higher layers are drawn on top of lower ones
+   * @param altitude higher layers are drawn on top of lower ones
    */
   public addBackground(
     sprite: Sprite,
     centerPos: Vector,
     width: number,
     height: number,
-    layer: Layer = 0
+    altitude = 0
   ): void {
-    this.backgrounds[layer].push({
-      sprite: sprite,
-      box: new Box(centerPos.subtract(width / 2, height / 2), width, height)
-    });
+    this.backgrounds.push(
+      new Background(
+        sprite,
+        new Box(centerPos.subtract(width / 2, height / 2), width, height),
+        altitude
+      )
+    );
+    this.sorted = false;
+  }
+
+  /**
+   * Adds any number of entities to this room
+   * @param ent the entities to add
+   */
+  public addEntities(...ent: FreeRoamEntity[]): void {
+    this.entities.push(...ent);
+    this.sorted = false;
   }
 
   /**
@@ -82,36 +115,37 @@ export class Room {
    * @param ctx the canvas context to draw on
    */
   public draw(ctx: CanvasRenderingContext2D): void {
-    // draw all backgrounds layer by layer
-    this.backgrounds.forEach(layer => {
-      layer.forEach(obj => {
-        ctx.drawImage(
-          obj.sprite.getCurrentFrame().getImage(),
-          obj.box.topLeft.x,
-          obj.box.topLeft.y,
-          obj.box.width,
-          obj.box.height
-        );
-      });
+    // sort array of drawables in non-decreasing order
+    if (!this.sorted) {
+      // TODO consider the efficiency of this
+      this.drawables = new Array<Background | FreeRoamEntity>()
+        .concat(this.backgrounds, this.entities)
+        .sort((a, b) => {
+          const diff = a.altitude - b.altitude;
+          if (
+            diff === 0 &&
+            a instanceof Background &&
+            b instanceof FreeRoamEntity
+          ) {
+            // backgrounds always come before entities of the same altitude
+            console.log("here");
+            return -1;
+          }
+          return diff;
+        });
+      this.sorted = true;
+    }
+    // draw all backgrounds and entities in ascending altitude layer
+    this.drawables.map(drawable => {
+      drawable.draw(ctx);
     });
-
-    // draw all entities on top of the background
-    this.entities.map(ent => ent.draw(ctx));
   }
 
   /**
-   * get objects representing this room's background sprites, organized by layer
+   * get objects representing this room's background sprites, sorted by layer
    */
-  public getBackgrounds(): bgObject[][] {
+  public getBackgrounds(): Background[] {
     return this.backgrounds;
-  }
-
-  /**
-   * Adds an entity to this room
-   * @param ent the entity to add
-   */
-  public addEntity(ent: FreeRoamEntity): void {
-    this.entities.push(ent);
   }
 
   /**

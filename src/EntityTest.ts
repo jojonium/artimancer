@@ -32,13 +32,15 @@ export class EntityTest extends FreeRoamEntity {
    * @param width
    * @param height
    * @param sprite sprite for this entity
+   * @param altitude altitude of this entity
    */
   public constructor(
     label: string,
     drawPos: Vector,
     width: number,
     height: number,
-    sprite: Sprite
+    sprite: Sprite,
+    altitude = 0
   ) {
     super(label);
     this.drawBox = new Box(
@@ -46,6 +48,7 @@ export class EntityTest extends FreeRoamEntity {
       width,
       height
     );
+    this.altitude = altitude;
     this.setSprite(sprite);
   }
 }

@@ -34,6 +34,8 @@ export abstract class FreeRoamEntity {
   private sprite: Sprite | undefined;
   /** location and dimensions for where to draw this entity */
   public drawBox: Box;
+  /** higher altitudes get drawn on top of lower ones */
+  public altitude: number;
 
   /**
    * Constructs a new FreeRoamEntity
@@ -46,6 +48,7 @@ export abstract class FreeRoamEntity {
     this.dir = new Vector(1, 0);
     this.drawBox = new Box(new Vector(0, 0), 0, 0);
     this.sprite = undefined;
+    this.altitude = 0;
   }
 
   /**

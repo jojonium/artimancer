@@ -17,7 +17,7 @@
  * Artimancer. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Room, bgObject } from "./Room";
+import { Room, Background } from "./Room";
 import { WorldFreeRoam } from "./WorldFreeRoam";
 import { Vector } from "./Vector";
 import { Polygon } from "./Polygon";
@@ -39,8 +39,8 @@ enum Mode {
  */
 export type roomDefinition = {
   barriers: Polygon[];
-  bgObjects: bgObject[][]; // arranged in layers
-  entityDefinitions: { label: string; drawBox: Box }[];
+  bgObjects: Background[]; // arranged in layers
+  entityDefinitions: { label: string; drawBox: Box; altitude: number }[];
 };
 
 /**
@@ -53,7 +53,7 @@ export class WorldRoomEditor extends WorldFreeRoam {
   /** the polygon currently being worked on */
   private selectedPolygon: Polygon | undefined;
   /** the currently selected background element */
-  private selectedBgObj: bgObject | undefined;
+  private selectedBgObj: Background | undefined;
   /** the currently selected FreeRoamEntity */
   private selectedEntity: FreeRoamEntity | undefined;
   /** current mouse location */
@@ -385,7 +385,6 @@ export class WorldRoomEditor extends WorldFreeRoam {
       }
 
       if (this.currentRoom !== undefined) {
-        const layers = this.currentRoom.getBackgrounds();
         // did we click an entity?
         for (const e of this.currentRoom.getEntities()) {
           if (e.drawBox.contains(vec)) {
@@ -394,14 +393,13 @@ export class WorldRoomEditor extends WorldFreeRoam {
           }
         }
 
+        const bgs = this.currentRoom.getBackgrounds();
         // did we click on a background?
-        for (let i = layers.length - 1; i >= 0; --i) {
+        for (let i = bgs.length - 1; i >= 0; --i) {
           // check from the top down
-          for (const s of layers[i]) {
-            if (s.box.contains(vec)) {
-              this.selectedBgObj = s;
-              return;
-            }
+          if (bgs[i].box.contains(vec)) {
+            this.selectedBgObj = bgs[i];
+            return;
           }
         }
       }
@@ -421,14 +419,12 @@ export class WorldRoomEditor extends WorldFreeRoam {
       return;
     }
     if (this.currentRoom && this.selectedBgObj) {
-      const layers = this.currentRoom.getBackgrounds();
-      for (const layer of layers) {
-        const index = layer.indexOf(this.selectedBgObj);
-        if (index > -1) {
-          layer.splice(index, 1);
-          this.selectedBgObj = undefined;
-          return;
-        }
+      const bgs = this.currentRoom.getBackgrounds();
+      const index = bgs.indexOf(this.selectedBgObj);
+      if (index > -1) {
+        bgs.splice(index, 1);
+        this.selectedBgObj = undefined;
+        return;
       }
     }
     if (this.currentRoom && this.selectedEntity) {
@@ -479,7 +475,8 @@ export class WorldRoomEditor extends WorldFreeRoam {
       this.currentRoom?.getEntities().map(ent => {
         return {
           label: ent.getLabel(),
-          drawBox: ent.drawBox
+          drawBox: ent.drawBox,
+          altitude: ent.altitude
         };
       }) ?? [];
     const out: roomDefinition = {

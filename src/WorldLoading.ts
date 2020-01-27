@@ -81,14 +81,31 @@ export class WorldLoading extends World {
       }
       const ballSpr = RM.getSprite("test");
       if (ballSpr !== undefined) {
-        const e = new EntityTest(
-          "Test Ball",
+        const e0 = new EntityTest(
+          "Test Ball 0",
           new Vector(350, 700),
           100,
           100,
-          ballSpr
+          ballSpr,
+          0
         );
-        room.addEntity(e);
+        const e1 = new EntityTest(
+          "Test Ball 1",
+          new Vector(450, 700),
+          100,
+          100,
+          ballSpr,
+          1
+        );
+        const e2 = new EntityTest(
+          "Test Ball 2",
+          new Vector(550, 700),
+          100,
+          100,
+          ballSpr,
+          2
+        );
+        room.addEntities(e0, e1, e2);
       }
       WM.enterWorld(new WorldRoomEditor(room));
     }
