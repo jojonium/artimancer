@@ -128,7 +128,6 @@ export class Room {
             b instanceof FreeRoamEntity
           ) {
             // backgrounds always come before entities of the same altitude
-            console.log("here");
             return -1;
           }
           return diff;
