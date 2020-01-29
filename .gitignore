@@ -4,3 +4,4 @@ static/main.js.map
 dist
 static/scripts
 static/bundle.js
+*.swp
