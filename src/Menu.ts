@@ -17,26 +17,59 @@
  */
 
 import { Vector } from "./Vector";
+import { Box } from "./Box";
+
+export const MENU_PADDING = 10;
 
 /**
  * An element of a menu that can be selected
  */
-export class MenuElement {
-  /** position of this element in the menu */
-  private pos: Vector;
+export abstract class MenuElement {
+  /** dimensions of this menu element in its parent */
+  protected box: Box;
+  /** whether this element can be clicked */
+  protected clickable: boolean;
 
   /**
-   * @param pos the position of this element in its parent menu
+   * @param box the dimensions of this menu element in its parent
    */
-  public constructor(pos: Vector) {
-    this.pos = pos;
+  public constructor(box: Box) {
+    this.box = box;
+    this.clickable = false;
   }
+
+  /**
+   * draws this element on the canvas
+   * @param ctx the canvas context to draw on
+   */
+  public abstract draw(ctx: CanvasRenderingContext2D): void;
 
   /**
    * get position of this element in its parent menu
    */
   public getPos(): Vector {
-    return this.pos;
+    return this.box.topLeft;
+  }
+
+  /**
+   * @return width of this element
+   */
+  public getWidth(): number {
+    return this.box.width;
+  }
+
+  /**
+   * @return height of this element
+   */
+  public getHeight(): number {
+    return this.box.height;
+  }
+
+  /**
+   * @return whether or not this element is clickable
+   */
+  public isClickable(): boolean {
+    return this.clickable;
   }
 }
 
@@ -48,14 +81,32 @@ export class Menu {
   /** all elements (e.g. bttons or text boxes) in this menu */
   private elements: MenuElement[];
   /** element that is currently selected */
-  private SelectedElement: MenuElement | undefined;
+  private selectedElement: MenuElement | undefined;
+  /** top-left location of this menu in the global canvas */
+  private box: Box;
+  /** style for background */
+  fillStyle: string | CanvasPattern | CanvasGradient | undefined;
+  /** style for outline */
+  strokeStyle: string | CanvasPattern | CanvasGradient | undefined;
 
   /**
    * Construct a new menu, optionally with a list of elements
+   * @param box position and dimensions of this menu in the global canvas
+   * @param elements menu elements to initialize with
+   * @param fillStyle style for background fill
+   * @param strokeStyle style for background outline
    */
-  public constructor(elements = new Array<MenuElement>()) {
+  public constructor(
+    box: Box,
+    elements = new Array<MenuElement>(),
+    fillStyle?: string | CanvasPattern | CanvasGradient,
+    strokeStyle?: string | CanvasPattern | CanvasGradient
+  ) {
+    this.box = box;
+    this.fillStyle = fillStyle;
+    this.strokeStyle = strokeStyle;
     this.elements = elements;
-    this.SelectedElement = this.elements[0] ?? undefined;
+    this.selectedElement = this.elements[0] ?? undefined;
   }
 
   /**
@@ -64,7 +115,72 @@ export class Menu {
    * @param dir the direction to move in
    */
   public changeSelection(dir: "up" | "down" | "left" | "right") {
-    if (this.SelectedElement === undefined) return;
-    // TODO implement
+    if (this.selectedElement === undefined) return;
+    let elToSelect = this.selectedElement;
+    let minDist = undefined;
+    for (const el of this.elements) {
+      const ydist = el.getPos().y - this.selectedElement.getPos().y;
+      const xdist = el.getPos().x - this.selectedElement.getPos().x;
+      if (dir === "up") {
+        if (ydist < 0 && (minDist === undefined || ydist > minDist)) {
+          minDist = ydist;
+          elToSelect = el;
+        }
+      } else if (dir === "down") {
+        if (ydist > 0 && (minDist === undefined || ydist < minDist)) {
+          minDist = ydist;
+          elToSelect = el;
+        }
+      } else if (dir === "left") {
+        if (xdist < 0 && (minDist === undefined || xdist > minDist)) {
+          minDist = xdist;
+          elToSelect = el;
+        }
+      } else if (dir === "right") {
+        if (xdist > 0 && (minDist === undefined || xdist < minDist)) {
+          minDist = xdist;
+          elToSelect = el;
+        }
+      }
+    }
+    this.selectedElement = elToSelect;
+  }
+
+  /**
+   * draws this menu's background
+   * @param ctx the canvas context to draw on
+   */
+  protected drawBackground(ctx: CanvasRenderingContext2D) {
+    // draw background
+    ctx.beginPath();
+    ctx.rect(
+      this.box.topLeft.x,
+      this.box.topLeft.y,
+      this.box.width,
+      this.box.height
+    );
+    ctx.fillStyle = this.fillStyle ?? "rgba(0, 0, 0, 0)";
+    ctx.strokeStyle = this.strokeStyle ?? "rgba(0, 0, 0, 0)";
+    ctx.lineWidth = 4;
+    ctx.fill();
+    ctx.stroke();
+  }
+
+  /**
+   * draws this menu
+   * by default this calls drawBackground(), then calls draw() for each child
+   * element, but it can be overridden to proved different behavior
+   * @param ctx the canvas context to draw on
+   */
+  public draw(ctx: CanvasRenderingContext2D) {
+    this.drawBackground(ctx);
+    // draw all children
+    ctx.save();
+    ctx.translate(
+      this.box.topLeft.x + MENU_PADDING,
+      this.box.topLeft.y + MENU_PADDING
+    );
+    this.elements.forEach(el => el.draw(ctx));
+    ctx.restore();
   }
 }
