@@ -89,6 +89,16 @@ class Directional {
   public hAxisIndex: number | undefined;
   public vAxisIndex: number | undefined;
   public vec: Vector;
+  public fn: (dir: "up" | "down" | "left" | "right") => void;
+  /**
+   * number of game steps between when fn is first fired and when it starts
+   * repeating
+   */
+  public keyDelay = 20;
+  /** number of game steps between fn calls during key repeat */
+  public keyRate = 5;
+  /** counter used for key repeat measurements */
+  private keyCounter = 0;
 
   /**
    * Constructs a new Directional including a set of four buttons and a joystick
@@ -114,6 +124,7 @@ class Directional {
     this.hAxisIndex = hAxisIndex;
     this.vAxisIndex = vAxisIndex;
     this.vec = new Vector(0, 0);
+    this.fn = noOp;
   }
 
   /**
@@ -134,7 +145,32 @@ class Directional {
   public getButtons(): Button[] {
     return [this.upButton, this.rightButton, this.downButton, this.leftButton];
   }
+
+  /**
+   * should be called each step
+   */
+  public step(): void {
+    if (this.vec.getMagnitude() === 0) {
+      // not being pressed, reset keyCounter
+      this.keyCounter = this.keyDelay;
+    } else {
+      // directional being pressed
+      if (this.keyCounter === 0) {
+        // fire fn
+        if (Math.abs(this.vec.x) > Math.abs(this.vec.y)) {
+          if (this.vec.x > 0) this.fn("right");
+          else this.fn("left");
+        } else {
+          if (this.vec.y > 0) this.fn("up");
+          else this.fn("down");
+        }
+        this.keyCounter = this.keyRate;
+      }
+      this.keyCounter--;
+    }
+  }
 }
+
 /**
  * The InputManager class deals with getting input from the keyboard and
  * controllers, abstracting them into an 'input' object that is updated every
@@ -163,6 +199,24 @@ class InputManager extends Manager {
   };
   /** whether to suppress the right-click context menu on the canvas */
   private noContextMenu = false;
+  private savedControls:
+    | {
+        buttons: Map<string, Button>;
+        directionals: Map<string, Directional>;
+      }
+    | undefined;
+  private menuNavigationInputs: {
+    up: string;
+    right: string;
+    down: string;
+    left: string;
+    hAxis?: number;
+    vAxis?: number;
+    clickKey: string;
+    clickGP?: number;
+    cancelKey: string;
+    cancelGP?: number;
+  };
 
   /**
    * Private because managers are supposed to be singleton
@@ -178,6 +232,19 @@ class InputManager extends Manager {
       up: noOp,
       move: noOp
     };
+    this.savedControls = undefined;
+    this.menuNavigationInputs = {
+      up: "w",
+      right: "d",
+      down: "s",
+      left: "a",
+      hAxis: 0,
+      vAxis: 1,
+      clickKey: "space",
+      clickGP: 4,
+      cancelKey: "tab",
+      cancelGP: 3
+    };
   }
 
   /**
@@ -185,6 +252,83 @@ class InputManager extends Manager {
    */
   public static getInstance(): InputManager {
     return InputManager._instance;
+  }
+
+  /**
+   * Save the current set of controls. Restore them later with IM.restore()
+   */
+  public save(): void {
+    if (this.noisy && this.savedControls !== undefined)
+      console.log("IM: Overwriting savedControls");
+    // clone saved controls
+    const saveButtons = new Map<string, Button>();
+    const saveDirectionals = new Map<string, Directional>();
+    this.buttons.forEach((but, key) => {
+      saveButtons.set(key, but);
+    });
+    this.directionals.forEach((dir, key) => {
+      saveDirectionals.set(key, dir);
+    });
+    this.savedControls = {
+      buttons: saveButtons,
+      directionals: saveDirectionals
+    };
+  }
+
+  /**
+   * set general controls used for navigating menus
+   */
+  public enterMenuMode(): void {
+    this.unregisterAll();
+    this.registerDirectional(
+      "navigation",
+      this.menuNavigationInputs.up,
+      this.menuNavigationInputs.right,
+      this.menuNavigationInputs.down,
+      this.menuNavigationInputs.left,
+      this.menuNavigationInputs.hAxis,
+      this.menuNavigationInputs.vAxis
+    );
+    this.registerButton(
+      "enter",
+      this.menuNavigationInputs.clickKey,
+      this.menuNavigationInputs.clickGP
+    );
+    this.registerButton(
+      "cancel",
+      this.menuNavigationInputs.clickKey,
+      this.menuNavigationInputs.clickGP
+    );
+  }
+
+  /**
+   * Set the function to call when a  directional is pressed, if the directional
+   * exists. The function is repeatedly based on the directional's key repeat
+   * @param label string identifier of the directional to set
+   * @param handler function to call when directional is pressed
+   */
+  public setDirectionalFunction(
+    label: string,
+    handler: (dir: "up" | "right" | "down" | "left") => void
+  ): void {
+    const d = this.directionals.get(label);
+    if (d !== undefined) {
+      d.fn = handler;
+    }
+  }
+
+  /**
+   * restore the previously saved set of controls from IM.save(), then clear
+   * the saved controls
+   */
+  public restore(): void {
+    if (this.savedControls !== undefined) {
+      this.buttons = this.savedControls.buttons;
+      this.directionals = this.savedControls.directionals;
+      this.savedControls = undefined;
+    } else {
+      if (this.noisy) console.log("IM: Tried to restore undefined controls");
+    }
   }
 
   /**
@@ -477,6 +621,9 @@ class InputManager extends Manager {
    * Should be called each game step to get input
    */
   public step(): void {
+    // step all directionals
+    this.directionals.forEach(dir => dir.step());
+
     this.getGamepadInput();
     // do all onPressed and onReleased functions for all buttons
     for (const b of this.getAllButtons()) {
@@ -556,8 +703,8 @@ class InputManager extends Manager {
    * @param rightKey KeyboardEvent.key value of the keyboard key for going right
    * @param downKey KeyboardEvent.key value of the keyboard key for going down
    * @param leftKey KeyboardEvent.key value of the keyboard key for going left
-   * @param hAxisIndex index of our vertical axis in gamepad.axes
-   * @param vAxisIndex index of our horizontal axis in gamepad.axes
+   * @param hAxisIndex index of our horizontal axis in gamepad.axes
+   * @param vAxisIndex index of our vertical axis in gamepad.axes
    */
   public registerDirectional(
     name: string,

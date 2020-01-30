@@ -88,6 +88,8 @@ export class Menu {
   fillStyle: string | CanvasPattern | CanvasGradient | undefined;
   /** style for outline */
   strokeStyle: string | CanvasPattern | CanvasGradient | undefined;
+  /** whether this menu should be closed by the world manager next step */
+  private shouldBeClosed: boolean;
 
   /**
    * Construct a new menu, optionally with a list of elements
@@ -107,6 +109,7 @@ export class Menu {
     this.strokeStyle = strokeStyle;
     this.elements = elements;
     this.selectedElement = this.elements[0] ?? undefined;
+    this.shouldBeClosed = false;
   }
 
   /**
@@ -182,5 +185,20 @@ export class Menu {
     );
     this.elements.forEach(el => el.draw(ctx));
     ctx.restore();
+  }
+
+  /**
+   * @param shouldBeClosed whether this menu should be closed in the next step,
+   * true by default
+   */
+  public closeMe(shouldBeClosed = true): void {
+    this.shouldBeClosed = shouldBeClosed;
+  }
+
+  /**
+   * true if this menu should stay open next step
+   */
+  public get keepAlive() {
+    return !this.shouldBeClosed;
   }
 }

@@ -20,6 +20,8 @@
 import { Manager } from "./Manager";
 import { World } from "./World";
 import { WorldLoading } from "./WorldLoading";
+import { Menu } from "./Menu";
+import { IM } from "./InputManager";
 
 /**
  * The WorldManager manages the game world, including positions of entities and
@@ -30,6 +32,11 @@ class WorldManager extends Manager {
   private static _instance = new WorldManager();
   /** current world the game is in */
   private currentWorld: World | undefined;
+  /**
+   * currently displayed menus. Works like a stack, the last menu in the list
+   * is on top and active
+   */
+  private menus: Menu[];
   /** whether to log extra info */
   private noisy = true;
 
@@ -40,6 +47,7 @@ class WorldManager extends Manager {
     super();
     this.setType("World Manager");
     this.currentWorld = undefined;
+    this.menus = new Array<Menu>();
   }
 
   /**
@@ -65,6 +73,15 @@ class WorldManager extends Manager {
    * @param stepCount number of current step
    */
   public step(stepCount: number): void {
+    // close any menus that need to be closed
+    const newMenus = new Array<Menu>();
+    for (const m of this.menus) {
+      if (m.keepAlive) newMenus.push(m);
+    }
+    if (this.menus.length === 0) {
+      // restore inputs to the regular world inputs
+      IM.restore();
+    }
     if (this.currentWorld !== undefined) {
       this.currentWorld.step(stepCount);
     }
@@ -78,6 +95,8 @@ class WorldManager extends Manager {
     if (this.currentWorld !== undefined) {
       this.currentWorld.draw(ctx);
     }
+    // draw menus on top of world
+    this.menus.forEach(m => m.draw(ctx));
   }
 
   /**
@@ -89,6 +108,19 @@ class WorldManager extends Manager {
 
     super.startUp();
     if (this.noisy) console.log("WM: successfully started");
+  }
+
+  /**
+   * opens a menu, placing it on top of the stack of open menus, drawing it on
+   * top, and focusing it
+   */
+  public openMenu(menu: Menu): void {
+    // if this is the first menu, switch to menu controls
+    if (this.menus.length === 0) {
+      IM.save();
+      IM.enterMenuMode();
+    }
+    this.menus.push(menu);
   }
 }
 
