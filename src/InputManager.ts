@@ -19,6 +19,7 @@
 
 import { Manager } from "./Manager";
 import { Vector } from "./Vector";
+import { DM } from "./DisplayManager";
 
 /**
  * function that does nothing
@@ -216,6 +217,8 @@ class InputManager extends Manager {
     clickGP?: number;
     cancelKey: string;
     cancelGP?: number;
+    fullscreenKey: string;
+    fullscreenGP?: number;
   };
 
   /**
@@ -243,7 +246,9 @@ class InputManager extends Manager {
       clickKey: "space",
       clickGP: 4,
       cancelKey: "tab",
-      cancelGP: 3
+      cancelGP: 3,
+      fullscreenKey: "f",
+      fullscreenGP: 8
     };
   }
 
@@ -299,6 +304,12 @@ class InputManager extends Manager {
       this.menuNavigationInputs.clickKey,
       this.menuNavigationInputs.clickGP
     );
+    this.registerButton(
+      "fullscreen",
+      this.menuNavigationInputs.fullscreenKey,
+      this.menuNavigationInputs.fullscreenGP
+    );
+    this.setOnPressed("fullscreen", DM.toggleFullScreen.bind(DM));
   }
 
   /**

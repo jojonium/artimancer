@@ -18,11 +18,13 @@
  */
 
 import { World } from "./World";
-import { DM } from "./DisplayManager";
-import { UIElement } from "./UIElement";
+import { DM, CANV_SIZE } from "./DisplayManager";
 import { WM } from "./WorldManager";
-import { WorldRoomEditor } from "./WorldRoomEditor";
-import { Room } from "./Room";
+import { UIElement } from "./UIElement";
+import { Menu } from "./Menu";
+import { Box } from "./Box";
+import { Vector } from "./Vector";
+import { SpriteMenuElement } from "./SpriteMenuElement";
 
 /**
  * This world controls the main menu of the game
@@ -40,6 +42,7 @@ export class WorldMainMenu extends World {
    * set up UI elements when this world is entered
    */
   public enter(): void {
+    // create UI element to show version number
     const version = require("../package.json").version;
     const versionDisplay = new UIElement("version-display");
     versionDisplay.setText("Artimancer v" + version);
@@ -53,9 +56,31 @@ export class WorldMainMenu extends World {
       padding: 5
     };
     DM.setCornerUI("bottom right", versionDisplay);
+
+    WM.openMenu(new TitleMenu());
   }
 
   public draw(ctx: CanvasRenderingContext2D): void {}
 
   public step(): void {}
+}
+
+class TitleMenu extends Menu {
+  /**
+   * set up the TitleMenu, covering the whole screen except for the margins
+   */
+  public constructor() {
+    const margin = 20;
+    super(
+      new Box(
+        new Vector(margin, margin),
+        CANV_SIZE - margin * 2,
+        CANV_SIZE - margin * 2
+      )
+    );
+
+    this.elements = [
+      new SpriteMenuElement(new Box(new Vector(250, 400), 500, 200), "logo")
+    ];
+  }
 }

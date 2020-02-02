@@ -28,7 +28,8 @@ export const resources = {
     { spriteLabel: "test-bg", length: 1, slowdown: 0 },
     { spriteLabel: "edit-menu-move", length: 1, slowdown: 0 },
     { spriteLabel: "edit-menu-barrier", length: 1, slowdown: 0 },
-    { spriteLabel: "edit-menu-export", length: 1, slowdown: 0 }
+    { spriteLabel: "edit-menu-export", length: 1, slowdown: 0 },
+    { spriteLabel: "logo", length: 1, slowdown: 0 }
   ],
   images: [
     { filename: "images/f1.svg", spriteLabel: "test", index: 0 },
@@ -38,6 +39,7 @@ export const resources = {
     { filename: "images/f5.svg", spriteLabel: "test", index: 4 },
     { filename: "images/f6.svg", spriteLabel: "test", index: 5 },
     { filename: "images/test-bg.svg", spriteLabel: "test-bg", index: 0 },
+    { filename: "images/logo.svg", spriteLabel: "logo", index: 0 },
     {
       filename: "images/edit-menu-move.svg",
       spriteLabel: "edit-menu-move",
@@ -74,6 +76,11 @@ export const resources = {
       family: "Bitter",
       filename: "fonts/bitter/Bitter-BoldItalic.otf",
       options: { style: "italic", weight: "700" } as FontFaceDescriptors
+    },
+    {
+      family: '"Libre Barcode 39 Text"',
+      filename: "fonts/libre-barcode/LibreBarcode39Text-Regular.ttf",
+      options: { style: "normal", weight: "normal" } as FontFaceDescriptors
     }
   ]
 };

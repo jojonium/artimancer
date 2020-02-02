@@ -79,7 +79,7 @@ export abstract class MenuElement {
  */
 export class Menu {
   /** all elements (e.g. bttons or text boxes) in this menu */
-  private elements: MenuElement[];
+  protected elements: MenuElement[];
   /** element that is currently selected */
   private selectedElement: MenuElement | undefined;
   /** top-left location of this menu in the global canvas */
