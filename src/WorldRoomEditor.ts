@@ -75,56 +75,11 @@ export class WorldRoomEditor extends WorldFreeRoam {
     super();
     this.setType("Room Editor");
     this.setRoom(room);
-
     this.completedPolygons = new Array<Polygon>();
     this.selectedEntity = undefined;
     this.mode = Mode.drawBarrier;
     this.mousePos = new Vector(0, 0);
     this.uiElements = new Array<UIElement>(5);
-    this.uiElements[0] = new UIElement("edit-menu-move");
-    this.uiElements[0].setWidth(300);
-    this.uiElements[0].setHeight(150);
-    this.uiElements[0].style = {
-      bgSprite: RM.getSprite("edit-menu-move")
-    };
-    this.uiElements[1] = new UIElement("edit-menu-barrier");
-    this.uiElements[1].setWidth(300);
-    this.uiElements[1].setHeight(150);
-    this.uiElements[1].style = {
-      bgSprite: RM.getSprite("edit-menu-barrier")
-    };
-    this.uiElements[2] = new UIElement("edit-instructions-barrier");
-    this.uiElements[2].setWidth(300);
-    this.uiElements[2].setHeight(100);
-    this.uiElements[2].style = {
-      font: "bold 20px Bitter",
-      fontFill: "#d2d2d2",
-      lineHeight: 25,
-      textAlign: "right",
-      padding: 5
-    };
-    this.uiElements[2].setText("Shift+click to complete\nTab to cancel");
-    this.uiElements[3] = new UIElement("edit-instructions-move");
-    this.uiElements[3].setWidth(300);
-    this.uiElements[3].setHeight(100);
-    this.uiElements[3].style = {
-      font: "bold 20px Bitter",
-      fontFill: "#d2d2d2",
-      lineHeight: 25,
-      textAlign: "right",
-      padding: 5
-    };
-    this.uiElements[3].setText(
-      "Click+drag to move\nShift+drag to scale\nDelete to delete"
-    );
-    this.uiElements[4] = new UIElement("edit-menu-export");
-    this.uiElements[4].setWidth(150);
-    this.uiElements[4].setHeight(150);
-    this.uiElements[4].style = {
-      bgSprite: RM.getSprite("edit-menu-export")
-    };
-    DM.setCornerUI("bottom left", this.uiElements[4]);
-    this.setMode(Mode.drawBarrier);
   }
 
   /**
@@ -224,6 +179,50 @@ export class WorldRoomEditor extends WorldFreeRoam {
    * Set default button inputs
    */
   public enter(): void {
+    this.uiElements[0] = new UIElement("edit-menu-move");
+    this.uiElements[0].setWidth(300);
+    this.uiElements[0].setHeight(150);
+    this.uiElements[0].style = {
+      bgSprite: RM.getSprite("edit-menu-move")
+    };
+    this.uiElements[1] = new UIElement("edit-menu-barrier");
+    this.uiElements[1].setWidth(300);
+    this.uiElements[1].setHeight(150);
+    this.uiElements[1].style = {
+      bgSprite: RM.getSprite("edit-menu-barrier")
+    };
+    this.uiElements[2] = new UIElement("edit-instructions-barrier");
+    this.uiElements[2].setWidth(300);
+    this.uiElements[2].setHeight(100);
+    this.uiElements[2].style = {
+      font: "bold 20px Bitter",
+      fontFill: "#d2d2d2",
+      lineHeight: 25,
+      textAlign: "right",
+      padding: 5
+    };
+    this.uiElements[2].setText("Shift+click to complete\nTab to cancel");
+    this.uiElements[3] = new UIElement("edit-instructions-move");
+    this.uiElements[3].setWidth(300);
+    this.uiElements[3].setHeight(100);
+    this.uiElements[3].style = {
+      font: "bold 20px Bitter",
+      fontFill: "#d2d2d2",
+      lineHeight: 25,
+      textAlign: "right",
+      padding: 5
+    };
+    this.uiElements[3].setText(
+      "Click+drag to move\nShift+drag to scale\nDelete to delete"
+    );
+    this.uiElements[4] = new UIElement("edit-menu-export");
+    this.uiElements[4].setWidth(150);
+    this.uiElements[4].setHeight(150);
+    this.uiElements[4].style = {
+      bgSprite: RM.getSprite("edit-menu-export")
+    };
+    DM.setCornerUI("bottom left", this.uiElements[4]);
+    this.setMode(Mode.drawBarrier);
     IM.setOnPressed("escape", this.cancel.bind(this));
     IM.registerButton("select-mode", "m");
     IM.setOnPressed("select-mode", () => {

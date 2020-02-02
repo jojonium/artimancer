@@ -71,7 +71,6 @@ export class UIElement {
    * @param ctx canvas context to draw on
    */
   public draw(ctx: CanvasRenderingContext2D): void {
-    // TODO implement
     // draw sprite
     if (this.style.bgSprite) {
       ctx.drawImage(
@@ -99,7 +98,7 @@ export class UIElement {
     // draw text
     ctx.font = this.style.font ?? "50px sans-serif";
     ctx.textAlign = this.style.textAlign ?? "center";
-    ctx.textBaseline = this.style.textBaseline ?? "alphabetic";
+    ctx.textBaseline = this.style.textBaseline ?? "middle";
     ctx.fillStyle = this.style.fontFill ?? "rgba(0, 0, 0, 0)";
     const textVec = new Vector(
       this.pos.x + this.width / 2,

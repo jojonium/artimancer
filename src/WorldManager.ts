@@ -22,6 +22,7 @@ import { World } from "./World";
 import { WorldLoading } from "./WorldLoading";
 import { Menu } from "./Menu";
 import { IM } from "./InputManager";
+import { DM } from "./DisplayManager";
 
 /**
  * The WorldManager manages the game world, including positions of entities and
@@ -64,6 +65,11 @@ class WorldManager extends Manager {
   public enterWorld(world: World): void {
     if (this.noisy) console.log(`WM: entering world ${world.getType()}`);
     if (this.currentWorld) this.currentWorld.exit();
+    // clear any corner UI elements left over from the previous world
+    DM.setCornerUI("top right", undefined);
+    DM.setCornerUI("bottom right", undefined);
+    DM.setCornerUI("bottom left", undefined);
+    DM.setCornerUI("top left", undefined);
     this.currentWorld = world;
     this.currentWorld.enter();
   }
@@ -74,11 +80,12 @@ class WorldManager extends Manager {
    */
   public step(stepCount: number): void {
     // close any menus that need to be closed
+    const oldMenusLength = this.menus.length;
     const newMenus = new Array<Menu>();
     for (const m of this.menus) {
       if (m.keepAlive) newMenus.push(m);
     }
-    if (this.menus.length === 0) {
+    if (oldMenusLength !== 0 && this.menus.length === 0) {
       // restore inputs to the regular world inputs
       IM.restore();
     }

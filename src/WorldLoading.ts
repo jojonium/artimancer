@@ -21,10 +21,10 @@ import { World } from "./World";
 import { RM } from "./ResourceManager";
 import { WM } from "./WorldManager";
 import { CANV_SIZE } from "./DisplayManager";
-import { WorldRoomEditor } from "./WorldRoomEditor";
 import { Room } from "./Room";
 import { Vector } from "./Vector";
 import { EntityTest } from "./EntityTest";
+import { WorldMainMenu } from "./WorldMainMenu";
 
 /**
  * a World that displays a loading bar while resources are being loaded
@@ -107,7 +107,7 @@ export class WorldLoading extends World {
         );
         room.addEntities(e0, e1, e2);
       }
-      WM.enterWorld(new WorldRoomEditor(room));
+      WM.enterWorld(new WorldMainMenu());
     }
   }
 }
