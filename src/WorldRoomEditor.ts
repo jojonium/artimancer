@@ -179,21 +179,24 @@ export class WorldRoomEditor extends WorldFreeRoam {
    * Set default button inputs
    */
   public enter(): void {
-    this.uiElements[0] = new UIElement("edit-menu-move");
-    this.uiElements[0].setWidth(300);
-    this.uiElements[0].setHeight(150);
+    this.uiElements[0] = new UIElement(
+      "edit-menu-move",
+      new Box(new Vector(0, 0), 300, 150)
+    );
     this.uiElements[0].style = {
       bgSprite: RM.getSprite("edit-menu-move")
     };
-    this.uiElements[1] = new UIElement("edit-menu-barrier");
-    this.uiElements[1].setWidth(300);
-    this.uiElements[1].setHeight(150);
+    this.uiElements[1] = new UIElement(
+      "edit-menu-barrier",
+      new Box(new Vector(0, 0), 300, 150)
+    );
     this.uiElements[1].style = {
       bgSprite: RM.getSprite("edit-menu-barrier")
     };
-    this.uiElements[2] = new UIElement("edit-instructions-barrier");
-    this.uiElements[2].setWidth(300);
-    this.uiElements[2].setHeight(100);
+    this.uiElements[2] = new UIElement(
+      "edit-instructions-barrier",
+      new Box(new Vector(0, 0), 300, 150)
+    );
     this.uiElements[2].style = {
       font: "bold 20px Bitter",
       fontFill: "#d2d2d2",
@@ -202,9 +205,10 @@ export class WorldRoomEditor extends WorldFreeRoam {
       padding: 5
     };
     this.uiElements[2].setText("Shift+click to complete\nTab to cancel");
-    this.uiElements[3] = new UIElement("edit-instructions-move");
-    this.uiElements[3].setWidth(300);
-    this.uiElements[3].setHeight(100);
+    this.uiElements[3] = new UIElement(
+      "edit-instructions-move",
+      new Box(new Vector(0, 0), 300, 150)
+    );
     this.uiElements[3].style = {
       font: "bold 20px Bitter",
       fontFill: "#d2d2d2",
@@ -215,9 +219,10 @@ export class WorldRoomEditor extends WorldFreeRoam {
     this.uiElements[3].setText(
       "Click+drag to move\nShift+drag to scale\nDelete to delete"
     );
-    this.uiElements[4] = new UIElement("edit-menu-export");
-    this.uiElements[4].setWidth(150);
-    this.uiElements[4].setHeight(150);
+    this.uiElements[4] = new UIElement(
+      "edit-menu-export",
+      new Box(new Vector(0, 0), 150, 150)
+    );
     this.uiElements[4].style = {
       bgSprite: RM.getSprite("edit-menu-export")
     };

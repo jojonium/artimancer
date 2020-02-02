@@ -16,62 +16,10 @@
  * Artimancer. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Vector } from "./Vector";
 import { Box } from "./Box";
+import { UIElement } from "./UIElement";
 
 export const MENU_PADDING = 10;
-
-/**
- * An element of a menu that can be selected
- */
-export abstract class MenuElement {
-  /** dimensions of this menu element in its parent */
-  protected box: Box;
-  /** whether this element can be clicked */
-  protected clickable: boolean;
-
-  /**
-   * @param box the dimensions of this menu element in its parent
-   */
-  public constructor(box: Box) {
-    this.box = box;
-    this.clickable = false;
-  }
-
-  /**
-   * draws this element on the canvas
-   * @param ctx the canvas context to draw on
-   */
-  public abstract draw(ctx: CanvasRenderingContext2D): void;
-
-  /**
-   * get position of this element in its parent menu
-   */
-  public getPos(): Vector {
-    return this.box.topLeft;
-  }
-
-  /**
-   * @return width of this element
-   */
-  public getWidth(): number {
-    return this.box.width;
-  }
-
-  /**
-   * @return height of this element
-   */
-  public getHeight(): number {
-    return this.box.height;
-  }
-
-  /**
-   * @return whether or not this element is clickable
-   */
-  public isClickable(): boolean {
-    return this.clickable;
-  }
-}
 
 /**
  * An abstract class represeting menus, which are displayed on the screen and
@@ -79,9 +27,9 @@ export abstract class MenuElement {
  */
 export class Menu {
   /** all elements (e.g. bttons or text boxes) in this menu */
-  protected elements: MenuElement[];
+  protected elements: UIElement[];
   /** element that is currently selected */
-  private selectedElement: MenuElement | undefined;
+  private selectedElement: UIElement | undefined;
   /** top-left location of this menu in the global canvas */
   private box: Box;
   /** style for background */
@@ -100,7 +48,7 @@ export class Menu {
    */
   public constructor(
     box: Box,
-    elements = new Array<MenuElement>(),
+    elements = new Array<UIElement>(),
     fillStyle?: string | CanvasPattern | CanvasGradient,
     strokeStyle?: string | CanvasPattern | CanvasGradient
   ) {

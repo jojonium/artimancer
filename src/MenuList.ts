@@ -16,60 +16,10 @@
  * Artimancer. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Menu, MenuElement, MENU_PADDING } from "./Menu";
+import { Menu, MENU_PADDING } from "./Menu";
 import { Box } from "./Box";
 import { Vector } from "./Vector";
-
-/**
- * Represents one line item on a menu
- */
-export class MenuListItem extends MenuElement {
-  /** text to display on this item */
-  private text: string;
-  /** function to execute when this element is triggered */
-  private fn: () => void;
-
-  /**
-   * constructs a new menu item
-   * @param box the dimensions of this menu element in its parent
-   * @param text the string to display on this item
-   * @param fn the function to execute when this element is triggered
-   */
-  public constructor(box: Box, text: string, fn: () => void) {
-    super(box);
-    this.text = text;
-    this.fn = fn;
-    this.clickable = true;
-  }
-
-  /**
-   * draws this element on the canvas
-   * @param ctx the canvas context to draw on
-   */
-  public draw(ctx: CanvasRenderingContext2D): void {
-    ctx.rect(
-      this.box.topLeft.x,
-      this.box.topLeft.y,
-      this.box.width,
-      this.box.height
-    );
-    ctx.fill();
-    ctx.stroke();
-    ctx.fillText(
-      this.text,
-      this.box.getCenter().x,
-      this.box.getCenter().y,
-      this.box.width
-    );
-  }
-
-  /**
-   * handles a click on this element
-   */
-  public click() {
-    this.fn();
-  }
-}
+import { UIElement } from "./UIElement";
 
 /**
  * The Menu class represents a menu, containing a vertical list of items that
@@ -87,19 +37,19 @@ export class MenuList extends Menu {
     box: Box,
     items = new Array<{ text: string; fn: () => any }>()
   ) {
-    const menuItems = new Array<MenuListItem>(items.length);
+    const menuItems = new Array<UIElement>(items.length);
     let verticalOffset = 0;
     const itemHeight = box.height / items.length - MENU_PADDING / 2;
     for (let i = 0; i < items.length; ++i) {
-      menuItems[i] = new MenuListItem(
+      menuItems[i] = new UIElement(
+        "",
         new Box(
           new Vector(box.topLeft.x, box.topLeft.y + verticalOffset),
           box.width - MENU_PADDING * 2,
           itemHeight
-        ),
-        items[i].text,
-        items[i].fn
+        )
       );
+      menuItems[i].setText(items[i].text);
       verticalOffset += itemHeight;
     }
 

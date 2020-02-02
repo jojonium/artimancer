@@ -20,6 +20,8 @@
 import { Sprite } from "./Sprite";
 import { Vector } from "./Vector";
 import { roundedRect } from "./DisplayManager";
+import { Box } from "./Box";
+import { RM } from "./ResourceManager";
 
 export enum UIElementAlignment {
   topLeft,
@@ -44,23 +46,22 @@ export class UIElement {
   public style: UIElementStyle;
   /** how to align this element in its container */
   private alignment: UIElementAlignment;
-  /** top left position of this element */
-  private pos: Vector;
-  /** height of this element. Set to 0 for auto */
-  private height: number;
-  /** width of this element. Set to 0 for auto */
-  private width: number;
   /** text to display */
   private text: string;
+  /** bounding box of this element in its parent */
+  protected box: Box;
+  /** whether or not this element can be clicked */
+  protected onClick: () => void;
 
   /**
    * @param label a unique string identifier for this UI Element
    */
-  public constructor(label: string) {
+  public constructor(label: string, box: Box) {
+    this.box = box;
+    this.onClick = (): void => {
+      return;
+    };
     this.label = label;
-    this.pos = new Vector(0, 0);
-    this.height = 0;
-    this.width = 0;
     this.style = {};
     this.alignment = UIElementAlignment.topLeft;
     this.text = "";
@@ -75,10 +76,10 @@ export class UIElement {
     if (this.style.bgSprite) {
       ctx.drawImage(
         this.style.bgSprite.getCurrentFrame().getImage(),
-        this.pos.x,
-        this.pos.y,
-        this.width,
-        this.height
+        this.box.topLeft.x,
+        this.box.topLeft.y,
+        this.box.width,
+        this.box.height
       );
     }
     // draw background rectangle
@@ -88,9 +89,9 @@ export class UIElement {
     ctx.setLineDash(this.style.lineDash ?? []);
     roundedRect(
       ctx,
-      this.pos,
-      this.width,
-      this.height,
+      this.box.topLeft,
+      this.box.width,
+      this.box.height,
       this.style.cornerRadius ?? 0
     );
     ctx.fill();
@@ -101,17 +102,18 @@ export class UIElement {
     ctx.textBaseline = this.style.textBaseline ?? "middle";
     ctx.fillStyle = this.style.fontFill ?? "rgba(0, 0, 0, 0)";
     const textVec = new Vector(
-      this.pos.x + this.width / 2,
-      this.pos.y + this.height / 2
+      this.box.topLeft.x + this.box.width / 2,
+      this.box.topLeft.y + this.box.height / 2
     );
     switch (ctx.textAlign) {
       case "center":
         break;
       case "left":
-        textVec.x = this.pos.x + (this.style.padding ?? 0);
+        textVec.x = this.box.topLeft.x + (this.style.padding ?? 0);
         break;
       case "right":
-        textVec.x = this.pos.x + this.width - (this.style.padding ?? 0);
+        textVec.x =
+          this.box.topLeft.x + this.box.width - (this.style.padding ?? 0);
         break;
     }
     // the JavaScript canvas API has no support for multi-line strings, so we'll
@@ -124,7 +126,7 @@ export class UIElement {
         line,
         textVec.x,
         textVec.y + i * lineHeight,
-        this.width - (this.style.padding ?? 0) * 2
+        this.box.width - (this.style.padding ?? 0) * 2
       );
     });
   }
@@ -154,36 +156,36 @@ export class UIElement {
    * get top-left position of this element
    */
   public getPos(): Vector {
-    return this.pos;
+    return this.box.topLeft;
   }
 
   /**
    * @param newPos new top-left position of this element
    */
   public setPos(newPos: Vector): void {
-    this.pos = newPos;
+    this.box.topLeft = newPos;
   }
 
   public getWidth(): number {
-    return this.width;
+    return this.box.width;
   }
 
   /**
    * @param newWidth width of this element. Set to 0 for auto
    */
   public setWidth(newWidth: number): void {
-    this.width = newWidth;
+    this.box.width = newWidth;
   }
 
   public getHeight(): number {
-    return this.height;
+    return this.box.height;
   }
 
   /**
    * @param newHeight height of this element. Set to 0 for auto
    */
   public setHeight(newHeight: number): void {
-    this.height = newHeight;
+    this.box.height = newHeight;
   }
 
   public getText(): string {
@@ -195,6 +197,17 @@ export class UIElement {
    */
   public setText(newText: string): void {
     this.text = newText;
+  }
+
+  /**
+   * Set the background sprite of this element. Throws an error if it can't get
+   * the sprite from the ResourceManager
+   * @param spriteLabel the string label of the sprite to set
+   */
+  public setSprite(spriteLabel: string): void {
+    const s = RM.getSprite(spriteLabel);
+    if (s === undefined) throw new Error("Couldn't get sprite " + spriteLabel);
+    this.style.bgSprite = s;
   }
 }
 

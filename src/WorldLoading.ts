@@ -25,6 +25,7 @@ import { Room } from "./Room";
 import { Vector } from "./Vector";
 import { EntityTest } from "./EntityTest";
 import { WorldMainMenu } from "./WorldMainMenu";
+import { WorldRoomEditor } from "./WorldRoomEditor";
 
 /**
  * a World that displays a loading bar while resources are being loaded
