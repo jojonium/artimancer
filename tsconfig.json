@@ -12,6 +12,7 @@
     "forceConsistentCasingInFileNames": true,
     "noImplicitReturns": true,
     "diagnostics": true,
+    "resolveJsonModule": true,
     "paths": {
       "*": ["node_modules/*"]
     }
