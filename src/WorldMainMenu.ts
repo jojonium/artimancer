@@ -24,46 +24,7 @@ import { UIElement } from "./UIElement";
 import { Menu } from "./Menu";
 import { Box } from "./Box";
 import { Vector } from "./Vector";
-
-/**
- * This world controls the main menu of the game
- */
-export class WorldMainMenu extends World {
-  /**
-   * constructs the main menu
-   */
-  public constructor() {
-    super();
-    this.setType("Main Menu");
-  }
-
-  /**
-   * set up UI elements when this world is entered
-   */
-  public enter(): void {
-    // create UI element to show version number
-    const version = require("../package.json").version;
-    const versionDisplay = new UIElement(
-      "version-display",
-      new Box(new Vector(0, 0), 200, 50)
-    );
-    versionDisplay.setText("Artimancer v" + version);
-    versionDisplay.style = {
-      font: "bold 20px Bitter",
-      fontFill: "#d2d2d2",
-      lineHeight: 50,
-      textAlign: "left",
-      padding: 5
-    };
-    DM.setCornerUI("bottom right", versionDisplay);
-
-    WM.openMenu(new TitleMenu());
-  }
-
-  public draw(ctx: CanvasRenderingContext2D): void {}
-
-  public step(): void {}
-}
+import { version } from "../package.json";
 
 class TitleMenu extends Menu {
   /**
@@ -85,5 +46,48 @@ class TitleMenu extends Menu {
     );
     logoElement.setSprite("logo");
     this.elements = [logoElement];
+  }
+}
+
+/**
+ * This world controls the main menu of the game
+ */
+export class WorldMainMenu extends World {
+  /**
+   * constructs the main menu
+   */
+  public constructor() {
+    super();
+    this.setType("Main Menu");
+  }
+
+  /**
+   * set up UI elements when this world is entered
+   */
+  public enter(): void {
+    // create UI element to show version number
+    const versionDisplay = new UIElement(
+      "version-display",
+      new Box(new Vector(0, 0), 200, 50)
+    );
+    versionDisplay.setText("Artimancer v" + version);
+    versionDisplay.style = {
+      font: "bold 20px Bitter",
+      fontFill: "#d2d2d2",
+      lineHeight: 50,
+      textAlign: "left",
+      padding: 5
+    };
+    DM.setCornerUI("bottom right", versionDisplay);
+
+    WM.openMenu(new TitleMenu());
+  }
+
+  public draw(ctx: CanvasRenderingContext2D): void {
+    return;
+  }
+
+  public step(): void {
+    return;
   }
 }

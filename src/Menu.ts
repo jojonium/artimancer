@@ -33,9 +33,9 @@ export class Menu {
   /** top-left location of this menu in the global canvas */
   private box: Box;
   /** style for background */
-  fillStyle: string | CanvasPattern | CanvasGradient | undefined;
+  private fillStyle: string | CanvasPattern | CanvasGradient | undefined;
   /** style for outline */
-  strokeStyle: string | CanvasPattern | CanvasGradient | undefined;
+  private strokeStyle: string | CanvasPattern | CanvasGradient | undefined;
   /** whether this menu should be closed by the world manager next step */
   private shouldBeClosed: boolean;
 

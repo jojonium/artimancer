@@ -1,8 +1,4 @@
 html {
-  /*
-  background-color: #232629;
-  color: #eff0f1;
-  */
   background-color: #dedede;
   color: #212121;
   font-family: sans-serif;
@@ -20,7 +16,7 @@ body {
 h1 {
   text-align: center;
   text-transform: uppercase;
-  font-family: "Libre Barcode 39 Text";
+  font-family: "Bitter";
   font-size: 2.5em;
   font-weight: normal;
 }
