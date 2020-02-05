@@ -1,6 +1,13 @@
 # Artimancer
 
-A simple game I'm working on. Stay tuned for more progress.
+A simple turn-based RPG for the web. Stay tuned for more progress.
+
+## Current State
+
+  - Most engine managers have basic functionality
+  - Simple sprite-based graphics options
+  - Robust controls system
+  - Working on a room editor
 
 ## Running Development Server
 
