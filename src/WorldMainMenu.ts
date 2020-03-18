@@ -17,6 +17,8 @@
  * Artimancer. If not, see <https://www.gnu.org/licenses/>.
  */
 
+const VERSION = "0.0.1";
+
 import { World } from "./World";
 import { DM, CANV_SIZE } from "./DisplayManager";
 import { WM } from "./WorldManager";
@@ -24,7 +26,6 @@ import { UIElement } from "./UIElement";
 import { Menu } from "./Menu";
 import { Box } from "./Box";
 import { Vector } from "./Vector";
-import { version } from "../package.json";
 
 class TitleMenu extends Menu {
   /**
@@ -70,7 +71,7 @@ export class WorldMainMenu extends World {
       "version-display",
       new Box(new Vector(0, 0), 200, 50)
     );
-    versionDisplay.setText("Artimancer v" + version);
+    versionDisplay.setText("Artimancer v" + VERSION);
     versionDisplay.style = {
       font: "bold 20px Bitter",
       fontFill: "#d2d2d2",
