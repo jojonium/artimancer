@@ -5,7 +5,7 @@ A simple game I'm working on. Stay tuned for more progress.
 ## Running Development Server
 
 ```
-$ npm ci
+$ npm install
 $ npm run build
 $ npm start
 ```
