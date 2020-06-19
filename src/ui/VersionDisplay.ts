@@ -17,45 +17,27 @@
  * Artimancer. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { TextUIElement } from "./ui/TextUIElement";
-import { UM } from "./UIManager";
-import { World } from "./World";
-import { Box } from "./Box";
-import { Vector } from "./Vector";
+import { Box } from "../Box";
+import { UIElement } from "../UIElement";
+import { Vector } from "../Vector";
 
-/** game version */
-const VERSION = "0.0.1";
-
-/**
- * This world controls the main menu of the game
- */
-export class WorldMainMenu extends World {
-  /**
-   * constructs the main menu
-   */
-  public constructor() {
-    super();
-    this.setType("Main Menu");
-  }
+export class VersionDisplay extends UIElement {
+  private versionText: string;
 
   /**
-   * set up UI elements when this world is entered
+   * @param version like '1.2.3'
    */
-  public enter(): void {
-    // create UI element to show version number
-    const versionDisplay = new TextUIElement(
-      "version-display",
-      new Box(new Vector(0, 0), 200, 500),
-      "Artimancer v" + VERSION
-    );
-    UM.setCornerUI("bottom right", versionDisplay);
+  public constructor(version: string) {
+    super("version-display", new Box(new Vector(0, 0), 200, 50));
+    this.versionText = "Artimancer v" + version;
   }
 
+  /** shows text with version number */
   public draw(ctx: CanvasRenderingContext2D): void {
-    return;
-  }
-
-  public step(): void {
-    return;
+    ctx.font = "bold 20px Bitter";
+    ctx.textAlign = "left";
+    ctx.textBaseline = "middle";
+    ctx.fillStyle = "#d2d2d2";
+    ctx.fillText(this.versionText, 5, 25);
   }
 }

@@ -17,16 +17,19 @@
  * Artimancer. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Room, Background } from "./Room";
-import { WorldFreeRoam } from "./WorldFreeRoam";
-import { Vector } from "./Vector";
-import { Polygon } from "./Polygon";
-import { DM, CANV_SIZE } from "./DisplayManager";
-import { IM } from "./InputManager";
-import { UIElement } from "./UIElement";
-import { RM } from "./ResourceManager";
-import { FreeRoamEntity } from "./FreeRoamEntity";
 import { Box } from "./Box";
+import { CANV_SIZE, DM } from "./DisplayManager";
+import { FreeRoamEntity } from "./FreeRoamEntity";
+import { IM } from "./InputManager";
+import { Polygon } from "./Polygon";
+import { RM } from "./ResourceManager";
+import { Background, Room } from "./Room";
+import { UIElement } from "./UIElement";
+import { UM } from "./UIManager";
+import { Vector } from "./Vector";
+import { WorldFreeRoam } from "./WorldFreeRoam";
+import { SpriteUIElement } from "./ui/SpriteUIElement";
+import { TextUIElement } from "./ui/TextUIElement";
 
 enum Mode {
   select,
@@ -163,9 +166,9 @@ export class WorldRoomEditor extends WorldFreeRoam {
    */
   public exit(): void {
     IM.setOnPressed("delete", undefined);
-    DM.setCornerUI("top left", undefined);
-    DM.setCornerUI("top right", undefined);
-    DM.setCornerUI("bottom left", undefined);
+    UM.setCornerUI("top left", undefined);
+    UM.setCornerUI("top right", undefined);
+    UM.setCornerUI("bottom left", undefined);
     IM.unregisterButton("select-mode");
     IM.unregisterButton("barrier-mode");
     IM.unregisterButton("export");
@@ -179,54 +182,51 @@ export class WorldRoomEditor extends WorldFreeRoam {
    * Set default button inputs
    */
   public enter(): void {
-    this.uiElements[0] = new UIElement(
+    const editMoveMenu = new SpriteUIElement(
       "edit-menu-move",
       new Box(new Vector(0, 0), 300, 150)
     );
-    this.uiElements[0].style = {
-      bgSprite: RM.getSprite("edit-menu-move")
-    };
-    this.uiElements[1] = new UIElement(
+    editMoveMenu.setSprite(RM.getSprite("edit-menu-move"));
+    this.uiElements[0] = editMoveMenu;
+    const editMenuBarrier = new SpriteUIElement(
       "edit-menu-barrier",
       new Box(new Vector(0, 0), 300, 150)
     );
-    this.uiElements[1].style = {
-      bgSprite: RM.getSprite("edit-menu-barrier")
-    };
-    this.uiElements[2] = new UIElement(
+    editMenuBarrier.setSprite(RM.getSprite("edit-menu-barrier"));
+    this.uiElements[1] = editMenuBarrier;
+    const editInstructionsBarrier = new TextUIElement(
       "edit-instructions-barrier",
-      new Box(new Vector(0, 0), 300, 150)
+      new Box(new Vector(0, 0), 300, 150),
+      "Shift+click to complete\nTab to cancel"
     );
-    this.uiElements[2].style = {
+    editInstructionsBarrier.style = {
       font: "bold 20px Bitter",
       fontFill: "#d2d2d2",
       lineHeight: 25,
       textAlign: "right",
       padding: 5
     };
-    this.uiElements[2].setText("Shift+click to complete\nTab to cancel");
-    this.uiElements[3] = new UIElement(
+    this.uiElements[2] = editInstructionsBarrier;
+    const editInstructionsMove = new TextUIElement(
       "edit-instructions-move",
-      new Box(new Vector(0, 0), 300, 150)
-    );
-    this.uiElements[3].style = {
-      font: "bold 20px Bitter",
-      fontFill: "#d2d2d2",
-      lineHeight: 25,
-      textAlign: "right",
-      padding: 5
-    };
-    this.uiElements[3].setText(
+      new Box(new Vector(0, 0), 300, 150),
       "Click+drag to move\nShift+drag to scale\nDelete to delete"
     );
-    this.uiElements[4] = new UIElement(
+    editInstructionsMove.style = {
+      font: "bold 20px Bitter",
+      fontFill: "#d2d2d2",
+      lineHeight: 25,
+      textAlign: "right",
+      padding: 0
+    };
+    this.uiElements[3] = editInstructionsMove;
+    const editMenuExport = new SpriteUIElement(
       "edit-menu-export",
       new Box(new Vector(0, 0), 150, 150)
     );
-    this.uiElements[4].style = {
-      bgSprite: RM.getSprite("edit-menu-export")
-    };
-    DM.setCornerUI("bottom left", this.uiElements[4]);
+    editMenuExport.setSprite(RM.getSprite("edit-menu-export"));
+    this.uiElements[4] = editMenuExport;
+    UM.setCornerUI("bottom left", this.uiElements[4]);
     this.setMode(Mode.drawBarrier);
     IM.setOnPressed("escape", this.cancel.bind(this));
     IM.registerButton("select-mode", "m");
@@ -461,11 +461,11 @@ export class WorldRoomEditor extends WorldFreeRoam {
     this.cancel();
     // set UI element
     if (this.mode === Mode.drawBarrier) {
-      DM.setCornerUI("top left", this.uiElements[1]);
-      DM.setCornerUI("top right", this.uiElements[2]);
+      UM.setCornerUI("top left", this.uiElements[1]);
+      UM.setCornerUI("top right", this.uiElements[2]);
     } else if (this.mode === Mode.select) {
-      DM.setCornerUI("top left", this.uiElements[0]);
-      DM.setCornerUI("top right", this.uiElements[3]);
+      UM.setCornerUI("top left", this.uiElements[0]);
+      UM.setCornerUI("top right", this.uiElements[3]);
     }
   }
 

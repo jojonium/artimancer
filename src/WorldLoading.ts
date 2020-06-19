@@ -26,6 +26,7 @@ import { Vector } from "./Vector";
 import { EntityTest } from "./EntityTest";
 import { WorldMainMenu } from "./WorldMainMenu";
 import { WorldRoomEditor } from "./WorldRoomEditor";
+import { WorldDisplayTest } from "./WorldDisplayTest";
 
 /**
  * a World that displays a loading bar while resources are being loaded
@@ -108,7 +109,7 @@ export class WorldLoading extends World {
         );
         room.addEntities(e0, e1, e2);
       }
-      WM.enterWorld(new WorldMainMenu());
+      WM.enterWorld(new WorldDisplayTest());
     }
   }
 }

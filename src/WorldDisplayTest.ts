@@ -18,6 +18,10 @@
  */
 
 import { World } from "./World";
+import { FPSCounter } from "./ui/FPSCounter";
+import { UM } from "./UIManager";
+import { TextUIElement } from "./ui/TextUIElement";
+import { Box } from "./Box";
 import { Vector } from "./Vector";
 import { CANV_SIZE } from "./DisplayManager";
 
@@ -35,6 +39,12 @@ export class WorldDisplayTest extends World {
     super();
     this.setType("Display Test");
     this.stepCount = 0;
+  }
+
+  public enter() {
+    const f = new FPSCounter();
+    console.log(f);
+    UM.setCornerUI("top right", f);
   }
 
   /**

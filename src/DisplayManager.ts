@@ -19,6 +19,7 @@
 
 import { Manager } from "./Manager";
 import { WM } from "./WorldManager";
+import { UM } from "./UIManager";
 import { Vector } from "./Vector";
 import { UIElement } from "./UIElement";
 
@@ -38,12 +39,6 @@ class DisplayManager extends Manager {
   private context: CanvasRenderingContext2D;
   /** canvas context that we draw on */
   private backContext: CanvasRenderingContext2D;
-  private cornerUI: {
-    tr: UIElement | undefined;
-    br: UIElement | undefined;
-    bl: UIElement | undefined;
-    tl: UIElement | undefined;
-  };
   /** whether to log extra info */
   private noisy = true;
   /** dimensions of back canvas in pixels */
@@ -55,13 +50,6 @@ class DisplayManager extends Manager {
   private constructor() {
     super();
     this.setType("Display Manager");
-
-    this.cornerUI = {
-      tr: undefined,
-      br: undefined,
-      bl: undefined,
-      tl: undefined
-    };
 
     // set these temporarily until we startUp
     this.canvas = document.createElement("canvas");
@@ -180,8 +168,8 @@ class DisplayManager extends Manager {
     // draw the current world
     WM.draw(this.backContext);
 
-    // draw corner UI elements
-    this.drawCorners();
+    // draw UI on top of world
+    UM.draw(this.backContext, this.backCanvas.width, this.backCanvas.height);
 
     this.backContext.restore();
 
@@ -200,71 +188,6 @@ class DisplayManager extends Manager {
 
     // now do it again
     window.requestAnimationFrame(this.draw.bind(this));
-  }
-
-  /**
-   * Draws corner UI elements
-   */
-  private drawCorners(): void {
-    // available "off-canvas" pixels that can still be seen, scaled to CANV_SIZE
-    const verticalSpace =
-      Math.max((this.backCanvas.height - this.backCanvas.width) / 2, 0) *
-      (CANV_SIZE / this.backCanvas.width);
-    const horizontalSpace =
-      Math.max((this.backCanvas.width - this.backCanvas.height) / 2, 0) *
-      (CANV_SIZE / this.backCanvas.height);
-
-    // top right
-    if (this.cornerUI.tr !== undefined) {
-      this.backContext.save();
-      this.backContext.translate(
-        CANV_SIZE -
-          this.cornerUI.tr.getWidth() +
-          Math.min(horizontalSpace, this.cornerUI.tr.getWidth()),
-        -Math.min(verticalSpace, this.cornerUI.tr.getHeight())
-      );
-      this.cornerUI.tr.draw(this.backContext);
-      this.backContext.restore();
-    }
-
-    // bottom right
-    if (this.cornerUI.br !== undefined) {
-      this.backContext.save();
-      this.backContext.translate(
-        CANV_SIZE -
-          this.cornerUI.br.getWidth() +
-          Math.min(horizontalSpace, this.cornerUI.br.getWidth()),
-        CANV_SIZE -
-          this.cornerUI.br.getHeight() +
-          Math.min(verticalSpace, this.cornerUI.br.getHeight())
-      );
-      this.cornerUI.br.draw(this.backContext);
-      this.backContext.restore();
-    }
-
-    // bottom left
-    if (this.cornerUI.bl !== undefined) {
-      this.backContext.save();
-      this.backContext.translate(
-        -Math.min(horizontalSpace, this.cornerUI.bl.getWidth()),
-        CANV_SIZE -
-          this.cornerUI.bl.getHeight() +
-          Math.min(verticalSpace, this.cornerUI.bl.getHeight())
-      );
-      this.cornerUI.bl.draw(this.backContext);
-      this.backContext.restore();
-    }
-
-    // top left
-    if (this.cornerUI.tl !== undefined) {
-      this.backContext.save();
-      this.backContext.translate(
-        -Math.min(horizontalSpace, this.cornerUI.tl.getWidth()),
-        -Math.min(verticalSpace, this.cornerUI.tl.getHeight())
-      );
-      this.cornerUI.tl.draw(this.backContext);
-      this.backContext.restore();
-    }
   }
 
   /**
@@ -346,31 +269,6 @@ class DisplayManager extends Manager {
     vec = vec.scale(scaleFact);
 
     return vec;
-  }
-
-  /**
-   * Set the UI element to display in one of the corners
-   * @param which which corner to set
-   * @param uie a UI element
-   */
-  public setCornerUI(
-    which: "top right" | "bottom right" | "bottom left" | "top left",
-    uie: UIElement | undefined
-  ): void {
-    switch (which) {
-      case "top right":
-        this.cornerUI.tr = uie;
-        return;
-      case "bottom right":
-        this.cornerUI.br = uie;
-        return;
-      case "bottom left":
-        this.cornerUI.bl = uie;
-        return;
-      case "top left":
-        this.cornerUI.tl = uie;
-        return;
-    }
   }
 }
 

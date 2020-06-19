@@ -17,45 +17,40 @@
  * Artimancer. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { TextUIElement } from "./ui/TextUIElement";
-import { UM } from "./UIManager";
-import { World } from "./World";
-import { Box } from "./Box";
-import { Vector } from "./Vector";
+import { Clock } from "../Clock";
+import { TextUIElement } from "./TextUIElement";
+import { Box } from "../Box";
+import { Vector } from "../Vector";
 
-/** game version */
-const VERSION = "0.0.1";
+export class FPSCounter extends TextUIElement {
+  private clock: Clock;
+  private frameCounter = 0;
+  private stepCounter = 0;
+  private fps = 0;
+  private sps = 0;
 
-/**
- * This world controls the main menu of the game
- */
-export class WorldMainMenu extends World {
-  /**
-   * constructs the main menu
-   */
   public constructor() {
-    super();
-    this.setType("Main Menu");
+    super("fps-counter", new Box(new Vector(0, 0), 300, 50), "No FPS yet");
+    this.style.padding = 5;
+    this.clock = new Clock();
+    this.clock.delta();
   }
 
-  /**
-   * set up UI elements when this world is entered
-   */
-  public enter(): void {
-    // create UI element to show version number
-    const versionDisplay = new TextUIElement(
-      "version-display",
-      new Box(new Vector(0, 0), 200, 500),
-      "Artimancer v" + VERSION
-    );
-    UM.setCornerUI("bottom right", versionDisplay);
-  }
-
+  /** overrided to count frames */
   public draw(ctx: CanvasRenderingContext2D): void {
-    return;
+    this.frameCounter++;
+    if (this.clock.split() >= 1000) {
+      this.clock.delta();
+      this.fps = this.frameCounter;
+      this.sps = this.stepCounter;
+      this.setText(`${this.fps} FPS, ${this.sps} SPS`);
+      this.frameCounter = 0;
+      this.stepCounter = 0;
+    }
+    super.draw(ctx);
   }
 
   public step(): void {
-    return;
+    this.stepCounter++;
   }
 }

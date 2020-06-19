@@ -23,9 +23,10 @@ import { DM } from "./DisplayManager";
 import { IM } from "./InputManager";
 import { RM } from "./ResourceManager";
 import { WM } from "./WorldManager";
+import { UM } from "./UIManager";
 
 // target number of game steps per secong
-const TARGET_STEPS_PER_SECOND = 60;
+const TARGET_STEPS_PER_SECOND = 30;
 
 class GameManager extends Manager {
   private static _instance = new GameManager();
@@ -71,6 +72,7 @@ class GameManager extends Manager {
     RM.startUp();
     IM.startUp();
     WM.startUp();
+    UM.startUp();
     super.startUp();
 
     this.run();
@@ -106,6 +108,9 @@ class GameManager extends Manager {
 
     // update game world
     WM.step(this.stepCount);
+
+    // update UI elements
+    UM.step();
 
     // sleep until it's time for the next step
     const elapsedTime = this.clock.split();
