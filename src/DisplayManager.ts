@@ -21,7 +21,6 @@ import { Manager } from "./Manager";
 import { WM } from "./WorldManager";
 import { UM } from "./UIManager";
 import { Vector } from "./Vector";
-import { UIElement } from "./UIElement";
 
 export const CANV_SIZE = 1000;
 
@@ -145,7 +144,7 @@ class DisplayManager extends Manager {
     this.backContext.save();
     // scale the back canvas so it's as if we're drawing on a square with width
     // and height equal to CANV_SIZE
-    let scaleFact = 1;
+    let scaleFact;
     let yTranslate = 0;
     let xTranslate = 0;
     if (this.backCanvas.width < this.backCanvas.height) {
@@ -205,7 +204,7 @@ class DisplayManager extends Manager {
         });
       }
     } else {
-      document.exitFullscreen();
+      document.exitFullscreen().then(); // ignore result of this promise
       this.adjustCanvasSize();
     }
   }
@@ -246,7 +245,7 @@ class DisplayManager extends Manager {
    * @return a corresponding coordinate Vector in the game world
    */
   public windowToWorldCoord(vec: Vector): Vector {
-    let scaleFact = 1;
+    let scaleFact;
     let xTranslate = 0;
     let yTranslate = 0;
     let scaleTo: HTMLCanvasElement | Screen = window.screen;
@@ -277,7 +276,7 @@ export const DM = DisplayManager.getInstance();
 /**
  * Draws a rounded rect on the canvas. You'll still have to call ctx.stroke()
  * and/or ctx.fill() afterward
- * @param ctx cavnas context to draw on
+ * @param ctx canvas context to draw on
  * @param topLeft Vector pointing to the top left of the rectangle
  * @param w width of the rectangle
  * @param h height of the rectangle

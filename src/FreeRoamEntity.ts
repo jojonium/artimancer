@@ -27,7 +27,7 @@ import { Box } from "./Box";
  */
 export abstract class FreeRoamEntity {
   /** string identifier for this entity */
-  private label: string;
+  private readonly label: string;
   /** direction the entity is facing */
   private dir: Vector;
   /** optional sprite for this entity to display */
@@ -40,9 +40,8 @@ export abstract class FreeRoamEntity {
   /**
    * Constructs a new FreeRoamEntity
    * @param label string identifier for this entity
-   * @param pos center position of this entity
    */
-  public constructor(label: string) {
+  protected constructor(label: string) {
     this.label = label;
     // start facing right
     this.dir = new Vector(1, 0);

@@ -120,7 +120,7 @@ export class ResourceManager extends Manager {
    * Loads a font from the server
    * @param family name of this font family
    * @param filename filename of the font to load
-   * @param ffdesc CSS font-face descriptors to go with this font
+   * @param ffDesc CSS font-face descriptors to go with this font
    * @return a Promise containing the FontFace
    */
   private loadFont(

@@ -59,7 +59,7 @@ export class Line {
         arg1.y <= Math.max(this.p1.y, this.p2.y) &&
         arg1.y >= Math.min(this.p1.y, this.p2.y)
       );
-    } else if (arg1 instanceof Line) {
+    } else {
       const o1 = Vector.orientation(this.p1, this.p2, arg1.p1);
       const o2 = Vector.orientation(this.p1, this.p2, arg1.p2);
       const o3 = Vector.orientation(arg1.p1, arg1.p2, this.p1);
@@ -77,7 +77,5 @@ export class Line {
       // Doesn't fall in any of the above cases
       return false;
     }
-    // should never get here
-    return false;
   }
 }

@@ -24,8 +24,6 @@ import { CANV_SIZE } from "./DisplayManager";
 import { Room } from "./Room";
 import { Vector } from "./Vector";
 import { EntityTest } from "./EntityTest";
-import { WorldMainMenu } from "./WorldMainMenu";
-import { WorldRoomEditor } from "./WorldRoomEditor";
 import { WorldDisplayTest } from "./WorldDisplayTest";
 
 /**

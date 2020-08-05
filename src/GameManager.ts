@@ -25,7 +25,7 @@ import { RM } from "./ResourceManager";
 import { WM } from "./WorldManager";
 import { UM } from "./UIManager";
 
-// target number of game steps per secong
+// target number of game steps per second
 const TARGET_STEPS_PER_SECOND = 30;
 
 class GameManager extends Manager {
@@ -36,10 +36,10 @@ class GameManager extends Manager {
   private stepCount = 0;
   /** milliseconds to adjust sleep time by */
   private adjustTime: number;
-  /** clock for timing stepa */
+  /** clock for timing steps */
   private clock: Clock;
   /** target number of milliseconds per game step */
-  private stepTime: number;
+  private readonly stepTime: number;
   /** whether to log extra info */
   private noisy = true;
 

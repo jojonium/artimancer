@@ -22,14 +22,18 @@ import { FreeRoamEntity } from "./FreeRoamEntity";
 import { Box } from "./Box";
 
 export class Background {
-  public constructor(
-    /** sprite for this bgObject */
-    public sprite: Sprite,
-    /** dimensions to draw the sprite in */
-    public box: Box,
-    /** higher altitudes are drawn on top of lower altitudes */
-    public altitude: number
-  ) {}
+  /** sprite for this bgObject */
+  public sprite: Sprite;
+  /** dimensions to draw the sprite in */
+  public box: Box;
+  /** higher altitudes are drawn on top of lower altitudes */
+  public altitude: number;
+
+  public constructor(sprite: Sprite, box: Box, altitude: number) {
+    this.sprite = sprite;
+    this.box = box;
+    this.altitude = altitude;
+  }
 
   public draw(ctx: CanvasRenderingContext2D): void {
     ctx.drawImage(
@@ -48,14 +52,14 @@ export class Background {
  */
 export class Room {
   /** unique identifier for this room */
-  private label: string;
+  private readonly label: string;
   /**
    * elements that make up the visual background of this room, sorted in order
-   * of nondecreasing altitude
+   * of non-decreasing altitude
    */
-  private backgrounds: Background[];
+  private readonly backgrounds: Background[];
   /** all free roam entities in this room */
-  private entities: FreeRoamEntity[];
+  private readonly entities: FreeRoamEntity[];
   /** array of all things to draw */
   private drawables: (Background | FreeRoamEntity)[];
   /** whether or not the drawables array has been sorted yet  */
@@ -82,6 +86,9 @@ export class Room {
   /**
    * Adds a piece of the background for this room
    * @param sprite the sprite of this background piece
+   * @param centerPos coordinates of the center of the background
+   * @param width
+   * @param height
    * @param altitude higher layers are drawn on top of lower ones
    */
   public addBackground(

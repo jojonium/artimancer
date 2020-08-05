@@ -38,7 +38,7 @@ export class WorldFreeRoam extends World {
    * can move freely. If it moves outside this circle the camera will begin
    * moving. Set to 0 for the camera to always follow the cameraEntity
    */
-  public cameraDeadzone: number;
+  public cameraDeadZone: number;
 
   /**
    * Creates a new WorldFreeRoam
@@ -48,7 +48,7 @@ export class WorldFreeRoam extends World {
     this.setType("Free Roam");
     this.cameraOffset = new Vector(0, 0);
     this.cameraEntity = undefined;
-    this.cameraDeadzone = 0;
+    this.cameraDeadZone = 0;
   }
 
   /**
@@ -58,11 +58,11 @@ export class WorldFreeRoam extends World {
   public draw(ctx: CanvasRenderingContext2D): void {
     // set camera offset
     if (this.cameraEntity !== undefined) {
-      // if the camera entity is bigger than the deadzone, camera should always
+      // if the camera entity is bigger than the dead zone, camera should always
       // stick to it
       if (
-        this.cameraDeadzone < this.cameraEntity.drawBox.width ||
-        this.cameraDeadzone < this.cameraEntity.drawBox.height
+        this.cameraDeadZone < this.cameraEntity.drawBox.width ||
+        this.cameraDeadZone < this.cameraEntity.drawBox.height
       ) {
         this.cameraOffset = this.cameraEntity.drawBox
           .getCenter()
@@ -71,9 +71,9 @@ export class WorldFreeRoam extends World {
         const diff = this.cameraEntity.drawBox
           .getCenter()
           .subtract(this.cameraOffset.add(CANV_SIZE / 2));
-        const distToAdjust = diff.getMagnitude() - this.cameraDeadzone;
+        const distToAdjust = diff.getMagnitude() - this.cameraDeadZone;
         if (distToAdjust > 0) {
-          // outside the deadzone
+          // outside the dead zone
           this.cameraOffset = this.cameraOffset.add(
             diff.normalize().scale(distToAdjust)
           );

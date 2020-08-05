@@ -48,11 +48,11 @@ export type roomDefinition = {
 
 /**
  * This class is for development purposes, and allows for easy graphical
- * editing of room backgrounds and collisison boundaries
+ * editing of room backgrounds and collision boundaries
  */
 export class WorldRoomEditor extends WorldFreeRoam {
   /** all finished bounding polygons */
-  private completedPolygons: Polygon[];
+  private readonly completedPolygons: Polygon[];
   /** the polygon currently being worked on */
   private selectedPolygon: Polygon | undefined;
   /** the currently selected background element */
@@ -66,7 +66,7 @@ export class WorldRoomEditor extends WorldFreeRoam {
   /** current editing mode */
   private mode: Mode;
   /** UI elements this world displays */
-  private uiElements: UIElement[];
+  private readonly uiElements: UIElement[];
   /** whether or not we're dragging the world camera */
   private dragging = false;
 
@@ -108,7 +108,7 @@ export class WorldRoomEditor extends WorldFreeRoam {
       this.cameraOffset = this.cameraOffset.subtract(delta);
       return;
     } else if (this.mouseIsDown && this.mousePos && this.mode === Mode.select) {
-      // if holding shift, scale whatever's selected
+      // if holding shift, scale whatever is selected
       if (ev.shiftKey) {
         // scale polygons
         // this is pretty wonky, and based on the canvas origin rather than the
@@ -139,7 +139,7 @@ export class WorldRoomEditor extends WorldFreeRoam {
           this.selectedEntity.drawBox = b;
         }
       } else {
-        // otherwise drag whatever's selected
+        // otherwise drag whatever is selected
         // drag polygons
         if (this.selectedPolygon !== undefined) {
           this.selectedPolygon.translate(delta);
@@ -274,7 +274,7 @@ export class WorldRoomEditor extends WorldFreeRoam {
       ctx.closePath();
       ctx.fill();
       ctx.stroke();
-      // draw crosshair in center
+      // draw cross-hair in center
       ctx.strokeStyle = "green";
       ctx.fillStyle = "green";
       ctx.lineWidth = 3;
@@ -331,7 +331,7 @@ export class WorldRoomEditor extends WorldFreeRoam {
       ctx.stroke();
     }
 
-    // draw a crosshair at the origin
+    // draw a cross-hair at the origin
     ctx.lineWidth = 3;
     ctx.strokeStyle = "yellow";
     ctx.beginPath();
@@ -446,10 +446,9 @@ export class WorldRoomEditor extends WorldFreeRoam {
   public selectMouseupHandler(ev: MouseEvent): void {
     this.mouseIsDown = false;
     this.dragging = false;
-    const vec = DM.windowToWorldCoord(new Vector(ev.clientX, ev.clientY)).add(
-      this.cameraOffset
-    );
-    this.mousePos = vec;
+    this.mousePos = DM.windowToWorldCoord(
+      new Vector(ev.clientX, ev.clientY)
+    ).add(this.cameraOffset);
   }
 
   /**
@@ -474,7 +473,7 @@ export class WorldRoomEditor extends WorldFreeRoam {
    * and collision polygons in this room
    */
   public exportString(): string {
-    const entitiyDefinitions =
+    const entityDefinitions =
       this.currentRoom?.getEntities().map(ent => {
         return {
           label: ent.getLabel(),
@@ -485,7 +484,7 @@ export class WorldRoomEditor extends WorldFreeRoam {
     const out: roomDefinition = {
       barriers: this.completedPolygons,
       bgObjects: this.currentRoom?.getBackgrounds() ?? [],
-      entityDefinitions: entitiyDefinitions
+      entityDefinitions: entityDefinitions
     };
     return JSON.stringify(out);
   }

@@ -25,7 +25,7 @@ class UIManager extends Manager {
   /** singleton instance */
   private static _instance = new UIManager();
   /** stack of active UI elements, higher index drawn on top of lower index */
-  private elements: UIElement[];
+  private readonly elements: UIElement[];
   /** UI elements that stick to the corners, drawn on top of others */
   private cornerUI: {
     tr: UIElement | undefined;

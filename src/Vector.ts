@@ -83,7 +83,7 @@ export class Vector {
   /**
    * multiplies this Vector's x and y by given factors
    * @param sx x scale factor
-   * @param sy y scale factor. Equal to sx if ommitted
+   * @param sy y scale factor. Equal to sx if omitted
    */
   public multiply(sx: number, sy?: number): Vector;
 
@@ -96,7 +96,7 @@ export class Vector {
   /**
    * Scales the vector (multiplying it by the given factors)
    * @param sx x scale factor
-   * @param sy y scale factor. Equal to sx if ommitted
+   * @param sy y scale factor. Equal to sx if omitted
    */
   public scale(sx: number, sy = sx): Vector {
     return this.multiply(sx, sy);
@@ -112,7 +112,7 @@ export class Vector {
   /**
    * adds the given addends to this Vector's x and y
    * @param ax x addend
-   * @param ay y addend. Equal to sx if ommitted
+   * @param ay y addend. Equal to sx if omitted
    */
   public add(ax: number, ay?: number): Vector;
 
@@ -131,8 +131,8 @@ export class Vector {
 
   /**
    * subtracts the given subtrahends from this Vector's x and y
-   * @param ax x subtrahend
-   * @param ay y subtrahend. Equal to sx if ommitted
+   * @param sx x subtrahend
+   * @param sy y subtrahend. Equal to sx if omitted
    */
   public subtract(sx: number, sy?: number): Vector;
 
@@ -153,7 +153,7 @@ export class Vector {
    * divides this Vector's x and y by the given divisors. If it would divide an
    * attribute by zero, it returns that attribute unmodified instead
    * @param dx x divisor
-   * @param dy y divisor. Equal to dx if ommitted
+   * @param dy y divisor. Equal to dx if omitted
    */
   public divide(dx: number, dy?: number): Vector;
 
@@ -194,11 +194,11 @@ export class Vector {
    * @param p first vector
    * @param q second vector
    * @param r third vector
-   * @return 0 if colinear, 1 if clockwise, or -1 if counterclockwise
+   * @return 0 if collinear, 1 if clockwise, or -1 if counterclockwise
    */
   public static orientation(p: Vector, q: Vector, r: Vector): -1 | 0 | 1 {
     const val = (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y);
-    if (val == 0) return 0; // colinear
+    if (val == 0) return 0; // collinear
     return val > 0 ? 1 : -1; // clockwise or counterclockwise
   }
 }

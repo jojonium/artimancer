@@ -76,11 +76,41 @@ class Button {
     this.gpButtonIndex = gpButtonIndex;
     this.status = new Status();
   }
+
+  /** Call this when a button has just been pressed. */
+  public down(): void {
+    this.status.isDown = true;
+    this.status.isHeld = this.status.wasDown;
+    this.status.isPressed = !this.status.wasDown;
+    this.status.isReleased = false;
+  }
+
+  /**
+   * Call this when a button has just been released
+   */
+  public up(): void {
+    this.status.isDown = false;
+    this.status.isHeld = false;
+    this.status.isPressed = false;
+    this.status.isReleased = this.status.wasDown;
+  }
+
+  /**
+   * Call this for each button each step before ageButton() *if* usingKeyboard
+   * is false
+   * @param currentlyDown whether the button is currently down
+   */
+  public step(currentlyDown = false): void {
+    this.status.isDown = currentlyDown;
+    this.status.isHeld = currentlyDown && this.status.wasDown;
+    this.status.isPressed = currentlyDown && !this.status.wasDown;
+    this.status.isReleased = !currentlyDown && this.status.wasDown;
+  }
 }
 
 /**
  * Represents a directional, mapping to four keyboard keys and a gamepad
- * joystick
+ * joystick.
  */
 class Directional {
   public upButton: Button;
@@ -102,7 +132,7 @@ class Directional {
   private keyCounter = 0;
 
   /**
-   * Constructs a new Directional including a set of four buttons and a joystick
+   * Constructs a new Directional including set of four buttons and a joystick.
    * @param upKey KeyboardEvent.key value of the keyboard key for going up
    * @param rightKey KeyboardEvent.key value of the keyboard key for going right
    * @param downKey KeyboardEvent.key value of the keyboard key for going down
@@ -187,13 +217,13 @@ class InputManager extends Manager {
   /** true if we're using the keyboard for controls, false for controller */
   private usingKeyboard: boolean;
   /** ignore central area of sticks */
-  private deadzone = 0.2;
+  private deadZone = 0.2;
   /** multiplier for stick reading */
   private stickSensitivity = 1.4;
   /** whether to log extra information */
   private noisy = true;
   /** functions to execute on various mouse events */
-  private mouseFuncs: {
+  private mouseFunctions: {
     down: (ev: MouseEvent) => void;
     up: (ev: MouseEvent) => void;
     move: (ev: MouseEvent) => void;
@@ -230,7 +260,7 @@ class InputManager extends Manager {
     this.directionals = new Map<string, Directional>();
     this.buttons = new Map<string, Button>();
     this.usingKeyboard = false;
-    this.mouseFuncs = {
+    this.mouseFunctions = {
       down: noOp,
       up: noOp,
       move: noOp
@@ -366,47 +396,12 @@ class InputManager extends Manager {
   }
 
   /**
-   * Call this when a button has just been pressed
-   * @param button the button that has just been pressed
-   */
-  private buttonDown(button: Button): void {
-    button.status.isDown = true;
-    button.status.isHeld = button.status.wasDown;
-    button.status.isPressed = !button.status.wasDown;
-    button.status.isReleased = false;
-  }
-
-  /**
-   * Call this when a button has just been released
-   * @param button the button that has just been released
-   */
-  private buttonUp(button: Button): void {
-    button.status.isDown = false;
-    button.status.isHeld = false;
-    button.status.isPressed = false;
-    button.status.isReleased = button.status.wasDown;
-  }
-
-  /**
-   * Call this for each button each step before ageButton() *if* usingKeyboard
-   * is false
-   * @param button a button
-   * @param currentlyDown whether that button is currently down
-   */
-  private buttonStep(button: Button, currentlyDown = false): void {
-    button.status.isDown = currentlyDown;
-    button.status.isHeld = currentlyDown && button.status.wasDown;
-    button.status.isPressed = currentlyDown && !button.status.wasDown;
-    button.status.isReleased = !currentlyDown && button.status.wasDown;
-  }
-
-  /**
    * This should be called every step to update buttons with input from any
    * connected controllers
    */
   private getGamepadInput(): void {
     const deadZoneGuard = (x: number): number =>
-      Math.abs(x) > this.deadzone ? x : 0;
+      Math.abs(x) > this.deadZone ? x : 0;
 
     for (const gamepad of navigator.getGamepads()) {
       if (!gamepad || !gamepad.connected) {
@@ -462,8 +457,7 @@ class InputManager extends Manager {
         this.buttons.forEach(but => {
           const bi = but.gpButtonIndex;
           if (bi !== undefined && gamepad.buttons[bi]) {
-            this.buttonStep(
-              but,
+            but.step(
               gamepad.buttons[bi].value > 0 || gamepad.buttons[bi].pressed
             );
           }
@@ -485,7 +479,7 @@ class InputManager extends Manager {
       for (const db of dir.getButtons()) {
         if (key === db.key) {
           e.preventDefault();
-          this.buttonDown(db);
+          db.down();
           dir.setVecFromButtons();
         }
       }
@@ -495,7 +489,7 @@ class InputManager extends Manager {
     this.buttons.forEach(but => {
       if (key === but.key) {
         e.preventDefault();
-        this.buttonDown(but);
+        but.down();
       }
     });
   }
@@ -513,7 +507,7 @@ class InputManager extends Manager {
       for (const db of dir.getButtons()) {
         if (key === db.key) {
           e.preventDefault();
-          this.buttonUp(db);
+          db.up();
           dir.setVecFromButtons();
         }
       }
@@ -523,7 +517,7 @@ class InputManager extends Manager {
     this.buttons.forEach(but => {
       if (key === but.key) {
         e.preventDefault();
-        this.buttonUp(but);
+        but.up();
       }
     });
   }
@@ -533,7 +527,7 @@ class InputManager extends Manager {
    * @param e the mouse event created by the mouse click
    */
   private mousedownHandler(e: MouseEvent): void {
-    this.mouseFuncs.down(e);
+    this.mouseFunctions.down(e);
   }
 
   /**
@@ -541,7 +535,7 @@ class InputManager extends Manager {
    * @param e the mouse event created by the mouse release
    */
   private mouseupHandler(e: MouseEvent): void {
-    this.mouseFuncs.up(e);
+    this.mouseFunctions.up(e);
   }
 
   /**
@@ -549,22 +543,18 @@ class InputManager extends Manager {
    * @param e the mouse event created by the mouse movement
    */
   private mousemoveHandler(e: MouseEvent): void {
-    this.mouseFuncs.move(e);
+    this.mouseFunctions.move(e);
   }
 
   /**
-   * handles gamepadconnect events
-   * @param e the GamepadEvent created by the event
+   * handles 'gamepadconnect' events
    */
   private gamepadconnectHandler(): void {
     if (this.noisy) console.log("IM: gamepad connected");
     this.usingKeyboard = false;
   }
 
-  /**
-   * handles gamepaddisconnect events
-   * @param e the GamepadEvent created by the event
-   */
+  /** handles 'gamepaddisconnect' events */
   private gamepaddisconnectHandler(): void {
     if (this.noisy) console.log("IM: gamepad disconnected");
     this.usingKeyboard = true;
@@ -710,6 +700,7 @@ class InputManager extends Manager {
   /**
    * Registers a new directional with a given name, overwriting any existing
    * directional with the same name
+   * @param name friendly name of the button
    * @param upKey KeyboardEvent.key value of the keyboard key for going up
    * @param rightKey KeyboardEvent.key value of the keyboard key for going right
    * @param downKey KeyboardEvent.key value of the keyboard key for going down
@@ -754,7 +745,7 @@ class InputManager extends Manager {
   public setMouseDown(
     func: ((this: Document, ev: MouseEvent) => void) | undefined
   ): void {
-    this.mouseFuncs.down = func ?? noOp;
+    this.mouseFunctions.down = func ?? noOp;
   }
 
   /**
@@ -763,7 +754,7 @@ class InputManager extends Manager {
   public setMouseUp(
     func: ((this: Document, ev: MouseEvent) => void) | undefined
   ): void {
-    this.mouseFuncs.up = func ?? noOp;
+    this.mouseFunctions.up = func ?? noOp;
   }
 
   /**
@@ -772,7 +763,7 @@ class InputManager extends Manager {
   public setMouseMove(
     func: ((this: Document, ev: MouseEvent) => void) | undefined
   ): void {
-    this.mouseFuncs.move = func ?? noOp;
+    this.mouseFunctions.move = func ?? noOp;
   }
 
   /**

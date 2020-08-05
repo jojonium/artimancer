@@ -51,7 +51,8 @@ export class WorldMainMenu extends World {
     UM.setCornerUI("bottom right", versionDisplay);
   }
 
-  public draw(ctx: CanvasRenderingContext2D): void {
+  public draw(): void {
+    // TODO implement
     return;
   }
 

@@ -25,7 +25,7 @@ export abstract class World {
   /** type identifier of this world */
   private type: string;
 
-  public constructor() {
+  protected constructor() {
     this.type = "World";
   }
 

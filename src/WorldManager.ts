@@ -20,7 +20,6 @@
 import { Manager } from "./Manager";
 import { World } from "./World";
 import { WorldLoading } from "./WorldLoading";
-import { IM } from "./InputManager";
 import { UM } from "./UIManager";
 
 /**

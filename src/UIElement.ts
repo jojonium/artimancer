@@ -39,7 +39,7 @@ export abstract class UIElement {
    * @param label a unique string identifier for this UI Element
    * @param box location and size of the element in its container
    */
-  public constructor(label: string, box: Box) {
+  protected constructor(label: string, box: Box) {
     this.label = label;
     this.box = box;
     this.onClick = (): void => {

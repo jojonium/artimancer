@@ -24,7 +24,7 @@ import { Clock } from "./Clock";
  */
 export class Frame {
   /** Image for this frame */
-  private img: HTMLImageElement;
+  private readonly img: HTMLImageElement;
 
   public constructor(img: HTMLImageElement) {
     this.img = img;
@@ -40,11 +40,11 @@ export class Frame {
  */
 export class Sprite {
   /** amount of time between frames, in milliseconds */
-  private slowdown: number;
+  private readonly slowdown: number;
   /** frames of this sprite */
-  private frames: Frame[];
+  private readonly frames: Frame[];
   /** clock for timing frames */
-  private clock: Clock | undefined;
+  private readonly clock: Clock | undefined;
   /** current frame index to draw */
   private currentFrameNum: number;
 
