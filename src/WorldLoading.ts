@@ -24,7 +24,9 @@ import { CANV_SIZE } from "./DisplayManager";
 import { Room } from "./Room";
 import { Vector } from "./Vector";
 import { EntityTest } from "./EntityTest";
-import { WorldDisplayTest } from "./WorldDisplayTest";
+import { WorldBattle } from "./battle/WorldBattle";
+import { TestCombatant } from "./battle/TestCombatant";
+import { Combatant } from "./battle/Combatant";
 
 /**
  * a World that displays a loading bar while resources are being loaded
@@ -107,7 +109,9 @@ export class WorldLoading extends World {
         );
         room.addEntities(e0, e1, e2);
       }
-      WM.enterWorld(new WorldDisplayTest());
+      const leftSide = new Array<Combatant>(2).fill(new TestCombatant());
+      const rightSide = new Array<Combatant>(4).fill(new TestCombatant());
+      WM.enterWorld(new WorldBattle(leftSide, rightSide));
     }
   }
 }

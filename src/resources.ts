@@ -29,9 +29,15 @@ export const resources = {
     { spriteLabel: "edit-menu-move", length: 1, slowdown: 0 },
     { spriteLabel: "edit-menu-barrier", length: 1, slowdown: 0 },
     { spriteLabel: "edit-menu-export", length: 1, slowdown: 0 },
-    { spriteLabel: "logo", length: 1, slowdown: 0 }
+    { spriteLabel: "logo", length: 1, slowdown: 0 },
+    { spriteLabel: "default-platform", length: 1, slowdown: 0 }
   ],
   images: [
+    {
+      filename: "images/default-platform.svg",
+      spriteLabel: "default-platform",
+      index: 0
+    },
     { filename: "images/f1.svg", spriteLabel: "test", index: 0 },
     { filename: "images/f2.svg", spriteLabel: "test", index: 1 },
     { filename: "images/f3.svg", spriteLabel: "test", index: 2 },

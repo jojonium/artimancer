@@ -17,6 +17,11 @@
  * Artimancer. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { Sprite } from "../Sprite";
+import { RM } from "../ResourceManager";
+import { Box } from "../Box";
+import { Vector } from "../Vector";
+
 /** variable core characteristics belonging to a combatant */
 export type CombatantTraits = {
   /** higher speed goes first in a round */
@@ -44,6 +49,8 @@ export abstract class Combatant {
     damageTaken: 0,
     kills: 0
   };
+  /** sprite for the platform this combatant stands on in battle */
+  private platformSprite: Sprite | undefined = undefined;
 
   /**
    * this combatant takes its turn in the battle, resolving the promise when
@@ -53,4 +60,36 @@ export abstract class Combatant {
 
   /** returns true if this is an enemy and false if it is an ally or neutral */
   public abstract isEnemy(): boolean;
+
+  /**
+   * draws the platform for this combatant to stand on
+   * @param ctx the canvas context to draw on
+   * @param drawBox specifies the position and size in which to draw
+   */
+  public drawPlatform(ctx: CanvasRenderingContext2D, drawBox: Box): void {
+    const sprite = this.platformSprite ?? RM.getSprite("default-platform");
+    if (sprite === undefined) {
+      throw new Error("Combatant: Failed to get platform sprite");
+    }
+    ctx.drawImage(
+      sprite.getCurrentFrame().getImage(),
+      drawBox.topLeft.x,
+      drawBox.topLeft.y,
+      drawBox.width,
+      drawBox.height
+    );
+  }
+
+  /**
+   * draws the combatant within the given box
+   * @param ctx the canvas context to draw on
+   * @param center the middle of the drawable area. The area's width is
+   * theoretically unlimited
+   * @param maxHeight maximum height of the drawable area
+   */
+  public abstract draw(
+    ctx: CanvasRenderingContext2D,
+    center: Vector,
+    maxHeight: number
+  ): void;
 }

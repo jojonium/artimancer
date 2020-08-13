@@ -19,6 +19,9 @@
 
 import { World } from "../World";
 import { Combatant } from "./Combatant";
+import { Box } from "../Box";
+import { Vector } from "../Vector";
+import { CANV_SIZE } from "../DisplayManager";
 
 /** Coordinates and draws a turn-based battle */
 export class WorldBattle extends World {
@@ -98,8 +101,71 @@ export class WorldBattle extends World {
 
   /** @override */
   public draw(ctx: CanvasRenderingContext2D): void {
+    const platformHeight = 40;
+    const platformWidth = 100;
+    const xMargin = 50;
+    const xStagger = 40;
     // TODO draw background
+    // left side
+    WorldBattle.drawColumn(
+      ctx,
+      this.leftCombatants,
+      xMargin,
+      platformWidth,
+      platformHeight,
+      xStagger
+    );
+    // right side
+    WorldBattle.drawColumn(
+      ctx,
+      this.rightCombatants,
+      CANV_SIZE -
+        platformWidth -
+        xStagger * this.rightCombatants.length -
+        xMargin,
+      platformWidth,
+      platformHeight,
+      xStagger
+    );
     return;
+  }
+
+  private static drawColumn(
+    ctx: CanvasRenderingContext2D,
+    combatants: Array<Combatant>,
+    startingX: number,
+    platformWidth: number,
+    platformHeight: number,
+    xStagger: number
+  ): void {
+    let xOffset = startingX;
+    let rowHeight = CANV_SIZE / combatants.length;
+    let yOffset = 0;
+    if (combatants.length === 1) {
+      rowHeight = CANV_SIZE / 2;
+      yOffset = CANV_SIZE / 4;
+    }
+    if (combatants.length === 2) {
+      rowHeight = CANV_SIZE / 3;
+      yOffset = CANV_SIZE / 6;
+    }
+    for (const c of combatants) {
+      c.drawPlatform(
+        ctx,
+        new Box(
+          new Vector(xOffset, yOffset + rowHeight - platformHeight),
+          platformWidth,
+          platformHeight
+        )
+      );
+      c.draw(
+        ctx,
+        new Vector(xOffset + platformWidth / 2, yOffset + rowHeight / 2),
+        rowHeight - platformHeight
+      );
+      xOffset += xStagger;
+      yOffset += rowHeight;
+    }
   }
 
   /** @override */
