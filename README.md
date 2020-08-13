@@ -8,6 +8,7 @@ A simple turn-based RPG for the web. Stay tuned for more progress.
   - Simple sprite-based graphics options
   - Robust controls system
   - Working on a room editor
+  - Working on turn-based battle system
 
 ## Running Development Server
 
