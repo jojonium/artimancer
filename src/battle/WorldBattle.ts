@@ -24,28 +24,52 @@ import { Combatant } from "./Combatant";
 export class WorldBattle extends World {
   /** whether to log info */
   private noisy = true;
-  /** list of participants in this battle in no particular order */
-  private combatants: Array<Combatant>;
+  /** participants on the left side of the screen, top to bottom */
+  private readonly leftCombatants: Array<Combatant>;
+  /** participants on the right side of the screen, top to bottom */
+  private readonly rightCombatants: Array<Combatant>;
   /** queue of participants in turn order for this round */
   private upNext: Array<Combatant>;
 
-  public constructor(combatants: Array<Combatant>) {
+  /**
+   * @param leftCombatants must contain 1-5 Combatants
+   * @param rightCombatants must contain 1-5 Combatants
+   */
+  public constructor(
+    leftCombatants: Array<Combatant>,
+    rightCombatants: Array<Combatant>
+  ) {
     super();
+    if (leftCombatants.length < 1 || leftCombatants.length > 5) {
+      throw new Error(
+        "WorldBattle constructor: leftCombatants must have length 1-5, not " +
+          leftCombatants.length
+      );
+    }
+    if (rightCombatants.length < 1 || rightCombatants.length > 5) {
+      throw new Error(
+        "WorldBattle constructor: rightCombatants must have length 1-5, not " +
+          rightCombatants.length
+      );
+    }
     this.setType("Battle");
-    this.combatants = combatants;
+    this.leftCombatants = leftCombatants;
+    this.rightCombatants = rightCombatants;
     this.upNext = [];
+  }
+
+  private allCombatants(): Array<Combatant> {
+    return [...this.leftCombatants, ...this.rightCombatants];
   }
 
   /** clears upNext, then populates it with combatants in speed order */
   private calculateTurnOrder(): void {
-    this.upNext = this.combatants.sort(
-      (a, b) => {
-        const diff = b.traits.speed - a.traits.speed;
-        if (diff !== 0) return diff;
-        // equal speeds get sorted randomly
-        return 0.5 - Math.random();
-      }
-    );
+    this.upNext = this.allCombatants().sort((a, b) => {
+      const diff = b.traits.speed - a.traits.speed;
+      if (diff !== 0) return diff;
+      // equal speeds get sorted randomly
+      return 0.5 - Math.random();
+    });
   }
 
   /** @override */
@@ -57,7 +81,7 @@ export class WorldBattle extends World {
 
   /** the combatant who is up next takes a turn */
   private takeTurn(): void {
-    if (!this.combatants.some(c => c.isEnemy())) {
+    if (!this.allCombatants().some(c => c.isEnemy())) {
       // no enemies left, the player won
       // TODO implement
       return;
@@ -67,14 +91,14 @@ export class WorldBattle extends World {
       this.calculateTurnOrder();
     }
     this.upNext[0].takeTurn().then(() => {
-      this.upNext.shift()
+      this.upNext.shift();
       this.takeTurn();
-    })
+    });
   }
 
   /** @override */
   public draw(ctx: CanvasRenderingContext2D): void {
-    // TODO implement
+    // TODO draw background
     return;
   }
 
