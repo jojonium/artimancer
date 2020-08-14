@@ -19,7 +19,7 @@
 
 import { Manager } from "./Manager";
 import { World } from "./World";
-import { WorldLoading } from "./WorldLoading";
+import { WorldLoading } from "./worlds/WorldLoading";
 import { UM } from "./UIManager";
 
 /**

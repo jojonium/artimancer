@@ -17,11 +17,11 @@
  * Artimancer. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { World } from "./World";
-import { Room } from "./Room";
-import { Vector } from "./Vector";
-import { FreeRoamEntity } from "./FreeRoamEntity";
-import { CANV_SIZE } from "./DisplayManager";
+import { World } from "../World";
+import { Room } from "../Room";
+import { Vector } from "../Vector";
+import { FreeRoamEntity } from "../FreeRoamEntity";
+import { CANV_SIZE } from "../DisplayManager";
 
 /**
  * This is a world in which the player character can walk around, talk to NPCs,

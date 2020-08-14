@@ -17,11 +17,11 @@
  * Artimancer. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { World } from "./World";
-import { FPSCounter } from "./ui/FPSCounter";
-import { UM } from "./UIManager";
-import { Vector } from "./Vector";
-import { CANV_SIZE } from "./DisplayManager";
+import { World } from "../World";
+import { FPSCounter } from "../ui/FPSCounter";
+import { UM } from "../UIManager";
+import { Vector } from "../Vector";
+import { CANV_SIZE } from "../DisplayManager";
 
 /**
  * This world is for testing display scaling

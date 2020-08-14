@@ -17,11 +17,11 @@
  * Artimancer. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { TextUIElement } from "./ui/TextUIElement";
-import { UM } from "./UIManager";
-import { World } from "./World";
-import { Box } from "./Box";
-import { Vector } from "./Vector";
+import { TextUIElement } from "../ui/TextUIElement";
+import { UM } from "../UIManager";
+import { World } from "../World";
+import { Box } from "../Box";
+import { Vector } from "../Vector";
 
 /** game version */
 const VERSION = "0.0.1";

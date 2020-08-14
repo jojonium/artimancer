@@ -17,16 +17,16 @@
  * Artimancer. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { World } from "./World";
-import { RM } from "./ResourceManager";
-import { WM } from "./WorldManager";
-import { CANV_SIZE } from "./DisplayManager";
-import { Room } from "./Room";
-import { Vector } from "./Vector";
-import { EntityTest } from "./EntityTest";
-import { WorldBattle } from "./battle/WorldBattle";
-import { TestCombatant } from "./battle/TestCombatant";
-import { Combatant } from "./battle/Combatant";
+import { World } from "../World";
+import { RM } from "../ResourceManager";
+import { WM } from "../WorldManager";
+import { CANV_SIZE } from "../DisplayManager";
+import { Room } from "../Room";
+import { Vector } from "../Vector";
+import { EntityTest } from "../EntityTest";
+import { WorldBattle } from "../battle/WorldBattle";
+import { TestCombatant } from "../battle/TestCombatant";
+import { Combatant } from "../battle/Combatant";
 
 /**
  * a World that displays a loading bar while resources are being loaded

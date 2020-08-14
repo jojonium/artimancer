@@ -17,19 +17,19 @@
  * Artimancer. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Box } from "./Box";
-import { CANV_SIZE, DM } from "./DisplayManager";
-import { FreeRoamEntity } from "./FreeRoamEntity";
-import { IM } from "./InputManager";
-import { Polygon } from "./Polygon";
-import { RM } from "./ResourceManager";
-import { Background, Room } from "./Room";
-import { UIElement } from "./UIElement";
-import { UM } from "./UIManager";
-import { Vector } from "./Vector";
+import { Box } from "../Box";
+import { CANV_SIZE, DM } from "../DisplayManager";
+import { FreeRoamEntity } from "../FreeRoamEntity";
+import { IM } from "../InputManager";
+import { Polygon } from "../Polygon";
+import { RM } from "../ResourceManager";
+import { Background, Room } from "../Room";
+import { UIElement } from "../UIElement";
+import { UM } from "../UIManager";
+import { Vector } from "../Vector";
 import { WorldFreeRoam } from "./WorldFreeRoam";
-import { SpriteUIElement } from "./ui/SpriteUIElement";
-import { TextUIElement } from "./ui/TextUIElement";
+import { SpriteUIElement } from "../ui/SpriteUIElement";
+import { TextUIElement } from "../ui/TextUIElement";
 
 enum Mode {
   select,
