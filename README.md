@@ -1,5 +1,8 @@
 # Artimancer
 
+__Note: This project is now archived. I was too busy with my thesis to work on
+it in the past year and gradually just lost interest.__
+
 A simple turn-based RPG for the web. Stay tuned for more progress.
 
 ## Current State
